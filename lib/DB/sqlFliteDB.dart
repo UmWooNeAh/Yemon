@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-
 import 'modeluuid.dart';
 
 class SqlFliteDB {
@@ -34,7 +32,7 @@ class SqlFliteDB {
       CREATE TABLE IF NOT EXISTS Settlement (
         settlementId TEXT PRIMARY KEY,
         settlementName TEXT NOT NULL,
-        RecordDate DATETIME
+        recordDate DATETIME
       )'''
     );
 
@@ -49,9 +47,9 @@ class SqlFliteDB {
 
     await db.execute('''
       CREATE TABLE IF NOT EXISTS ReceiptItem (
-        rcpItemId TEXT PRIMARY KEY,
+        receiptItemId TEXT PRIMARY KEY,
         receiptId TEXT,
-        rcpItemName TEXT NOT NULL,
+        name TEXT NOT NULL,
         price INTEGER NOT NULL,
         count INTEGER NOT NULL,
         FOREIGN KEY(receiptId) REFERENCES Receipt(receiptId)
@@ -70,45 +68,13 @@ class SqlFliteDB {
     await db.execute('''
     CREATE TABLE IF NOT EXISTS SettlementItem (
         settlementPaperId TEXT,
-        rcpItemId TEXT,
-        FOREIGN KEY(settlementPaperId) REFERENCES SettlementPaper(settlementPaperId),
-        FOREIGN KEY(rcpItemId) REFERENCES ReceiptItem(rcpItemId)
+        receiptItemId TEXT,
+        FOREIGN KEY(settlementPaperId) REFERENCES SettlementPaper(stmPaperId),
+        FOREIGN KEY(receiptItemId) REFERENCES ReceiptItem(rcpItemId)
       )'''
     );
   }
 
-  Future<void> insertStm(String stmName) async {
-    var db = await database;
-    await db.rawInsert('INSERT INTO Settlement(settlementId, settlementName, RecordDate) VALUES(?, ?, ?)'
-        , [_uuid.randomId, stmName, DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())]);
-    log("settlement insert successfully");
-  }
-  
-  Future<void> updateStm(String newstmName, String id) async {
-    var db = await database;
-    await db.rawUpdate('UPDATE Settlement SET settlementName = ?, RecordDate = ? WHERE settlementId = ?'
-        , [newstmName, DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()), id]);
-    log("update successfully");
-  }
-  
-  Future<void> deleteStm(String id) async {
-    var db = await database;
-    await db.rawDelete('DELETE FROM Settlement WHERE settlementId = ?', [id]);
-    log("delete successfully");
-  }
-
-  Future<void> insertRcp(String rcpName, String stmId) async {
-    var db = await database;
-    await db.rawInsert('INSERT INTO Receipt(receiptId, settlementId, receiptName) VALUES(?, ?, ?)'
-        , [_uuid.randomId, stmId, rcpName]);
-    log("receipt insert successfully");
-  }
-  
-  Future<void> joinTest(String stmId) async {
-    var db = await database;
-    List<Map> result = await db.rawQuery('SELECT receiptName, settlementName FROM Settlement INNER JOIN Receipt ON ? = ?', [stmId, stmId]);
-    result.forEach((row) => print(row));
-  }
 
   FutureOr<void> _onUpgrade(Database db, int oldVersion, int newVersion) {
   }
