@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LoadMemberPage extends ConsumerStatefulWidget {
@@ -11,6 +11,9 @@ class LoadMemberPage extends ConsumerStatefulWidget {
 class _LoadMemberPageState extends ConsumerState<LoadMemberPage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(),
+      body: const Center(child: Text("Load Member Page")),
+    );
   }
 }

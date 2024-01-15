@@ -7,8 +7,6 @@ import 'View/load_member_page.dart';
 import 'View/settlement_list_page.dart';
 import 'View/settlement_management_page.dart';
 
-
-
 void main() {
   runApp(const ProviderScope(child: MainApp()));
 }
@@ -42,10 +40,12 @@ final GoRouter router = GoRouter(
         GoRoute(
           path: 'SettlementManagementPage',
           builder: (context, state) => const SettlementManagementPage(),
-        ),
-        GoRoute(
-          path: 'LoadMemberPage',
-          builder: (context, state) => const LoadMemberPage(),
+          routes: [
+            GoRoute(
+              path: 'LoadMemberPage',
+              builder: (context, state) => const LoadMemberPage(),
+            ),
+          ],
         ),
       ],
     ),
@@ -74,36 +74,40 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             OutlinedButton(
-                onPressed: () {
-                  var db = _model.database;
-                },
-                child: Text('DB 생성'),
+              onPressed: () {
+                var db = _model.database;
+              },
+              child: Text('DB 생성'),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 OutlinedButton(
-                    onPressed: () async {
-                      //await _model.insertStm("데모 정산");
-                      await _model.insertRcp("영수증 2", "b9277cbb-e29f-4d32-bae7-0e196030590e");
-                    },
-                    child: Text('INSERT'),
+                  onPressed: () async {
+                    //await _model.insertStm("데모 정산");
+                    await _model.insertRcp(
+                        "영수증 2", "b9277cbb-e29f-4d32-bae7-0e196030590e");
+                  },
+                  child: Text('INSERT'),
                 ),
                 OutlinedButton(
                   onPressed: () async {
-                    await _model.updateStm("데모 정산 1", "26262c21-596a-4210-8714-3cf094a0676a");
+                    await _model.updateStm(
+                        "데모 정산 1", "26262c21-596a-4210-8714-3cf094a0676a");
                   },
                   child: Text('UPDATE'),
                 ),
                 OutlinedButton(
                   onPressed: () async {
-                    await _model.deleteStm("26262c21-596a-4210-8714-3cf094a0676a");
+                    await _model
+                        .deleteStm("26262c21-596a-4210-8714-3cf094a0676a");
                   },
                   child: Text('DELETE'),
                 ),
                 OutlinedButton(
                   onPressed: () async {
-                    await _model.joinTest("b9277cbb-e29f-4d32-bae7-0e196030590e");
+                    await _model
+                        .joinTest("b9277cbb-e29f-4d32-bae7-0e196030590e");
                   },
                   child: Text('Query'),
                 ),
