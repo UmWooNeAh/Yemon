@@ -4,6 +4,7 @@ class ReceiptItem{
   String receiptItemId = "";
   String receiptItemName = "";
   double price = 0;
+  double individualPrice = 0;
   int count = 0;
   Map<String,String> paperOwner = {};
 
