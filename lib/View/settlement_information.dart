@@ -192,28 +192,84 @@ class SettlementName extends ConsumerWidget {
         children: [
           Container(
             height: 40,
-            // color: basic[2],
             margin: const EdgeInsets.only(left: 10),
             child: Center(
-              child: Text(
-                provider.selectedSettlement.settlementName,
-                style: const TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: size.width - 70),
+                child: Text(
+                  provider.selectedSettlement.settlementName,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
           ),
           GestureDetector(
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return const EditSettlementName();
+                  });
+            },
             child: Container(
               width: 40,
               height: 40,
-              // color: basic[2],
               child: const Icon(Icons.edit),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class EditSettlementName extends ConsumerStatefulWidget {
+  const EditSettlementName({super.key});
+
+  @override
+  ConsumerState<EditSettlementName> createState() => _EditSettlementNameState();
+}
+
+class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
+  String newName = "";
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text("Edit Settlement Name"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text("New Settlement Name : "),
+          TextField(
+            onChanged: (value) {
+              setState(() {
+                newName = value;
+              });
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            context.pop();
+          },
+          child: const Text("취소하기"),
+        ),
+        TextButton(
+          onPressed: () {
+            final provider = ref.watch(mainProvider);
+            provider.editSettlementName(newName);
+            context.pop();
+          },
+          child: const Text("변경하기"),
+        ),
+      ],
     );
   }
 }
@@ -402,15 +458,15 @@ class IncludedMember extends ConsumerWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Center(
-            child: Text(
-                mprovider.selectedSettlement.settlementPapers[index].memberName),
+            child: Text(mprovider
+                .selectedSettlement.settlementPapers[index].memberName),
           ),
         ),
         Positioned(
           right: 0,
           top: 5,
           child: GestureDetector(
-            onTap: (){
+            onTap: () {
               mprovider.deleteMember(index);
             },
             child: SizedBox(

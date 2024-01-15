@@ -12,6 +12,11 @@ class MainViewModel extends ChangeNotifier {
   List<Settlement> settlementList = [];
   Settlement selectedSettlement = Settlement();
 
+  void editSettlementName(String newName){
+    selectedSettlement.settlementName = newName;
+    notifyListeners();
+  }
+
   void deleteReceiptItemList(List<List<bool>> receiptItems){
     for (int i = receiptItems.length - 1; i >= 0; i--){
       for (int j = receiptItems[i].length - 1; j >= 0; j--){
