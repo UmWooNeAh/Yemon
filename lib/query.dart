@@ -6,6 +6,7 @@ import 'package:sqlite_test/DB/db_receiptitem.dart';
 import 'package:sqlite_test/DB/db_settlement.dart';
 import 'package:sqlite_test/DB/db_settlementitem.dart';
 import 'package:sqlite_test/DB/db_settlementpaper.dart';
+import 'package:sqlite_test/DB/savepoint.dart';
 
 import 'Model/Receipt.dart';
 import 'Model/ReceiptItem.dart';
@@ -16,9 +17,11 @@ import 'Model/settlement.dart';
 class Query {
 
   Database? _db;
+  SavepointManager? savepointManager;
 
-  Query(Database db) {
+  Query(Database db, SavepointManager spm) {
     _db = db;
+    savepointManager = spm;
   }
 
   Future<void> showRecentSettlement(String stmId) async {
@@ -51,7 +54,7 @@ class Query {
     try {
       res = await _db!.transaction((txn) async {
         memberNames.forEach((memberName) async {
-          await DBSettlementPaper().createStmPaper(_db!, stmId, memberName);
+          await DBSettlementPaper().createStmPaperTxn(txn, stmId, memberName);
         });
       });
     }
@@ -66,8 +69,8 @@ class Query {
     try {
       await _db!.transaction((txn) async {
         settlementPaperIds.forEach((stmPaperId) async {
-          await DBSettlementPaper().deleteStmPaper(_db!, stmPaperId);
-          await DBSettlementItem().deleteAllStmItems(_db!, stmPaperId);
+          await DBSettlementPaper().deleteStmPaperTxn(txn, stmPaperId);
+          await DBSettlementItem().deleteAllStmItemsTxn(txn, stmPaperId);
         });
       });
     }
@@ -119,8 +122,9 @@ class Query {
     try {
         res = await _db!.transaction((txn) async {
           rcpItemIds.forEach((rcpItemId) async {
-            await DBSettlementItem().createStmItem(_db!, stmPaperId, rcpItemId);
+            await DBSettlementItem().createStmItemTxn(txn, stmPaperId, rcpItemId);
           });
+          await savepoint(txn);
       });
     }
     catch (e) {
@@ -130,7 +134,17 @@ class Query {
   }
 
   Future<int> matchingMemberToReceiptItem(String stmPaperId, String rcpItemId) async {
-    return DBSettlementItem().createStmItem(_db!, stmPaperId, rcpItemId);
+    var res;
+    try {
+      res = await _db!.transaction((txn) async {
+          await DBSettlementItem().createStmItem(_db!, stmPaperId, rcpItemId);
+          await savepoint(txn);
+        });
+    }
+    catch (e) {
+      print(e);
+    }
+    return res;
   }
 
   Future<int> unmatchingMemberFromAllReceiptItems(String stmPaperId, List<String> rcpItemIds) async {
@@ -138,8 +152,9 @@ class Query {
     try {
       res = await _db!.transaction((txn) async {
         rcpItemIds.forEach((rcpItemId) async {
-          await DBSettlementItem().deleteStmItem(_db!, stmPaperId, rcpItemId);
+          await DBSettlementItem().deleteStmItemTxn(txn, stmPaperId, rcpItemId);
         });
+        await savepoint(txn);
       });
     }
     catch (e) {
@@ -149,7 +164,27 @@ class Query {
   }
 
   Future<int> unmatchingMemberFromReceiptItem(String stmPaperId, String rcpItemId) async {
-    return DBSettlementItem().deleteStmItem(_db!, stmPaperId, rcpItemId);
+    var res;
+    try {
+      res = await _db!.transaction((txn) async {
+        await DBSettlementItem().deleteStmItem(_db!, stmPaperId, rcpItemId);
+        await savepoint(txn);
+      });
+    }
+    catch (e) {
+      print(e);
+    }
+    return res;
+  }
+  
+  Future<void> savepoint(Transaction txn) async {
+    final savepoint = savepointManager!.createSavePoint();
+    await txn.query('SAVEPOINT $savepoint');
+  }
+
+  Future<void> rollback(Database db, String pointName) async {
+    final savepoint = savepointManager!.returnSavePoint();
+    await db.rawDelete('ROLLBACK TO $savepoint');
   }
 
 

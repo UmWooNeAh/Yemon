@@ -3,11 +3,13 @@ import 'dart:developer';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqlite_test/DB/savepoint.dart';
 import 'modeluuid.dart';
 
 class SqlFliteDB {
   Database? _db;
   ModelUuid _uuid = ModelUuid();
+  final savepointManager  = SavepointManager();
 
   Future<Database> get database async {
       if(_db != null) return _db!;

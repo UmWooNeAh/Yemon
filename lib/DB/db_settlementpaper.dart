@@ -14,6 +14,11 @@ class DBSettlementPaper {
     ,[_uuid.randomId, stmId, memberName]);
   }
 
+  Future<int> createStmPaperTxn(Transaction txn, String stmId, String memberName) async {
+    return await txn.rawInsert('INSERT INTO SettlementPaper(settlementPaperId, settlementId, memberName) VALUES(?,?,?)'
+        ,[_uuid.randomId, stmId, memberName]);
+  }
+
   Future<List<Map>> readStmPaper(Database db, String stmPaperId) async {
     return await db!.rawQuery('SELECT * FROM SettlementPaper WHERE settlementPaperId = ?', [stmPaperId]);
   }
@@ -24,5 +29,9 @@ class DBSettlementPaper {
 
   Future<int> deleteStmPaper(Database db, String stmPaperId) async {
     return await db!.rawDelete('DELETE FROM SettlementPaper WHERE settlementPaperId = ?', [stmPaperId]);
+  }
+
+  Future<int> deleteStmPaperTxn(Transaction txn, String stmPaperId) async {
+    return await txn.rawDelete('DELETE FROM SettlementPaper WHERE settlementPaperId = ?', [stmPaperId]);
   }
 }

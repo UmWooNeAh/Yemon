@@ -14,13 +14,27 @@ class DBSettlementItem {
     ,[stmPaperId, rcpItemId]);
   }
 
+  Future<int> createStmItemTxn(Transaction txn, String stmPaperId, String rcpItemId) async {
+    return await txn.rawInsert('INSERT INTO SettlementItem(settlementPaperId, receiptItemId) VALUES (?,?)'
+        ,[stmPaperId, rcpItemId]);
+  }
+
   Future<int> deleteStmItem(Database db, String stmPaperId, String rcpItemId) async {
     return await db!.rawDelete('DELETE FROM SettlementItem WHERE settlementPaperId = ? and receiptItemId = ?'
     ,[stmPaperId, rcpItemId]);
   }
 
+  Future<int> deleteStmItemTxn(Transaction txn, String stmPaperId, String rcpItemId) async {
+    return await txn.rawDelete('DELETE FROM SettlementItem WHERE settlementPaperId = ? and receiptItemId = ?'
+        ,[stmPaperId, rcpItemId]);
+  }
+
   Future<int> deleteAllStmItems(Database db, String stmPaperId) async {
     return await db!.rawDelete('DELETE FROM SettlementItem WHERE settlementPaperId = ?', [stmPaperId]);
+  }
+
+  Future<int> deleteAllStmItemsTxn(Transaction txn, String stmPaperId) async {
+    return await txn.rawDelete('DELETE FROM SettlementItem WHERE settlementPaperId = ?', [stmPaperId]);
   }
 
 }
