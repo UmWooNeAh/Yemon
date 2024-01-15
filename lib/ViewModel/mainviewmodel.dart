@@ -12,6 +12,11 @@ class MainViewModel extends ChangeNotifier {
   List<Settlement> settlementList = [];
   Settlement selectedSettlement = Settlement();
 
+  void deleteSettlement(int index){
+    settlementList.removeAt(index);
+    notifyListeners();
+  }
+
   void editSettlementName(String newName){
     selectedSettlement.settlementName = newName;
     notifyListeners();
@@ -84,4 +89,5 @@ class MainViewModel extends ChangeNotifier {
       }
     }
   }
+
 }

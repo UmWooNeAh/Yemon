@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../ViewModel/mainviewmodel.dart';
 import '../theme.dart';
 
 int size = 10;
@@ -43,6 +44,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
   @override
   Widget build(BuildContext context) {
     final editManagement = ref.watch(editManagementProvider);
+    final provider = ref.watch(mainProvider);
     final sizes = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -80,20 +82,20 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                     ),
                   ),
                 ),
-                GestureDetector(
+                InkWell(
                   onTap:(){
                     editManagement.toggleEdit();
                   },
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 20),
-                    child: Text("목록 편집",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: basic[2],
+                  child: Padding(
+                      padding: const EdgeInsets.only(right:20),
+                      child: Text("목록 편집",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: basic[2],
+                        ),
                       ),
                     ),
-                  ),
                 )
               ],
             ),
@@ -104,11 +106,14 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                 ),
               ),
             ),
-            editManagement.isEdit && editManagement.isSelected.contains(true) ? Container(
+            AnimatedContainer(
               color: basic[1],
-              width: sizes.width, height: 80,
-              child: GestureDetector(
-                onTap:(){},
+              duration: Duration(milliseconds: 150),
+              width: sizes.width,
+              height: editManagement.isEdit && editManagement.isSelected.contains(true) ? 80 : 0,
+              child: InkWell(
+                onTap:(){
+                },
                 child: editManagement.checkMultipleSelect() ? Container(
                   margin: const EdgeInsets.only(left: 40, right: 40, top: 10, bottom:10),
                   color: basic[2],
@@ -124,7 +129,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    GestureDetector(
+                    InkWell(
                       onTap: (){
                         showDialog(context: context, builder: (context){
                           return AlertDialog(
@@ -184,8 +189,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                   ],
                 )
               )
-            ) :
-            const SizedBox.shrink(),
+            )
           ]
         ),
       ),
@@ -195,7 +199,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
           onPressed: (){
             context.push('/SettlementManagementPage');
           },
-          backgroundColor: basic[0],
+          backgroundColor: basic[5],
           child: const Icon(Icons.add),
         ),
       ),
@@ -218,6 +222,56 @@ class _SingleSettlementState extends ConsumerState<SingleSettlement> {
     final size = MediaQuery.of(context).size;
     return Stack(
       children: [
+        InkWell(
+          onTap:(){
+
+          },
+          onLongPress: (){
+            editManagement.toggleEdit();
+            editManagement.toggleSelect(widget.index);
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            width: size.width * 0.9,
+            height: 100,
+            margin: EdgeInsets.only(left: editManagement.isEdit ? 60 : 20, right: 20, top:10, bottom: 10),
+            color: basic[1],
+            child: Container(
+              margin: const EdgeInsets.only(left: 20, right: 20, top: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("정산 이름",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text("2024-01-01",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        )
+                      ],
+                    ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: const Text("참여자(류지원, 신성민 등 2명)",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
         editManagement.isEdit ?
         Positioned(
           top: 35, left: 5,
@@ -238,50 +292,6 @@ class _SingleSettlementState extends ConsumerState<SingleSettlement> {
           ),
         ) :
         const SizedBox.shrink(),
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          width: size.width * 0.9,
-          height: 100,
-          margin: EdgeInsets.only(left: editManagement.isEdit ? 60 : 20, right: 20, top:10, bottom: 10),
-          color: basic[1],
-          child: Container(
-            margin: const EdgeInsets.only(left: 20, right: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 15),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("정산 이름",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text("2024-01-01",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: const Text("참여자(류지원, 신성민 등 2명)",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ],
     );
   }
