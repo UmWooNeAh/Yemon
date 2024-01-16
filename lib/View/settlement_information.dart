@@ -577,7 +577,6 @@ class IncludedReceipt extends ConsumerWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    final rprovider = ref.watch(receiptProvider);
                     rprovider.selectReceipt(index);
                   },
                   child: AnimatedContainer(
@@ -595,10 +594,34 @@ class IncludedReceipt extends ConsumerWidget {
                     ),
                   ),
                 ),
-                Text(
-                  mprovider.selectedSettlement.receipts[index].receiptName,
-                  style: const TextStyle(fontSize: 20),
-                )
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: size.width - 60 - 20,
+                  ),
+                  child: Text(
+                    mprovider.selectedSettlement.receipts[index].receiptName,
+                    style: const TextStyle(fontSize: 20),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return EditReceiptName(index: index);
+                        });
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 5),
+                    width: 20,
+                    height: 20,
+                    child: const FittedBox(
+                      fit: BoxFit.fill,
+                      child: Icon(Icons.edit),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -615,6 +638,53 @@ class IncludedReceipt extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class EditReceiptName extends ConsumerStatefulWidget {
+  const EditReceiptName({super.key, required this.index});
+  final int index;
+
+  @override
+  ConsumerState<EditReceiptName> createState() => _EditReceiptNameState();
+}
+
+class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
+  String newName = '';
+  @override
+  Widget build(BuildContext context) {
+    final mprovider = ref.watch(mainProvider);
+    return AlertDialog(
+      title: const Text("Edit Receipt Name"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text("New Receipt Name : "),
+          TextField(
+            onChanged: (value) {
+              setState(() {
+                newName = value;
+              });
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            context.pop();
+          },
+          child: const Text("취소하기"),
+        ),
+        TextButton(
+          onPressed: () {
+            context.pop();
+            mprovider.editReceiptName(newName, widget.index);
+          },
+          child: const Text("변경하기"),
+        ),
+      ],
     );
   }
 }
@@ -706,6 +776,7 @@ class IncludedReceiptItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    List<int> cursorPositions = [0, 0, 0, 0];
     Size size = MediaQuery.of(context).size;
     final mprovider = ref.watch(mainProvider);
     final rprovider = ref.watch(receiptProvider);
@@ -747,62 +818,59 @@ class IncludedReceiptItem extends ConsumerWidget {
                         : (size.width - 60) * 0.3,
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: Text(
-                        mprovider.selectedSettlement.receipts[receiptIndex]
-                            .receiptItems[index].receiptItemName,
-                        overflow: TextOverflow.ellipsis,
+                      child: TextField(
+                        controller: mprovider
+                            .receiptItemControllerList[receiptIndex][index][0],
+                        onChanged: (value) {
+                          mprovider.editReceiptItemName(
+                              value, receiptIndex, index);
+                        },
                       ),
                     )),
                 SizedBox(
                     height: 40,
                     width: (size.width - 60) * 0.25,
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        mprovider.selectedSettlement.receipts[receiptIndex]
-                            .receiptItems[index].price
-                            .toInt()
-                            .toString(),
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                    child: TextField(
+                      controller: mprovider
+                          .receiptItemControllerList[receiptIndex][index][1],
+                      onChanged: (value) {
+                        if (value == '') {
+                          value = '0';
+                        }
+                        mprovider.editReceiptItemIndividualPrice(
+                            double.parse(value), receiptIndex, index);
+                      },
+                      textAlign: TextAlign.right,
                     )),
                 SizedBox(
                     height: 40,
                     width: (size.width - 60) * 0.2,
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        mprovider.selectedSettlement.receipts[receiptIndex]
-                            .receiptItems[index].count
-                            .toInt()
-                            .toString(),
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                    child: TextField(
+                      controller: mprovider
+                          .receiptItemControllerList[receiptIndex][index][2],
+                      onChanged: (value) {
+                        if (value == '') {
+                          value = '0';
+                        }
+                        mprovider.editReceiptItemCount(
+                            int.parse(value), receiptIndex, index);
+                      },
+                      textAlign: TextAlign.right,
                     )),
                 SizedBox(
                     height: 40,
                     width: (size.width - 60) * 0.25,
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        mprovider.selectedSettlement.receipts[receiptIndex]
-                            .receiptItems[index].price
-                            .toInt()
-                            .toString(),
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                    child: TextField(
+                      controller: mprovider
+                          .receiptItemControllerList[receiptIndex][index][3],
+                      onChanged: (value) {
+                        if (value == '') {
+                          value = '0';
+                        }
+                        mprovider.editReceiptItemPrice(
+                            double.parse(value), receiptIndex, index);
+                      },
+                      textAlign: TextAlign.right,
                     )),
               ],
             ),

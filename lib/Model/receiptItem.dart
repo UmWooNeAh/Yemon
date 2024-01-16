@@ -2,10 +2,10 @@ import 'package:uuid/uuid.dart';
 
 class ReceiptItem{
   String receiptItemId = "";
-  String receiptItemName = "";
+  String receiptItemName = "newItem";
   double price = 0;
   double individualPrice = 0;
-  int count = 0;
+  int count = 1;
   Map<String,String> paperOwner = {};
 
   ReceiptItem(){
