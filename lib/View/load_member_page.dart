@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart' hide BoxShadow, BoxDecoration;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sqlite_test/ViewModel/mainviewmodel.dart';
 import 'package:sqlite_test/theme.dart';
 
@@ -56,6 +57,7 @@ class _LoadMemberPageState extends ConsumerState<LoadMemberPage> {
   @override
   Widget build(BuildContext context) {
     final lprovider = ref.watch(loadMemberProvider);
+    final mprovider = ref.watch(mainProvider);
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(),
@@ -88,7 +90,8 @@ class _LoadMemberPageState extends ConsumerState<LoadMemberPage> {
               margin: const EdgeInsets.all(10),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  mprovider.loadMemberList(lprovider.selectedIndex);
+                  context.pop();
                 },
                 child: const Text("불러오기"),
               )),

@@ -12,6 +12,15 @@ class MainViewModel extends ChangeNotifier {
   List<Settlement> settlementList = [];
   Settlement selectedSettlement = Settlement();
 
+  void loadMemberList(int index){
+    for (SettlementPaper settlementPaper in settlementList[index].settlementPapers){
+      SettlementPaper newSettlementPaper = SettlementPaper();
+      newSettlementPaper.memberName = settlementPaper.memberName;
+      selectedSettlement.settlementPapers.add(newSettlementPaper);
+    }
+    notifyListeners();
+  }
+
   void deleteSettlement(int index){
     settlementList.removeAt(index);
     notifyListeners();
