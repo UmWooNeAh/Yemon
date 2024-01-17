@@ -1,17 +1,15 @@
 import 'dart:developer';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
-import 'modeluuid.dart';
 
 class DBReceiptItem {
 
-  ModelUuid _uuid = ModelUuid();
 
   DBReceiptItem();
 
-  Future<int> createReceiptItem(Database db, String rcpId, String name, int price, int count) async {
-    return await db!.rawInsert('INSERT INTO ReceiptItem(receiptItemId, receiptId, receiptItemName, price, count) VALUES(?,?,?,?) '
-      ,[_uuid.randomId, rcpId, name, price, count]);
+  Future<int> createReceiptItem(Database db, String rcpItemId, String rcpId, String name, double price, int count) async {
+    return await db!.rawInsert('INSERT INTO ReceiptItem(receiptItemId, receiptId, name, price, count) VALUES(?,?,?,?,?)'
+      ,[rcpItemId, rcpId, name, price, count]);
   }
 
   Future<List<Map>> readReceiptItem(Database db, String rcpId, String stmId) async {
@@ -19,11 +17,11 @@ class DBReceiptItem {
   }
 
   Future<int> updateReceiptItemName(Database db, String name, String rcpItemId) async {
-    return await db!.rawUpdate('UPDATE ReceiptItem SET receiptItemName = ? WHERE receiptItemId = ?'
+    return await db!.rawUpdate('UPDATE ReceiptItem SET name = ? WHERE receiptItemId = ?'
     , [name, rcpItemId]);
   }
 
-  Future<int> updateReceiptItemPrice(Database db, int price, String rcpItemId) async {
+  Future<int> updateReceiptItemPrice(Database db, double price, String rcpItemId) async {
     return await db!.rawUpdate('UPDATE ReceiptItem SET price = ? WHERE receiptItemId = ?'
         , [price, rcpItemId]);
   }

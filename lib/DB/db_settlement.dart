@@ -1,17 +1,14 @@
 import 'dart:developer';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
-import 'modeluuid.dart';
 
 class DBSettlement {
 
-  ModelUuid _uuid = ModelUuid();
-
   DBSettlement();
 
-  Future<int> createStm(Database db, String stmName) async {
+  Future<int> createStm(Database db, String stmId, String stmName) async {
     return await db!.rawInsert('INSERT INTO Settlement(settlementId, settlementName, recordDate) VALUES(?, ?, ?)'
-        , [_uuid.randomId, stmName, DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())]);
+        , [stmId, stmName, DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now())]);
   }
 
   Future<List<Map>> readStm(Database db, String stmId) async {

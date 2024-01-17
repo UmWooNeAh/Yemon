@@ -1,12 +1,14 @@
 class SavepointManager {
-  int _savepointId = 0;
+  var savepointId;
+
+  SavepointManager() {
+    savepointId = 0;
+  }
 
   String createSavePoint() {
-    int now = ++_savepointId;
-    return 'my_savepoint_$now';
+    return 'my_savepoint_${++savepointId}';
   }
   String returnSavePoint() {
-    int now = _savepointId--;
-    return 'my_savepoint_$now';
+    return 'my_savepoint_${savepointId--}';
   }
 }

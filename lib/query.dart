@@ -6,8 +6,7 @@ import 'package:sqlite_test/DB/db_receiptitem.dart';
 import 'package:sqlite_test/DB/db_settlement.dart';
 import 'package:sqlite_test/DB/db_settlementitem.dart';
 import 'package:sqlite_test/DB/db_settlementpaper.dart';
-import 'package:sqlite_test/DB/savepoint.dart';
-
+import 'DB/savepoint.dart';
 import 'Model/Receipt.dart';
 import 'Model/ReceiptItem.dart';
 import 'Model/SettlementItem.dart';
@@ -17,27 +16,39 @@ import 'Model/settlement.dart';
 class Query {
 
   Database? _db;
-  SavepointManager? savepointManager;
 
-  Query(Database db, SavepointManager spm) {
+  Query(Database db) {
     _db = db;
-    savepointManager = spm;
   }
 
-  Future<void> showRecentSettlement(String stmId) async {
+  Future<List<dynamic>> showRecentSettlement(String stmId) async {
+
+    List<dynamic> res = [];
+
     Settlement settlement = await FetchQuery().fetchSettlement(_db!, stmId);
+    res.add(settlement);
+
     List<Receipt> receipts = await FetchQuery().fetchReceipts(_db!, stmId);
+    res.add(receipts);
+
     Map<String, List<ReceiptItem>> allReceiptItems = {}; //key: receiptId, value: List<ReceiptItem>
     receipts.forEach((receipt) async {
       String rcpId = receipt.receiptId;
       allReceiptItems[rcpId] = await FetchQuery().fetchReceiptItems(_db!, rcpId);
     });
+    res.add(allReceiptItems);
+
     List<SettlementPaper> settlementPapers = await FetchQuery().fetchSettlementPapers(_db!, stmId);
+    res.add(settlementPapers);
+    
     Map<String, List<SettlementItem>> allSettlementItems = {}; //key: settlementPaperId, value: List<SettlementItem>
     settlementPapers.forEach((stmPaper) async {
       String stmPaperId = stmPaper.settlementPaperId;
       allSettlementItems[stmPaperId] = await FetchQuery().fetchSettlementItems(_db!, stmPaperId);
     });
+    res.add(allSettlementItems);
+
+    return res;
   }
 
   Future<Map<String,List<String>>> showSettlementMembers(List<String> stmIds) async {
@@ -49,25 +60,36 @@ class Query {
     return members;
   }
 
-  Future<int> createMembers(String stmId, List<String> memberNames) async {
-    var res;
+  Future<int> createSettlement(Settlement stm) async {
+    return await DBSettlement().createStm(_db!, stm.settlementId, stm.settlementName);
+  }
+
+  Future<int> updateSettlement(Settlement stm) async {
+    return await DBSettlement().updateStm(_db!, stm.settlementName, stm.settlementId);
+  }
+
+  Future<int> deleteSettlement(String stmId) async {
+    return await DBSettlement().deleteStm(_db!, stmId);
+  }
+
+  Future<int> createMembers(String stmId, List<SettlementPaper> stmPapers) async {
     try {
-      res = await _db!.transaction((txn) async {
-        memberNames.forEach((memberName) async {
-          await DBSettlementPaper().createStmPaperTxn(txn, stmId, memberName);
+      var res = await _db!.transaction((txn) async {
+        stmPapers.forEach((stmPaper) async {
+          await DBSettlementPaper().createStmPaperTxn(txn, stmPaper.settlementPaperId, stmId, stmPaper.memberName);
         });
       });
     }
     catch (e) {
       print(e);
+      return 0;
     }
-    return res;
+    return 1;
   }
 
   Future<int> deleteMembers(String stmId, List<String> settlementPaperIds) async {
-    var res;
     try {
-      await _db!.transaction((txn) async {
+      var res = await _db!.transaction((txn) async {
         settlementPaperIds.forEach((stmPaperId) async {
           await DBSettlementPaper().deleteStmPaperTxn(txn, stmPaperId);
           await DBSettlementItem().deleteAllStmItemsTxn(txn, stmPaperId);
@@ -76,16 +98,17 @@ class Query {
     }
     catch (e) {
       print(e);
+      return 0;
     }
-    return res;
+    return 2;
   }
 
   Future<int> updateMemberName(String newmemberName, String stmPaperId) async {
     return DBSettlementPaper().updateStmPaper(_db!, newmemberName, stmPaperId);
   }
 
-  Future<int> createReceipt(String rcpName, String stmId) async {
-    return DBReceipt().createRcp(_db!, rcpName, stmId);
+  Future<int> createReceipt(Receipt rcp, String stmId) async {
+    return DBReceipt().createRcp(_db!, rcp.receiptId, rcp.receiptName, stmId);
   }
 
   Future<int> updateReceiptName(String rcpName, String rcpId) async {
@@ -96,15 +119,15 @@ class Query {
     return DBReceipt().deleteRcp(_db!, rcpId);
   }
 
-  Future<int> createRcpItem(String rcpId, String name, int price, int count) async {
-    return DBReceiptItem().createReceiptItem(_db!, rcpId, name, price, count);
+  Future<int> createRcpItem(String rcpId, ReceiptItem rcpItem) async {
+    return DBReceiptItem().createReceiptItem(_db!, rcpItem.receiptItemId, rcpId, rcpItem.receiptItemName, rcpItem.price, rcpItem.count);
   }
 
   Future<int> updateRcpItemName(String rcpItemId, String name) async {
     return DBReceiptItem().updateReceiptItemName(_db!, name, rcpItemId);
   }
 
-  Future<int> updateRcpItemPrice(String rcpItemId, int price) async {
+  Future<int> updateRcpItemPrice(String rcpItemId, double price) async {
     return DBReceiptItem().updateReceiptItemPrice(_db!, price, rcpItemId);
   }
 
@@ -118,74 +141,76 @@ class Query {
 
   //정산 매칭 시의 쿼리들(롤백 적용 필요)
   Future<int> matchingMemberToAllReceiptItems(String stmPaperId, List<String> rcpItemIds) async {
-    var res;
+
     try {
-        res = await _db!.transaction((txn) async {
           rcpItemIds.forEach((rcpItemId) async {
-            await DBSettlementItem().createStmItemTxn(txn, stmPaperId, rcpItemId);
+            await DBSettlementItem().createStmItem(_db!, stmPaperId, rcpItemId);
           });
-          await savepoint(txn);
-      });
     }
     catch (e) {
       print(e);
+      return 0;
     }
-    return res;
+    return 1;
   }
 
   Future<int> matchingMemberToReceiptItem(String stmPaperId, String rcpItemId) async {
-    var res;
+
     try {
-      res = await _db!.transaction((txn) async {
-          await DBSettlementItem().createStmItem(_db!, stmPaperId, rcpItemId);
-          await savepoint(txn);
-        });
+        await DBSettlementItem().createStmItem(_db!, stmPaperId, rcpItemId);
     }
     catch (e) {
       print(e);
+      return 0;
     }
-    return res;
+    return 1;
   }
 
   Future<int> unmatchingMemberFromAllReceiptItems(String stmPaperId, List<String> rcpItemIds) async {
-    var res;
+
     try {
-      res = await _db!.transaction((txn) async {
         rcpItemIds.forEach((rcpItemId) async {
-          await DBSettlementItem().deleteStmItemTxn(txn, stmPaperId, rcpItemId);
-        });
-        await savepoint(txn);
+          await DBSettlementItem().deleteStmItem(_db!, stmPaperId, rcpItemId);
       });
     }
     catch (e) {
       print(e);
+      return 0;
     }
-    return res;
+    return 1;
   }
 
   Future<int> unmatchingMemberFromReceiptItem(String stmPaperId, String rcpItemId) async {
-    var res;
+
     try {
-      res = await _db!.transaction((txn) async {
         await DBSettlementItem().deleteStmItem(_db!, stmPaperId, rcpItemId);
-        await savepoint(txn);
-      });
     }
     catch (e) {
       print(e);
+      return 0;
     }
-    return res;
-  }
-  
-  Future<void> savepoint(Transaction txn) async {
-    final savepoint = savepointManager!.createSavePoint();
-    await txn.query('SAVEPOINT $savepoint');
+    return 1;
   }
 
-  Future<void> rollback(Database db, String pointName) async {
-    final savepoint = savepointManager!.returnSavePoint();
-    await db.rawDelete('ROLLBACK TO $savepoint');
+  Future<void> startTransaction(Database db) async {
+    await db.execute('BEGIN TRANSACTION');
+  }
+  Future <void> commitTransaction(Database db) async {
+    await db.execute('COMMIT');
   }
 
+  Future<void> savepointTranscation(Database db, SavepointManager spm) async {
+    String savepoint = spm!.createSavePoint();
+    //String savepoint = 'my_savepoint_${++_savepointId}';
+    await db.execute('SAVEPOINT $savepoint');
+    log("savepoint: ${savepoint}");
+  }
+
+  Future<void> rollbackTransaction(Database db, SavepointManager spm) async {
+    String savepoint = spm!.returnSavePoint();
+    //String savepoint = 'my_savepoint_${_savepointId--}';
+    log("savepoint: ${savepoint}");
+    await db.execute('ROLLBACK TO SAVEPOINT $savepoint');
+  }
 
 }

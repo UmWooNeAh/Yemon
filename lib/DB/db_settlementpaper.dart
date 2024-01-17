@@ -1,22 +1,19 @@
 import 'dart:developer';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
-import 'modeluuid.dart';
 
 class DBSettlementPaper {
 
-  ModelUuid _uuid = ModelUuid();
-
   DBSettlementPaper();
 
-  Future<int> createStmPaper(Database db, String stmId, String memberName) async {
+  Future<int> createStmPaper(Database db, String stmPaperId, String stmId, String memberName) async {
     return await db!.rawInsert('INSERT INTO SettlementPaper(settlementPaperId, settlementId, memberName) VALUES(?,?,?)'
-    ,[_uuid.randomId, stmId, memberName]);
+    ,[stmPaperId, stmId, memberName]);
   }
 
-  Future<int> createStmPaperTxn(Transaction txn, String stmId, String memberName) async {
+  Future<int> createStmPaperTxn(Transaction txn, String stmPaperId, String stmId, String memberName) async {
     return await txn.rawInsert('INSERT INTO SettlementPaper(settlementPaperId, settlementId, memberName) VALUES(?,?,?)'
-        ,[_uuid.randomId, stmId, memberName]);
+        ,[stmPaperId, stmId, memberName]);
   }
 
   Future<List<Map>> readStmPaper(Database db, String stmPaperId) async {

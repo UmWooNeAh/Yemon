@@ -1,15 +1,10 @@
 import 'dart:async';
-import 'dart:developer';
-import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:sqlite_test/DB/savepoint.dart';
 import 'modeluuid.dart';
 
 class SqlFliteDB {
   Database? _db;
-  ModelUuid _uuid = ModelUuid();
-  final savepointManager  = SavepointManager();
 
   Future<Database> get database async {
       if(_db != null) return _db!;
@@ -52,7 +47,7 @@ class SqlFliteDB {
         receiptItemId TEXT PRIMARY KEY,
         receiptId TEXT,
         name TEXT NOT NULL,
-        price INTEGER NOT NULL,
+        price REAL NOT NULL,
         count INTEGER NOT NULL,
         FOREIGN KEY(receiptId) REFERENCES Receipt(receiptId)
       )'''
@@ -75,6 +70,7 @@ class SqlFliteDB {
         FOREIGN KEY(receiptItemId) REFERENCES ReceiptItem(rcpItemId)
       )'''
     );
+
   }
 
 

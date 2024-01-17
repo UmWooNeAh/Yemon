@@ -1,11 +1,8 @@
 import 'dart:developer';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
-import 'modeluuid.dart';
 
 class DBSettlementItem {
-
-  ModelUuid _uuid = ModelUuid();
 
   DBSettlementItem();
 

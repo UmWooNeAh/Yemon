@@ -1,17 +1,14 @@
 import 'dart:developer';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
-import 'modeluuid.dart';
 
 class DBReceipt {
 
-  ModelUuid _uuid = ModelUuid();
-
   DBReceipt();
 
-  Future<int> createRcp(Database db, String rcpName, String stmId) async {
+  Future<int> createRcp(Database db, String rcpId, String rcpName, String stmId) async {
     return await db!.rawInsert('INSERT INTO Receipt(receiptId, settlementId, receiptName) VALUES(?, ?, ?)'
-        , [_uuid.randomId, stmId, rcpName]);
+        , [rcpId, stmId, rcpName]);
   }
   
   Future<List<Map>> readRcp(Database db, String stmId) async {
