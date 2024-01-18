@@ -13,6 +13,20 @@ class MainViewModel extends ChangeNotifier {
   Settlement selectedSettlement = Settlement();
   List<List<List<TextEditingController>>> receiptItemControllerList = [];
 
+  void updateTotalPrice(receiptIndex){
+    double total = 0;
+    for(ReceiptItem receiptItem in selectedSettlement.receipts[receiptIndex].receiptItems){
+      total += receiptItem.price;
+    }
+    selectedSettlement.receipts[receiptIndex].totalPrice = total;
+    total = 0;
+    for(Receipt receipt in selectedSettlement.receipts){
+      total += receipt.totalPrice;
+    }
+    selectedSettlement.totalPrice = total;
+    notifyListeners();
+  }
+
   void addReceiptItemTextEditingController(int index) {
     receiptItemControllerList[index]
         .add(List.generate(4, (index) => TextEditingController()));
@@ -42,8 +56,9 @@ class MainViewModel extends ChangeNotifier {
                 .receipts[receiptIndex].receiptItems[receiptItemIndex].count;
     receiptItemControllerList[receiptIndex][receiptItemIndex][3].text =
         selectedSettlement
-            .receipts[receiptIndex].receiptItems[receiptItemIndex].price
+            .receipts[receiptIndex].receiptItems[receiptItemIndex].price.truncate()
             .toString();
+    updateTotalPrice(receiptIndex);
     notifyListeners();
   }
 
@@ -58,8 +73,10 @@ class MainViewModel extends ChangeNotifier {
                 .receiptItems[receiptItemIndex].individualPrice;
     receiptItemControllerList[receiptIndex][receiptItemIndex][3].text =
         selectedSettlement
-            .receipts[receiptIndex].receiptItems[receiptItemIndex].price
+            .receipts[receiptIndex].receiptItems[receiptItemIndex].price.truncate()
             .toString();
+    
+    updateTotalPrice(receiptIndex);
     notifyListeners();
   }
 
@@ -74,8 +91,10 @@ class MainViewModel extends ChangeNotifier {
                 .receipts[receiptIndex].receiptItems[receiptItemIndex].count;
     receiptItemControllerList[receiptIndex][receiptItemIndex][1].text =
         selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex]
-            .individualPrice
+            .individualPrice.truncate()
             .toString();
+    
+    updateTotalPrice(receiptIndex);
     notifyListeners();
   }
 
