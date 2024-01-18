@@ -28,6 +28,7 @@ class ReceiptInformationViewModel extends ChangeNotifier {
   }
 
   void addReceiptItem(int receiptIndex) {
+    print(receiptIndex);
     isReceiptItemSelected[receiptIndex].add(isReceiptSelected[receiptIndex]);
     notifyListeners();
   }
@@ -42,10 +43,8 @@ class ReceiptInformationViewModel extends ChangeNotifier {
 
   void selectReceipt(int index) {
     isReceiptSelected[index] = !isReceiptSelected[index];
-    if (isReceiptSelected[index]) {
-      for (int i = 0; i < isReceiptItemSelected[index].length; i++) {
-        isReceiptItemSelected[index][i] = true;
-      }
+    for (int i = 0; i < isReceiptItemSelected[index].length; i++) {
+      isReceiptItemSelected[index][i] = isReceiptSelected[index];
     }
     notifyListeners();
   }
@@ -57,19 +56,16 @@ class ReceiptInformationViewModel extends ChangeNotifier {
   }
 
   void deleteSelected() {
-    for (int i = isReceiptSelected.length - 1; i >= 0; i--) {
-      if (isReceiptSelected[i]) {
-        isReceiptSelected.removeAt(i);
-        isReceiptItemSelected.removeAt(i);
-      }
-    }
     for (int i = isReceiptItemSelected.length - 1; i >= 0; i--) {
       for (int j = isReceiptItemSelected[i].length - 1; j >= 0; j--) {
         if (isReceiptItemSelected[i][j]) {
           isReceiptItemSelected[i].removeAt(j);
         }
       }
-      if (isReceiptItemSelected[i].isEmpty) {
+    }
+    for (int i = isReceiptSelected.length - 1; i >= 0; i--) {
+      if (isReceiptSelected[i]) {
+        isReceiptSelected.removeAt(i);
         isReceiptItemSelected.removeAt(i);
       }
     }
@@ -939,12 +935,18 @@ class AddReceipt extends ConsumerWidget {
       width: size.width,
       height: 50,
       margin: const EdgeInsets.all(10),
-      child: ElevatedButton(
-        onPressed: () {
+      decoration: BoxDecoration(
+        color: basic[1],
+        border: Border.all(
+          color: basic[3],
+        ),
+      ),
+      child: InkWell(
+        onTap: () {
           rprovider.addReceipt();
           mprovider.addReceipt();
         },
-        child: const Text("항목 추가하기"),
+        child: const Center(child: Text("항목 추가하기")),
       ),
     );
   }

@@ -16,7 +16,8 @@ class LoadMemberViewModel extends ChangeNotifier {
   List<bool> isDetailSelected = [];
 
   void set(int settlementLength) {
-    isDetailSelected = List.generate(settlementLength, (index) => false);
+    // isDetailSelected = List.generate(settlementLength, (index) => false);
+    isDetailSelected = List.generate(10, (index) => false);
   }
 
   void settlementDetailSelected(int index) {
@@ -90,7 +91,7 @@ class _LoadMemberPageState extends ConsumerState<LoadMemberPage> {
               margin: const EdgeInsets.all(10),
               child: ElevatedButton(
                 onPressed: () {
-                  mprovider.loadMemberList(lprovider.selectedIndex);
+                  // mprovider.loadMemberList(lprovider.selectedIndex);
                   context.pop();
                 },
                 child: const Text("불러오기"),
@@ -108,7 +109,8 @@ class SettlementList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mprovider = ref.watch(mainProvider);
     return ListView.builder(
-      itemCount: mprovider.settlementList.length,
+      // itemCount: mprovider.settlementList.length,
+      itemCount: 10,
       itemBuilder: (context, index) {
         return UnitSettlement(
           index: index,
@@ -141,12 +143,15 @@ class UnitSettlement extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    Text(mprovider.settlementList[index].settlementName),
-                    Text(
-                        "(${mprovider.settlementList[index].settlementPapers.length})명")
+                    // Text(mprovider.settlementList[index].settlementName),
+                    Text("123123"),
+                    Text("4321321"),
+                    // Text(
+                    //     "(${mprovider.settlementList[index].settlementPapers.length})명")
                   ],
                 ),
-                Text(mprovider.settlementList[index].date.toString()),
+                Text("asdasdasd"),
+                // Text(mprovider.settlementList[index].date.toString()),
               ],
             ),
             Stack(
@@ -198,7 +203,8 @@ class SettlementSimpleView extends ConsumerWidget {
             scrollDirection: Axis.horizontal,
             child: Row(
                 children: List.generate(
-              mprovider.settlementList[settlementIndex].settlementPapers.length,
+              10,
+              // mprovider.settlementList[settlementIndex].settlementPapers.length,
               (index) => SettlementMember(
                   settlementIndex: settlementIndex, memberIndex: index),
             )),
@@ -234,37 +240,45 @@ class SettlementDetailView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mprovider = ref.watch(mainProvider);
     Size size = MediaQuery.of(context).size;
-    int memberLength =
-        mprovider.settlementList[settlementIndex].settlementPapers.length;
+    // int memberLength =
+    //     mprovider.settlementList[settlementIndex].settlementPapers.length;
     int firstRowNum = (size.width - 90) ~/ 90;
     int otherRowNum = (size.width - 50) ~/ 90;
     return Container(
       width: size.width - 50,
-      child: Column(
+      child: Wrap(
         children: List.generate(
-            (memberLength > firstRowNum ? 1 : 0) +
-                max(0, memberLength - firstRowNum) ~/ otherRowNum +
-                1, (index) {
-          int rowNum = 0;
-          if (index == 0) {
-            rowNum = min(firstRowNum, memberLength);
-          } else {
-            rowNum = min(otherRowNum,
-                memberLength - otherRowNum * (index - 1) - firstRowNum);
-          }
-          return Row(
-            children: List.generate(
-                rowNum,
-                (iindex) => SettlementMember(
-                    settlementIndex: settlementIndex,
-                    memberIndex: iindex +
-                        (index - 1) * otherRowNum +
-                        firstRowNum +
-                        1 +
-                        (index == 0 ? 1 : 0))),
-          );
-        }),
+          10,
+          // memberLength,
+          (index) => SettlementMember(
+              settlementIndex: settlementIndex, memberIndex: index),
+        ),
       ),
+      // child: Column(
+      //   children: List.generate(
+      //       (memberLength > firstRowNum ? 1 : 0) +
+      //           max(0, memberLength - firstRowNum) ~/ otherRowNum +
+      //           1, (index) {
+      //     int rowNum = 0;
+      //     if (index == 0) {
+      //       rowNum = min(firstRowNum, memberLength);
+      //     } else {
+      //       rowNum = min(otherRowNum,
+      //           memberLength - otherRowNum * (index - 1) - firstRowNum);
+      //     }
+      //     return Row(
+      //       children: List.generate(
+      //           rowNum,
+      //           (iindex) => SettlementMember(
+      //               settlementIndex: settlementIndex,
+      //               memberIndex: iindex +
+      //                   (index - 1) * otherRowNum +
+      //                   firstRowNum +
+      //                   1 +
+      //                   (index == 0 ? 1 : 0))),
+      //     );
+      //   }),
+      // ),
     );
   }
 }
@@ -279,19 +293,21 @@ class SettlementMember extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mprovider = ref.watch(mainProvider);
     return Container(
-      width: 80,
       height: 40,
       margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       padding: const EdgeInsets.all(5),
       color: basic[2],
-      child: Center(
-          child: Text(
-        mprovider.settlementList[settlementIndex].settlementPapers[memberIndex]
-            .memberName,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-            color: basic[0], fontSize: 17, fontWeight: FontWeight.bold),
-      )),
+      child: Align(
+        alignment: Alignment.center,
+        child: Text(
+          ("${memberIndex * memberIndex * memberIndex * memberIndex * memberIndex * memberIndex * memberIndex * memberIndex * memberIndex * memberIndex}"),
+          // mprovider.settlementList[settlementIndex].settlementPapers[memberIndex]
+          //     .memberName,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+              color: basic[0], fontSize: 17, fontWeight: FontWeight.bold),
+        ),
+      ),
     );
   }
 }
