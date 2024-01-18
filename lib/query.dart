@@ -21,34 +21,10 @@ class Query {
     _db = db;
   }
 
-  Future<List<dynamic>> showRecentSettlement(String stmId) async {
-
-    List<dynamic> res = [];
+  Future<Settlement> showRecentSettlement(String stmId) async {
 
     Settlement settlement = await FetchQuery().fetchSettlement(_db!, stmId);
-    res.add(settlement);
-
-    List<Receipt> receipts = await FetchQuery().fetchReceipts(_db!, stmId);
-    res.add(receipts);
-
-    Map<String, List<ReceiptItem>> allReceiptItems = {}; //key: receiptId, value: List<ReceiptItem>
-    receipts.forEach((receipt) async {
-      String rcpId = receipt.receiptId;
-      allReceiptItems[rcpId] = await FetchQuery().fetchReceiptItems(_db!, rcpId);
-    });
-    res.add(allReceiptItems);
-
-    List<SettlementPaper> settlementPapers = await FetchQuery().fetchSettlementPapers(_db!, stmId);
-    res.add(settlementPapers);
-    
-    Map<String, List<SettlementItem>> allSettlementItems = {}; //key: settlementPaperId, value: List<SettlementItem>
-    settlementPapers.forEach((stmPaper) async {
-      String stmPaperId = stmPaper.settlementPaperId;
-      allSettlementItems[stmPaperId] = await FetchQuery().fetchSettlementItems(_db!, stmPaperId);
-    });
-    res.add(allSettlementItems);
-
-    return res;
+    return settlement;
   }
 
   Future<Map<String,List<String>>> showSettlementMembers(List<String> stmIds) async {
