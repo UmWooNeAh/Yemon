@@ -155,7 +155,6 @@ class MainViewModel extends ChangeNotifier {
 
   void addReceiptItem(int index) {
     ReceiptItem newReceiptItem = ReceiptItem();
-    newReceiptItem.receiptItemId = DateTime.now().toString();
     selectedSettlement.receipts[index].receiptItems.add(newReceiptItem);
     addReceiptItemTextEditingController(index);
     receiptItemControllerList[index]
