@@ -162,13 +162,13 @@ class MainViewModel extends ChangeNotifier {
         .text = newReceiptItem.receiptItemName;
     receiptItemControllerList[index]
             [receiptItemControllerList[index].length - 1][1]
-        .text = newReceiptItem.individualPrice.toString();
+        .text = newReceiptItem.individualPrice.toInt().toString();
     receiptItemControllerList[index]
             [receiptItemControllerList[index].length - 1][2]
         .text = newReceiptItem.count.toString();
     receiptItemControllerList[index]
             [receiptItemControllerList[index].length - 1][3]
-        .text = newReceiptItem.price.toString();
+        .text = newReceiptItem.price.toInt().toString();
     notifyListeners();
   }
 

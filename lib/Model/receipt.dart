@@ -4,7 +4,7 @@ import 'ReceiptItem.dart';
 
 class Receipt{
   String receiptId = "";
-  String receiptName = "";
+  String receiptName = "New Receipt";
   double totalPrice = 0;
   List<ReceiptItem> receiptItems = [];
 

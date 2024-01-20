@@ -26,7 +26,7 @@ class SettlementMatchingViewmodel extends ChangeNotifier{
   }
 
   void selectMember(int index){
-    selectedMemberIndexList.add(index);
+    selectedMemberIndexList[index] = !selectedMemberIndexList[index];
     notifyListeners();
   }
 }
