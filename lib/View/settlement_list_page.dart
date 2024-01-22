@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sqlite_test/ViewModel/mainviewmodel.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:sqlite_test/theme.dart';
+import '../Model/Settlement.dart';
 import '../theme.dart';
 import '../ViewModel/mainviewmodel.dart';
 import '../theme.dart';
@@ -18,6 +19,7 @@ class EditManagement extends ChangeNotifier{
   void toggleEdit(){
     isEdit = !isEdit;
     isSelected = List.generate(size, (index) => false);
+    isAllSelect = false;
     notifyListeners();
   }
 
@@ -78,47 +80,55 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(left: 20),
-                  child: editManagement.isEdit ? Row(
-                    children: [
-                      Column(
+        child: Column(children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(left: 20),
+                height: 60,
+                child: editManagement.isEdit
+                    ? Row(
                         children: [
-                          Transform.scale(
-                            scale: 1.6,
-                            child: Checkbox(
-                              value: editManagement.isAllSelect,
-                              onChanged: (value){
-                                editManagement.toggleAllSelect();
-                              },
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                          Column(
+                            children: [
+                              Transform.scale(
+                                scale: 1.6,
+                                child: Checkbox(
+                                  materialTapTargetSize: MaterialTapTargetSize
+                                      .shrinkWrap,
+                                  value: editManagement.isAllSelect,
+                                  onChanged: (value) {
+                                    editManagement.toggleAllSelect();
+                                  },
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  side: BorderSide(color: basic[1], width: 2),
+                                ),
                               ),
+                              Text(
+                                "전체",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width:15),
+                          Text(
+                            "${editManagement.isSelected.where((element) => element == true).length}개 선택됨",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: basic[3],
                             ),
                           ),
                           Text("전체")
                         ],
-                      ),
-                      Text("${editManagement.isSelected.where((element) => element == true).length}개 선택됨",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: basic[3],
-                        ),
-                      )
-                    ],
-                  ): const Text("최근 정산 목록",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    ) : Text("최근 정산 목록"),
                   ),
-                ),
                 InkWell(
                   onTap:(){
                     editManagement.toggleEdit();
@@ -255,7 +265,8 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
       floatingActionButton: Container(
         margin: EdgeInsets.only(bottom: editManagement.isEdit && editManagement.isSelected.contains(true) ? 80 : 0),
         child: FloatingActionButton(
-          onPressed: (){
+          onPressed: () {
+            provider.settlementList.insert(0,Settlement());
             context.push('/SettlementManagementPage');
           },
           backgroundColor: basic[6],
@@ -279,102 +290,116 @@ class _SingleSettlementState extends ConsumerState<SingleSettlement> {
   Widget build(BuildContext context) {
     final editManagement = ref.watch(editManagementProvider);
     final size = MediaQuery.of(context).size;
-    return Column(
-      children: [
-        Stack(
-          children: [
-            InkWell(
-              onTap:(){
-                if(editManagement.isEdit) {
-                  editManagement.toggleSelect(widget.index);
-                } else {
-                  context.push('/SettlementInformation');
-                }
-              },
-              onLongPress: (){
-                if(!editManagement.isEdit) {
-                  editManagement.toggleEdit();
-                }
-                editManagement.toggleSelect(widget.index);
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: size.width * 0.9,
-                height: 80,
-                margin: EdgeInsets.only(left: editManagement.isEdit ? 80 : 40, right: 40, top:25, bottom: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("정산 이름",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
+    return Container(
+      color: editManagement.isSelected[widget.index] ? Color(0xFFD9D9D9).withOpacity(0.85) : Colors.transparent,
+      margin: const EdgeInsets.only(left:20),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: editManagement.isEdit ? size.width * 0.1 : 0,
+                    child: Transform.scale(
+                      scale: 1.6,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 200),
+                        opacity: editManagement.isEdit ? 1 : 0,
+                        child: Checkbox(
+                          value: editManagement.isSelected[widget.index],
+                          onChanged: (value) {
+                            if(!editManagement.isEdit) return;
+                            editManagement.toggleSelect(widget.index);
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          checkColor: Colors.white,
+                          activeColor: basic[6],
+                          side: BorderSide(color: basic[1]),
+                        ),
                       ),
                     ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 5,bottom: 5),
-                      child: Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "6명",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            TextSpan(
-                              text: ": 참여자 이름, 참여자 이름, 참여자 이름",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: basic[3],
-                              ),
-                            ),
-                          ]
-                        )
-                      ),
-                      ),
-                    Text("2024-01-01 화",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: basic[3]
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            editManagement.isEdit ?
-            Positioned(
-              top: 40, left: 20,
-              child: Transform.scale(
-                scale: 1.6,
-                child: Checkbox(
-                  value: editManagement.isSelected[widget.index],
-                  onChanged: (value){
-                    editManagement.toggleSelect(widget.index);
-                  },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
                   ),
-                  checkColor: Colors.white,
-                  activeColor: basic[6],
-                  side: BorderSide(color: basic[1]),
+              InkWell(
+                onTap: () {
+                  if (editManagement.isEdit) {
+                    editManagement.toggleSelect(widget.index);
+                  } else {
+                    context.push('/SettlementInformation');
+                  }
+                },
+                onLongPress: () {
+                  if (!editManagement.isEdit) {editManagement.toggleEdit();
+                  }
+                  editManagement.toggleSelect(widget.index);
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  width: size.width * 0.7,
+                  height: size.height * 0.1,
+                  margin: EdgeInsets.only(
+                      left: 20,
+                      right: 40,
+                      top: 25,
+                      bottom: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "정산 이름",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Flexible(
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 5, bottom: 5),
+                          child: RichText(
+                            overflow: TextOverflow.ellipsis,
+                            text :
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "6명",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: ": 참여자 이름, 참여자 이름, 참여자 이름",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: basic[3],
+                                  ),
+                                ),
+                          ])),
+                        ),
+                      ),
+                      Text(
+                        "2024-01-01 화",
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: basic[3]),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ) :
-            const SizedBox.shrink(),
-          ],
-        ),
-        Container(
-          margin: const EdgeInsets.only(left: 20, right: 20),
-          child: Divider(
-            thickness: 2,
+            ],
           ),
-        ),
-      ],
+          Container(
+            color: basic[2],
+            height: 1,
+            width: size.width
+          )
+        ],
+      ),
     );
   }
 }
