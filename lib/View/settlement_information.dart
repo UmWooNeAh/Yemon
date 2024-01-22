@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sqlite_test/ViewModel/mainviewmodel.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:sqlite_test/theme.dart';
+import 'package:dotted_border/dotted_border.dart';
 
 final receiptProvider =
     ChangeNotifierProvider((ref) => ReceiptInformationViewModel());
@@ -823,30 +824,33 @@ class AddReceiptItem extends ConsumerWidget {
     return Container(
       height: 40,
       width: size.width - 60,
-      decoration: BoxDecoration(
-        border: Border.all(color: basic[2]),
-      ),
-      child: InkWell(
-        onTap: () {
-          rprovider.addReceiptItem(index);
-          provider.addReceiptItem(index);
-        },
-        child: const Center(
-            child: SizedBox(
-          width: 100,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: FittedBox(
-                      fit: BoxFit.fill,
-                      child: Icon(Icons.add_circle_outline_outlined))),
-              Text(" 제품 추가"),
-            ],
-          ),
-        )),
+      child: DottedBorder(
+        dashPattern: const [4, 4],
+        strokeWidth: 1,
+        strokeCap: StrokeCap.round,
+        color: basic[2],
+        child: InkWell(
+          onTap: () {
+            rprovider.addReceiptItem(index);
+            provider.addReceiptItem(index);
+          },
+          child: const Center(
+              child: SizedBox(
+            width: 100,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: FittedBox(
+                        fit: BoxFit.fill,
+                        child: Icon(Icons.add_circle_outline_outlined))),
+                Text(" 제품 추가"),
+              ],
+            ),
+          )),
+        ),
       ),
     );
   }
@@ -1033,18 +1037,51 @@ class AddReceipt extends ConsumerWidget {
       margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: basic[1],
-        border: Border.all(
-          color: basic[3],
+      ),
+      child: DottedBorder(
+        dashPattern: const [4, 4],
+        strokeWidth: 1,
+        strokeCap: StrokeCap.round,
+        color: basic[3],
+        child: InkWell(
+          onTap: () {
+            rprovider.addReceipt();
+            mprovider.addReceipt();
+          },
+          child: const Center(child: Text("영수증 추가")),
         ),
       ),
-      child: InkWell(
-        onTap: () {
-          rprovider.addReceipt();
-          mprovider.addReceipt();
-        },
-        child: const Center(child: Text("영수증 추가")),
-      ),
     );
+  }
+}
+
+class BorderPainter extends CustomPainter {
+  BorderPainter(
+      {required this.width,
+      required this.height,
+      this.horizontal = 20,
+      this.vertical = 10});
+  final double width, height;
+  final double horizontal, vertical;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = basic[4]
+      ..strokeWidth = 1;
+    canvas.drawLine(Offset(horizontal, vertical),
+        Offset(width - horizontal, vertical), paint);
+    canvas.drawLine(Offset(width - horizontal, vertical),
+        Offset(width - horizontal, height + vertical), paint);
+    canvas.drawLine(Offset(width - horizontal, height + vertical),
+        Offset(horizontal, height + vertical), paint);
+    canvas.drawLine(Offset(horizontal, height + vertical),
+        Offset(horizontal, vertical), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
   }
 }
 
