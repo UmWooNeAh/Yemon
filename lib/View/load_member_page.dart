@@ -176,6 +176,18 @@ class UnitSettlement extends ConsumerWidget {
                               ? basic[0]
                               : basic[1],
                           borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: basic[2],
+                            width: 1.5
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: basic[2],
+                              blurRadius: 5,
+                              spreadRadius: -4,
+                              offset: const Offset(5, 5),
+                            ),
+                          ],
                         ),
                         child: IconButton(
                           onPressed: () {
@@ -292,12 +304,13 @@ class SettlementMember extends ConsumerWidget {
       decoration: BoxDecoration(
         color: lprovider.selectedIndex == settlementIndex ? basic[0] : basic[1],
         borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: basic[2], width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: basic[3],
-            spreadRadius: -5,
+            color: basic[5],
+            spreadRadius: -4,
             blurRadius: 5,
-            offset: const Offset(3, 3),
+            offset: const Offset(2, 2),
           ),
         ],
       ),
@@ -307,7 +320,7 @@ class SettlementMember extends ConsumerWidget {
         //     .memberName,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-            color: basic[3], fontSize: 20, fontWeight: FontWeight.bold),
+            color: memberIndex == 0 ? basic[3] : basic[5], fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sqlite_test/View/menu_sheet.dart';
+import 'package:sqlite_test/View/receipt_circulator.dart';
 
 import '../theme.dart';
 
@@ -46,25 +48,15 @@ class _SettlementMatchingState extends ConsumerState<SettlementMatching> {
         Container(
           margin: const EdgeInsets.only(top: 15),
           decoration: BoxDecoration(
-            color: basic[6],
+            color: basic[9],
             borderRadius: BorderRadius.circular(20),
           ),
         ),
-        ReceiptCirculator(),
-        MenuSheet(),
-        GroupMembers(),
+        const ReceiptCirculator(),
+        const MenuSheet(),
+        const GroupMembers(),
       ],
     );
-  }
-}
-
-
-class MenuSheet extends ConsumerWidget {
-  const MenuSheet({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context,WidgetRef ref) {
-    return const Placeholder();
   }
 }
 
@@ -77,14 +69,6 @@ class GroupMembers extends ConsumerWidget {
   }
 }
 
-class ReceiptCirculator extends ConsumerWidget {
-  const ReceiptCirculator({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context,WidgetRef ref) {
-    return const Placeholder();
-  }
-}
 
 
 
