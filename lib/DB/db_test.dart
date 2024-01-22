@@ -56,29 +56,12 @@ void test_add(Database db) async {
   await Query(db).createSettlement(stm);
   await Query(db).createReceipt(rcp1, stm.settlementId);
   await Query(db).createReceipt(rcp2, stm.settlementId);
-  await Query(db).createRcpItem(rcp1.receiptId, rcpitem1);
-  await Query(db).createRcpItem(rcp1.receiptId, rcpitem2);
-  await Query(db).createRcpItem(rcp2.receiptId, rcpitem3);
+  await Query(db).createReceiptItem(rcp1.receiptId, rcpitem1);
+  await Query(db).createReceiptItem(rcp1.receiptId, rcpitem2);
+  await Query(db).createReceiptItem(rcp2.receiptId, rcpitem3);
   await Query(db).createMembers(stm.settlementId, paperlist);
 
   //List<Map> res = await db.rawQuery('SELECT * FROM SAVEPOINT');
   //log("${res[0]["savepoint"]}");
 
 }
-
-Future<void> test_checkpoint(Database db, SavepointManager spm) async {
-
-  await Query(db).startTransaction(db);
-  await Query(db).matchingMemberToReceiptItem(stmpaper1.settlementPaperId, rcpitem1.receiptItemId);
-  await Query(db).savepointTranscation(db, spm);
-  await Query(db).matchingMemberToReceiptItem(stmpaper1.settlementPaperId, rcpitem2.receiptItemId);
-
-}
-
-Future<void> test_rollback(Database db, SavepointManager spm) async {
-  //await DBSettlementItem().deleteAllStmItems(db, stmpaper1.settlementPaperId);
-  await Query(db).rollbackTransaction(db, spm);
-  await Query(db).commitTransaction(db);
-}
-
-

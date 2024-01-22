@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:sqlite_test/DB/sqlFliteDB.dart';
 import 'View/load_member_page.dart';
 import 'View/settlement_list_page.dart';
 import 'View/settlement_management_page.dart';
 
+final SqlFliteDB _model = SqlFliteDB();
 void main() {
   runApp(const ProviderScope(child: MainApp()));
 }
@@ -15,6 +16,8 @@ class MainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    var db = _model.database;
+
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

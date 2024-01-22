@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
+import '../Model/ReceiptItem.dart';
 
 class DBReceiptItem {
 
@@ -16,19 +17,9 @@ class DBReceiptItem {
     return await db!.rawQuery('SELECT * FROM ReceiptItem WHERE receiptId = ?', [rcpId]);
   }
 
-  Future<int> updateReceiptItemName(Database db, String name, String rcpItemId) async {
-    return await db!.rawUpdate('UPDATE ReceiptItem SET name = ? WHERE receiptItemId = ?'
-    , [name, rcpItemId]);
-  }
-
-  Future<int> updateReceiptItemPrice(Database db, double price, String rcpItemId) async {
-    return await db!.rawUpdate('UPDATE ReceiptItem SET price = ? WHERE receiptItemId = ?'
-        , [price, rcpItemId]);
-  }
-
-  Future<int> updateReceiptItemCount(Database db, int count, String rcpItemId) async {
-    return await db!.rawUpdate('UPDATE ReceiptItem SET count = ? WHERE receiptItemId = ?'
-        , [count, rcpItemId]);
+  Future<int> updateReceiptItem(Database db, ReceiptItem rcpItem) async {
+    return await db!.rawUpdate('UPDATE ReceiptItem SET name = ? and price = ? and count = ? WHERE receiptItemId = ?'
+      , [rcpItem.receiptItemName, rcpItem.price, rcpItem.count, rcpItem.receiptItemId]);
   }
 
   Future<int> deleteReceiptItem(Database db, String rcpItemId) async {

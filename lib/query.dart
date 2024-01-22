@@ -95,38 +95,35 @@ class Query {
     return DBReceipt().deleteRcp(_db!, rcpId);
   }
 
-  Future<int> createRcpItem(String rcpId, ReceiptItem rcpItem) async {
+  Future<int> createReceiptItem(String rcpId, ReceiptItem rcpItem) async {
     return DBReceiptItem().createReceiptItem(_db!, rcpItem.receiptItemId, rcpId, rcpItem.receiptItemName, rcpItem.price, rcpItem.count);
   }
 
-  Future<int> updateRcpItemName(String rcpItemId, String name) async {
-    return DBReceiptItem().updateReceiptItemName(_db!, name, rcpItemId);
+  Future<int> updateReceiptItem(ReceiptItem rcpItem) async {
+    return DBReceiptItem().updateReceiptItem(_db!, rcpItem);
   }
 
-  Future<int> updateRcpItemPrice(String rcpItemId, double price) async {
-    return DBReceiptItem().updateReceiptItemPrice(_db!, price, rcpItemId);
-  }
-
-  Future<int> updateRcpItemCount(String rcpItemId, int count) async {
-    return DBReceiptItem().updateReceiptItemCount(_db!, count, rcpItemId);
-  }
-
-  Future<int> deleteRcpItem(String rcpItemId) async {
+  Future<int> deleteReceiptItem(String rcpItemId) async {
    return DBReceiptItem().deleteReceiptItem(_db!, rcpItemId);
   }
 
-  //정산 매칭 시의 쿼리들(롤백 적용 필요)
+  //정산 매칭 시의 쿼리들
   Future<int> matchingMemberToAllReceiptItems(String stmPaperId, List<String> rcpItemIds) async {
 
+   var res;
     try {
+        res = await _db!.transaction((txn) async {
           rcpItemIds.forEach((rcpItemId) async {
-            await DBSettlementItem().createStmItem(_db!, stmPaperId, rcpItemId);
+            await DBSettlementItem().createStmItemTxn(txn, stmPaperId, rcpItemId);
           });
+
+      });
     }
     catch (e) {
       print(e);
       return 0;
     }
+
     return 1;
   }
 
@@ -144,9 +141,12 @@ class Query {
 
   Future<int> unmatchingMemberFromAllReceiptItems(String stmPaperId, List<String> rcpItemIds) async {
 
+    var res;
     try {
+      res = await _db!.transaction((txn) async {
         rcpItemIds.forEach((rcpItemId) async {
-          await DBSettlementItem().deleteStmItem(_db!, stmPaperId, rcpItemId);
+          await DBSettlementItem().deleteStmItemTxn(txn, stmPaperId, rcpItemId);
+        });
       });
     }
     catch (e) {
@@ -168,25 +168,25 @@ class Query {
     return 1;
   }
 
-  Future<void> startTransaction(Database db) async {
-    await db.execute('BEGIN TRANSACTION');
-  }
-  Future <void> commitTransaction(Database db) async {
-    await db.execute('COMMIT');
-  }
+  // Future<void> startTransaction(Database db) async {
+  //   await db.execute('BEGIN TRANSACTION');
+  // }
+  // Future <void> commitTransaction(Database db) async {
+  //   await db.execute('COMMIT');
+  // }
 
-  Future<void> savepointTranscation(Database db, SavepointManager spm) async {
-    String savepoint = spm!.createSavePoint();
-    //String savepoint = 'my_savepoint_${++_savepointId}';
-    await db.execute('SAVEPOINT $savepoint');
-    log("savepoint: ${savepoint}");
-  }
+  // Future<void> savepointTranscation(Database db, SavepointManager spm) async {
+  //   String savepoint = spm!.createSavePoint();
+  //   //String savepoint = 'my_savepoint_${++_savepointId}';
+  //   await db.execute('SAVEPOINT $savepoint');
+  //   log("savepoint: ${savepoint}");
+  // }
 
-  Future<void> rollbackTransaction(Database db, SavepointManager spm) async {
-    String savepoint = spm!.returnSavePoint();
-    //String savepoint = 'my_savepoint_${_savepointId--}';
-    log("savepoint: ${savepoint}");
-    await db.execute('ROLLBACK TO SAVEPOINT $savepoint');
-  }
+  // Future<void> rollbackTransaction(Database db, SavepointManager spm) async {
+  //   String savepoint = spm!.returnSavePoint();
+  //   //String savepoint = 'my_savepoint_${_savepointId--}';
+  //   log("savepoint: ${savepoint}");
+  //   await db.execute('ROLLBACK TO SAVEPOINT $savepoint');
+  // }
 
 }
