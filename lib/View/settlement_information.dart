@@ -103,7 +103,6 @@ class _SettlementInformationState extends ConsumerState<SettlementInformation> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        const SettlementName(),
         const SettlementMember(),
         Expanded(
           child: AnimatedContainer(
@@ -186,103 +185,7 @@ class _SettlementInformationState extends ConsumerState<SettlementInformation> {
   }
 }
 
-class SettlementName extends ConsumerWidget {
-  const SettlementName({super.key});
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    Size size = MediaQuery.of(context).size;
-    final provider = ref.watch(mainProvider);
-    return Container(
-      width: size.width,
-      height: 60,
-      // color: basic[1],
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      child: Row(
-        children: [
-          Container(
-            height: 40,
-            margin: const EdgeInsets.only(left: 10),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: size.width - 70),
-                child: Text(
-                  provider.selectedSettlement.settlementName,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return const EditSettlementName();
-                  });
-            },
-            child: Container(
-              width: 40,
-              height: 40,
-              child: const Icon(Icons.edit),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class EditSettlementName extends ConsumerStatefulWidget {
-  const EditSettlementName({super.key});
-
-  @override
-  ConsumerState<EditSettlementName> createState() => _EditSettlementNameState();
-}
-
-class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
-  String newName = "";
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text("Edit Settlement Name"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text("New Settlement Name : "),
-          TextField(
-            onChanged: (value) {
-              setState(() {
-                newName = value;
-              });
-            },
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            context.pop();
-          },
-          child: const Text("취소하기"),
-        ),
-        TextButton(
-          onPressed: () {
-            final provider = ref.watch(mainProvider);
-            provider.editSettlementName(newName);
-            context.pop();
-          },
-          child: const Text("변경하기"),
-        ),
-      ],
-    );
-  }
-}
 
 class SettlementMember extends ConsumerWidget {
   const SettlementMember({super.key});
@@ -862,7 +765,6 @@ class IncludedReceiptItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<int> cursorPositions = [0, 0, 0, 0];
     Size size = MediaQuery.of(context).size;
     final mprovider = ref.watch(mainProvider);
     final rprovider = ref.watch(receiptProvider);
@@ -932,6 +834,8 @@ class IncludedReceiptItem extends ConsumerWidget {
                         if (value == '') {
                           value = '0';
                         }
+                        value = value.replaceAll(RegExp(r'[^0-9]'), '');
+                        print(value);
                         mprovider.editReceiptItemIndividualPrice(
                             double.parse(value), receiptIndex, index);
                       },
@@ -947,6 +851,7 @@ class IncludedReceiptItem extends ConsumerWidget {
                         if (value == '') {
                           value = '0';
                         }
+                        value.replaceAll(RegExp(r'[^0-9]'), '');
                         mprovider.editReceiptItemCount(
                             int.parse(value), receiptIndex, index);
                       },
@@ -962,6 +867,7 @@ class IncludedReceiptItem extends ConsumerWidget {
                         if (value == '') {
                           value = '0';
                         }
+                        value.replaceAll(RegExp(r'[^0-9]'), '');
                         mprovider.editReceiptItemPrice(
                             double.parse(value), receiptIndex, index);
                       },

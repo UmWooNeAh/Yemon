@@ -69,7 +69,7 @@ class MenuSheet extends ConsumerWidget {
             SizedBox(height:10),
             SingleChildScrollView(
               child: Column(
-                  children : List.generate(mProvider.selectedSettlement.receipts.first.receiptItems.length, (index) => SingleMenu(rcpItem: mProvider.selectedSettlement.receipts.first.receiptItems[index],))
+                  // children : List.generate(mProvider.selectedSettlement.receipts.first.receiptItems.length, (index) => SingleMenu(rcpItem: mProvider.selectedSettlement.receipts.first.receiptItems[index],))
               ),
             )
           ]
