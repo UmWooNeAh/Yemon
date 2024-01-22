@@ -2,10 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqlite_test/View/menu_sheet.dart';
 import 'package:sqlite_test/View/receipt_circulator.dart';
-
 import '../theme.dart';
+import 'bottom_sheet.dart';
+
+final settlementMatchingProvider = ChangeNotifierProvider((ref) => SettlementMatchingViewmodel());
 
 class SettlementMatchingViewmodel extends ChangeNotifier{
+  ScrollController receiptScrollController = ScrollController();
   int presentReceiptIndex = 0;
   List<bool> selectedReceiptItemIndexList = [];
   List<bool> selectedMemberIndexList = [];
@@ -46,12 +49,11 @@ class _SettlementMatchingState extends ConsumerState<SettlementMatching> {
     return Stack(
       children: [
         Container(
-          margin: const EdgeInsets.only(top: 15),
           decoration: BoxDecoration(
-            color: basic[9],
-            borderRadius: BorderRadius.circular(20),
+            color: basic[8],
           ),
         ),
+        const CustomBottomSheet(),
         const ReceiptCirculator(),
         const MenuSheet(),
         const GroupMembers(),

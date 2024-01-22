@@ -42,6 +42,7 @@ dependencies:
   go_router: ^13.0.1
   flutter_inset_box_shadow: ^1.0.8
   dotted_border: ^2.1.0
+  scroll_snap_list: ^0.9.1
 
 dev_dependencies:
   flutter_test:
@@ -59,7 +60,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  assets:
+    - assets/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
