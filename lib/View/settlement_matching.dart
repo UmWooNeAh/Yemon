@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqlite_test/View/menu_sheet.dart';
 import 'package:sqlite_test/View/receipt_circulator.dart';
 
+import '../Model/ReceiptItem.dart';
+import '../ViewModel/mainviewmodel.dart';
 import '../theme.dart';
 
 class SettlementMatchingViewmodel extends ChangeNotifier{
@@ -43,6 +46,7 @@ class SettlementMatching extends ConsumerStatefulWidget {
 class _SettlementMatchingState extends ConsumerState<SettlementMatching> {
   @override
   Widget build(BuildContext context) {
+    final size =  MediaQuery.of(context).size;
     return Stack(
       children: [
         Container(
@@ -52,9 +56,15 @@ class _SettlementMatchingState extends ConsumerState<SettlementMatching> {
             borderRadius: BorderRadius.circular(20),
           ),
         ),
-        const ReceiptCirculator(),
-        const MenuSheet(),
-        const GroupMembers(),
+        ReceiptCirculator(),
+        Positioned(
+          top:MediaQuery.of(context).size.height*0.4,
+          child: MenuSheet()
+        ),
+        Positioned(
+          top:MediaQuery.of(context).size.height*0.7,
+          child: GroupMembers()
+        ),
       ],
     );
   }
@@ -65,7 +75,10 @@ class GroupMembers extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context,WidgetRef ref) {
-    return const Placeholder();
+    final size = MediaQuery.of(context).size;
+    return Container(
+      color: basic[2]
+    );
   }
 }
 
