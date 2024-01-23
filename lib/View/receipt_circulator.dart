@@ -24,7 +24,6 @@ class ReceiptCirculator extends ConsumerWidget {
               mprovider.selectedSettlement.receipts[index].receiptItems.length);
         },
         itemBuilder: (context, index) {
-          print(index);
           return ListedReceiptShape(
             index: index,
           );
