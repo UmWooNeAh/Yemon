@@ -17,12 +17,11 @@ class ReceiptCirculator extends ConsumerWidget {
       width: size.width,
       margin: const EdgeInsets.only(top: 50),
       child: ScrollSnapList(
-        itemCount: 10,
-        // itemCount: mprovider.selectedSettlement.receipts.length,
+
+        itemCount: mprovider.selectedSettlement.receipts.length,
         itemSize: 100,
         onItemFocus: (index) {
-          sprovider.selectReceipt(index, 5);
-          // sprovider.selectReceipt(index, mprovider.selectedSettlement.receipts[index].receiptItems.length);
+          sprovider.selectReceipt(index, mprovider.selectedSettlement.receipts[index].receiptItems.length);
         },
         itemBuilder: (context, index) {
           return ListedReceiptShape(
