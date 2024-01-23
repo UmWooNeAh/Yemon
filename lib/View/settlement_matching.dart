@@ -58,14 +58,10 @@ class _SettlementMatchingState extends ConsumerState<SettlementMatching> {
             color: basic[8],
           ),
         ),
-        const CustomBottomSheet(),
         const ReceiptCirculator(),
+        const CustomBottomSheet(childWidget: MenuSheet(),),
         Positioned(
-          top:MediaQuery.of(context).size.height*0.4,
-          child: MenuSheet()
-        ),
-        Positioned(
-          top:MediaQuery.of(context).size.height*0.7,
+          bottom: 0,
           child: GroupMembers()
         ),
       ],
@@ -80,6 +76,8 @@ class GroupMembers extends ConsumerWidget {
   Widget build(BuildContext context,WidgetRef ref) {
     final size = MediaQuery.of(context).size;
     return Container(
+      width: size.width,
+      height: 100,
       color: basic[2]
     );
   }

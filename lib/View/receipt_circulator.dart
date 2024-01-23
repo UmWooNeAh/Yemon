@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scroll_snap_list/scroll_snap_list.dart';
 import 'package:sqlite_test/View/settlement_matching.dart';
 import 'package:sqlite_test/ViewModel/mainviewmodel.dart';
-import 'dart:math' as math;
 
 class ReceiptCirculator extends ConsumerWidget {
   const ReceiptCirculator({Key? key}) : super(key: key);
@@ -23,6 +22,7 @@ class ReceiptCirculator extends ConsumerWidget {
         itemSize: 100,
         onItemFocus: (index) {
           sprovider.selectReceipt(index, 5);
+          // sprovider.selectReceipt(index, mprovider.selectedSettlement.receipts[index].receiptItems.length);
         },
         itemBuilder: (context, index) {
           return ListedReceiptShape(
