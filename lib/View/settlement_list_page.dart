@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide BoxShadow, BoxDecoration;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sqlite_test/View/settlement_matching.dart';
 import 'package:sqlite_test/ViewModel/mainviewmodel.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:sqlite_test/theme.dart';
@@ -104,7 +105,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  side: BorderSide(color: basic[1], width: 2),
+                                  side: BorderSide(color: basic[2], width: 1),
                                 ),
                               ),
                               Text(
@@ -125,25 +126,41 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                               color: basic[3],
                             ),
                           ),
-                          Text("전체")
                         ],
-                    ) : Text("최근 정산 목록"),
-                  ),
-                InkWell(
-                  onTap:(){
-                    editManagement.toggleEdit();
-                  },
-                  child: Padding(
-                      padding: const EdgeInsets.only(right:20),
-                      child: Text("목록 편집",
+                    ) : Center(
+                      child: Text("최근 정산 목록",
                         style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: basic[2],
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
-                )
+                  ),
+              Container(
+                margin: const EdgeInsets.only(right: 20),
+                child: OutlinedButton(
+                  onPressed: () {
+                    editManagement.toggleEdit();
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: editManagement.isEdit ? basic[2] : basic[8], width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 12),
+                    child: Text(editManagement.isEdit ? "편집 취소" : "목록 편집",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
               ],
             ),
             Expanded(
@@ -267,9 +284,10 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
         child: FloatingActionButton(
           onPressed: () {
             provider.settlementList.insert(0,Settlement());
+            provider.addMember("나");
             context.push('/SettlementManagementPage');
           },
-          backgroundColor: basic[6],
+          backgroundColor: basic[8],
           child: const Icon(Icons.add),
         ),
       ),
@@ -315,8 +333,8 @@ class _SingleSettlementState extends ConsumerState<SingleSettlement> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           checkColor: Colors.white,
-                          activeColor: basic[6],
-                          side: BorderSide(color: basic[1]),
+                          activeColor: basic[8],
+                          side: BorderSide(width:1,color: basic[2]),
                         ),
                       ),
                     ),
