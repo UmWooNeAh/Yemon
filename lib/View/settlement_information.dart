@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart' hide BoxShadow, BoxDecoration;
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sqlite_test/View/settlement_matching.dart';
 import 'package:sqlite_test/ViewModel/mainviewmodel.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:sqlite_test/shared_tool.dart';
 import 'package:sqlite_test/theme.dart';
 import 'package:dotted_border/dotted_border.dart';
 
@@ -576,7 +578,8 @@ class _AddMemberState extends ConsumerState<AddMember> {
         TextButton(
           onPressed: () {
             provider.addMember(newName);
-            sProvider.settingMemberIndexList(provider.selectedSettlement.settlementPapers.length);
+            sProvider.settingMemberIndexList(
+                provider.selectedSettlement.settlementPapers.length);
             context.pop();
           },
           child: const Text("추가하기"),
@@ -917,7 +920,8 @@ class AddReceiptItem extends ConsumerWidget {
           onTap: () {
             rprovider.addReceiptItem(index);
             provider.addReceiptItem(index);
-            sProvider.settingReceiptItemIndexList(provider.selectedSettlement.receipts[index].receiptItems.length);
+            sProvider.settingReceiptItemIndexList(provider
+                .selectedSettlement.receipts[index].receiptItems.length);
           },
           child: const Center(
               child: SizedBox(
@@ -955,7 +959,7 @@ class IncludedReceiptItem extends ConsumerWidget {
         mprovider.selectedSettlement.receipts[receiptIndex].receiptItems.length,
         (index) {
           return SizedBox(
-            height: 40,
+            height: 45,
             width: size.width,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -968,7 +972,7 @@ class IncludedReceiptItem extends ConsumerWidget {
                   },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 100),
-                    height: 20,
+                    height: 30,
                     width: rprovider.deleteMode ? 20 : 0,
                     margin: const EdgeInsets.only(right: 5),
                     child: Visibility(
@@ -991,7 +995,7 @@ class IncludedReceiptItem extends ConsumerWidget {
                 ),
                 AnimatedContainer(
                     duration: const Duration(milliseconds: 100),
-                    height: 20,
+                    height: 30,
                     width: rprovider.deleteMode
                         ? (size.width - 60) * 0.3 - 20 - 5
                         : (size.width - 60) * 0.3 - 5,
@@ -1009,6 +1013,12 @@ class IncludedReceiptItem extends ConsumerWidget {
                             borderSide: BorderSide(color: basic[5]),
                           ),
                         ),
+                        buildCounter: (context,
+                            {required currentLength,
+                            required isFocused,
+                            maxLength}) {
+                          return const SizedBox.shrink();
+                        },
                         controller: mprovider
                             .receiptItemControllerList[receiptIndex][index][0],
                         onChanged: (value) {
@@ -1018,7 +1028,7 @@ class IncludedReceiptItem extends ConsumerWidget {
                       ),
                     )),
                 Container(
-                    height: 20,
+                    height: 30,
                     width: (size.width - 60) * 0.25 - 20,
                     margin: const EdgeInsets.only(left: 20),
                     child: TextField(
@@ -1035,6 +1045,14 @@ class IncludedReceiptItem extends ConsumerWidget {
                       ),
                       controller: mprovider
                           .receiptItemControllerList[receiptIndex][index][1],
+                      maxLength: 7,
+                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                      buildCounter: (context,
+                          {required currentLength,
+                          required isFocused,
+                          maxLength}) {
+                        return const SizedBox.shrink();
+                      },
                       onChanged: (value) {
                         if (value == '') {
                           value = '0';
@@ -1046,7 +1064,7 @@ class IncludedReceiptItem extends ConsumerWidget {
                       textAlign: TextAlign.right,
                     )),
                 Container(
-                    height: 20,
+                    height: 30,
                     width: (size.width - 60) * 0.2 - 30,
                     margin: const EdgeInsets.only(left: 30),
                     child: TextField(
@@ -1061,6 +1079,12 @@ class IncludedReceiptItem extends ConsumerWidget {
                           borderSide: BorderSide(color: basic[5]),
                         ),
                       ),
+                      buildCounter: (context,
+                          {required currentLength,
+                          required isFocused,
+                          maxLength}) {
+                        return const SizedBox.shrink();
+                      },
                       controller: mprovider
                           .receiptItemControllerList[receiptIndex][index][2],
                       onChanged: (value) {
@@ -1071,36 +1095,50 @@ class IncludedReceiptItem extends ConsumerWidget {
                         mprovider.editReceiptItemCount(
                             int.parse(value), receiptIndex, index);
                       },
+                      maxLength: 2,
+                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
                       textAlign: TextAlign.right,
                     )),
-                Container(
-                    height: 20,
-                    width: (size.width - 60) * 0.25 - 20,
-                    margin: const EdgeInsets.only(left: 20),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(color: basic[5]),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: basic[8]),
-                        ),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: basic[5]),
+                SizedBox(
+                    height: 30,
+                    width: (size.width - 60) * 0.25,
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        mprovider
+                            .receiptItemControllerList[receiptIndex][index][3]
+                            .text,
+                        style: TextStyle(
+                          color: basic[5],
+                          fontSize: 17,
                         ),
                       ),
-                      controller: mprovider
-                          .receiptItemControllerList[receiptIndex][index][3],
-                      onChanged: (value) {
-                        if (value == '') {
-                          value = '0';
-                        }
-                        value = value.replaceAll(RegExp(r'[^0-9]'), '');
-                        mprovider.editReceiptItemPrice(
-                            double.parse(value), receiptIndex, index);
-                      },
-                      textAlign: TextAlign.right,
-                    )),
+                    )
+                    // child: TextField(
+                    //   decoration: InputDecoration(
+                    //     border: UnderlineInputBorder(
+                    //       borderSide: BorderSide(color: basic[5]),
+                    //     ),
+                    //     focusedBorder: UnderlineInputBorder(
+                    //       borderSide: BorderSide(color: basic[8]),
+                    //     ),
+                    //     enabledBorder: UnderlineInputBorder(
+                    //       borderSide: BorderSide(color: basic[5]),
+                    //     ),
+                    //   ),
+                    //   controller: mprovider
+                    //       .receiptItemControllerList[receiptIndex][index][3],
+                    //   onChanged: (value) {
+                    //     if (value == '') {
+                    //       value = '0';
+                    //     }
+                    //     value = value.replaceAll(RegExp(r'[^0-9]'), '');
+                    //     mprovider.editReceiptItemPrice(
+                    //         double.parse(value), receiptIndex, index);
+                    //   },
+                    //   textAlign: TextAlign.right,
+                    // ),
+                    ),
               ],
             ),
           );
@@ -1133,13 +1171,12 @@ class ReceiptTotalPrice extends ConsumerWidget {
                 ),
               ),
               TextSpan(
-                text: provider.selectedSettlement.receipts[index].totalPrice
-                    .toInt()
-                    .toString(),
-                style: TextStyle(
+                text: priceToString.format(provider
+                    .selectedSettlement.receipts[index].totalPrice
+                    .toInt()),
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  // color: basic[4],
                 ),
               ),
               const TextSpan(
@@ -1182,7 +1219,8 @@ class AddReceipt extends ConsumerWidget {
           onTap: () {
             rprovider.addReceipt();
             mprovider.addReceipt();
-            sProvider.selectReceipt(mprovider.selectedSettlement.receipts.length-1, 0);
+            sProvider.selectReceipt(
+                mprovider.selectedSettlement.receipts.length - 1, 0);
           },
           child: const Center(child: Text("영수증 추가")),
         ),
@@ -1243,11 +1281,12 @@ class SettlementTotalPrice extends ConsumerWidget {
                 ),
               ),
               TextSpan(
-                text: provider.selectedSettlement.totalPrice.toInt().toString(),
+                text: priceToString
+                    .format(provider.selectedSettlement.totalPrice.toInt()),
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: basic[4],
+                  color: basic[8],
                 ),
               ),
               const TextSpan(
