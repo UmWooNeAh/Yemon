@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sqlite_test/shared_tool.dart';
 import '../Model/Receipt.dart';
 import '../Model/ReceiptItem.dart';
 import '../Model/Settlement.dart';
@@ -12,6 +13,11 @@ class MainViewModel extends ChangeNotifier {
   List<Settlement> settlementList = [];
   Settlement selectedSettlement = Settlement();
   List<List<List<TextEditingController>>> receiptItemControllerList = [];
+
+  void editMemberName(String newName, int index) {
+    selectedSettlement.settlementPapers[index].memberName = newName;
+    notifyListeners();
+  }
 
   void updateTotalPrice(receiptIndex) {
     double total = 0;
@@ -56,15 +62,13 @@ class MainViewModel extends ChangeNotifier {
             selectedSettlement
                 .receipts[receiptIndex].receiptItems[receiptItemIndex].count;
     receiptItemControllerList[receiptIndex][receiptItemIndex][1].text =
-        selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex]
-            .individualPrice
-            .truncate()
-            .toString();
+        priceToString.format(selectedSettlement.receipts[receiptIndex]
+            .receiptItems[receiptItemIndex].individualPrice
+            .truncate());
     receiptItemControllerList[receiptIndex][receiptItemIndex][3].text =
-        selectedSettlement
+        priceToString.format(selectedSettlement
             .receipts[receiptIndex].receiptItems[receiptItemIndex].price
-            .truncate()
-            .toString();
+            .truncate());
     updateTotalPrice(receiptIndex);
     notifyListeners();
   }
@@ -79,10 +83,9 @@ class MainViewModel extends ChangeNotifier {
             selectedSettlement.receipts[receiptIndex]
                 .receiptItems[receiptItemIndex].individualPrice;
     receiptItemControllerList[receiptIndex][receiptItemIndex][3].text =
-        selectedSettlement
+        priceToString.format(selectedSettlement
             .receipts[receiptIndex].receiptItems[receiptItemIndex].price
-            .truncate()
-            .toString();
+            .truncate());
 
     updateTotalPrice(receiptIndex);
     notifyListeners();
@@ -98,15 +101,14 @@ class MainViewModel extends ChangeNotifier {
             selectedSettlement
                 .receipts[receiptIndex].receiptItems[receiptItemIndex].count;
     receiptItemControllerList[receiptIndex][receiptItemIndex][1].text =
-        selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex]
-            .individualPrice
-            .truncate()
-            .toString();
+        priceToString.format(selectedSettlement.receipts[receiptIndex]
+            .receiptItems[receiptItemIndex].individualPrice
+            .truncate());
+
     receiptItemControllerList[receiptIndex][receiptItemIndex][3].text =
-        selectedSettlement
+        priceToString.format(selectedSettlement
             .receipts[receiptIndex].receiptItems[receiptItemIndex].price
-            .truncate()
-            .toString();
+            .truncate());
 
     updateTotalPrice(receiptIndex);
     notifyListeners();
@@ -156,6 +158,7 @@ class MainViewModel extends ChangeNotifier {
         receiptItemControllerList.removeAt(i);
       }
     }
+    print(selectedSettlement.receipts.length);
     notifyListeners();
   }
 

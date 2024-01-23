@@ -5,6 +5,7 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sqlite_test/ViewModel/mainviewmodel.dart';
+import 'package:sqlite_test/shared_tool.dart';
 import 'package:sqlite_test/theme.dart';
 
 final loadMemberProvider =
@@ -87,17 +88,47 @@ class _LoadMemberPageState extends ConsumerState<LoadMemberPage> {
               child: SettlementList(),
             ),
             AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeInSine,
-                height: lprovider.loadMode ? 50 : 0,
-                margin: const EdgeInsets.all(10),
-                child: ElevatedButton(
-                  onPressed: () {
-                    // mprovider.loadMemberList(lprovider.selectedIndex);
-                    context.pop();
-                  },
-                  child: const Text("불러오기"),
-                )),
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInSine,
+              width: size.width,
+              height: lprovider.loadMode ? 80 : 0,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: basic[1],
+                boxShadow: [
+                  BoxShadow(
+                    color: basic[6],
+                    blurRadius: 5,
+                    spreadRadius: -4,
+                    offset: const Offset(0, 7),
+                    inset: true,
+                  ),
+                ],
+              ),
+              // decoration: BoxDecoration(
+              //   color: basic[1],
+              // ),
+              child: ElevatedButton(
+                onPressed: () {
+                  mprovider.loadMemberList(lprovider.selectedIndex);
+                  context.pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: basic[8],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  "정산 참여 인원 불러오기",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w300,
+                    color: basic[0],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -112,9 +143,12 @@ class SettlementList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mprovider = ref.watch(mainProvider);
     return ListView.builder(
-      // itemCount: mprovider.settlementList.length,
-      itemCount: 10,
+      itemCount: mprovider.settlementList.length,
       itemBuilder: (context, index) {
+        if (mprovider.settlementList[index].settlementId ==
+            mprovider.selectedSettlement.settlementId) {
+          return const SizedBox.shrink();
+        }
         return UnitSettlement(
           index: index,
         );
@@ -144,24 +178,60 @@ class UnitSettlement extends ConsumerWidget {
               color: lprovider.selectedIndex == index ? basic[1] : basic[0],
             ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Row(
-                      children: [
-                        // Text(mprovider.settlementList[index].settlementName),
-                        Text("123123"),
-                        Text("4321321"),
-                        // Text(
-                        //     "(${mprovider.settlementList[index].settlementPapers.length})명")
-                      ],
-                    ),
-                    Text("asdasdasd"),
-                    // Text(mprovider.settlementList[index].date.toString()),
-                  ],
+                SizedBox(
+                  width: size.width - 80,
+                  height: 20,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            mprovider.settlementList[index].settlementName,
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: basic[4]),
+                          ),
+                          Text(
+                            "   ${mprovider.settlementList[index].settlementPapers.length}명",
+                            style: TextStyle(
+                                color: basic[5],
+                                fontSize: 18,
+                                fontWeight: FontWeight.w300),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                              mprovider.settlementList[index].date
+                                  .toString()
+                                  .substring(0, 10),
+                              style: TextStyle(
+                                  color: basic[5],
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w300)),
+                          Text(
+                            "  ${intToWeekDay(mprovider.settlementList[index].date.weekday)}",
+                            style: TextStyle(
+                                color: basic[5],
+                                fontSize: 18,
+                                fontWeight: FontWeight.w300),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
                 Stack(
                   children: [
+                    Container(
+                      width: size.width,
+                      height: 50,
+                    ),
                     lprovider.isDetailSelected[index]
                         ? SettlementDetailView(settlementIndex: index)
                         : SettlementSimpleView(settlementIndex: index),
@@ -176,10 +246,7 @@ class UnitSettlement extends ConsumerWidget {
                               ? basic[0]
                               : basic[1],
                           borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                            color: basic[2],
-                            width: 1.5
-                          ),
+                          border: Border.all(color: basic[2], width: 1.5),
                           boxShadow: [
                             BoxShadow(
                               color: basic[2],
@@ -234,8 +301,7 @@ class SettlementSimpleView extends ConsumerWidget {
             scrollDirection: Axis.horizontal,
             child: Row(
                 children: List.generate(
-              10,
-              // mprovider.settlementList[settlementIndex].settlementPapers.length,
+              mprovider.settlementList[settlementIndex].settlementPapers.length,
               (index) => SettlementMember(
                   settlementIndex: settlementIndex, memberIndex: index),
             )),
@@ -271,14 +337,13 @@ class SettlementDetailView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mprovider = ref.watch(mainProvider);
     Size size = MediaQuery.of(context).size;
-    // int memberLength =
-    //     mprovider.settlementList[settlementIndex].settlementPapers.length;
+    int memberLength =
+        mprovider.settlementList[settlementIndex].settlementPapers.length;
     return Container(
       width: size.width - 50,
       child: Wrap(
         children: List.generate(
-          10,
-          // memberLength,
+          memberLength,
           (index) => SettlementMember(
               settlementIndex: settlementIndex, memberIndex: index),
         ),
@@ -315,12 +380,13 @@ class SettlementMember extends ConsumerWidget {
         ],
       ),
       child: Text(
-        ("${memberIndex * memberIndex * memberIndex * memberIndex * memberIndex * memberIndex * memberIndex * memberIndex * memberIndex * memberIndex}"),
-        // mprovider.settlementList[settlementIndex].settlementPapers[memberIndex]
-        //     .memberName,
+        mprovider.settlementList[settlementIndex].settlementPapers[memberIndex]
+            .memberName,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-            color: memberIndex == 0 ? basic[3] : basic[5], fontSize: 20, fontWeight: FontWeight.bold),
+            color: memberIndex == 0 ? basic[3] : basic[5],
+            fontSize: 20,
+            fontWeight: FontWeight.bold),
       ),
     );
   }

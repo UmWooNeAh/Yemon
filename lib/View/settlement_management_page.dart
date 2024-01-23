@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:sqlite_test/View/settlement_check.dart';
 import 'package:sqlite_test/View/settlement_information.dart';
 import 'package:sqlite_test/View/settlement_matching.dart';
-
 import '../ViewModel/mainviewmodel.dart';
+import '../theme.dart';
 
 class SettlementManagementPage extends ConsumerStatefulWidget {
   const SettlementManagementPage({Key? key}) : super(key: key);
@@ -92,7 +92,9 @@ class SettlementName extends ConsumerWidget {
             child: Container(
               width: 40,
               height: 40,
-              child: const Icon(Icons.edit),
+              padding: const EdgeInsets.all(10),
+              child: FittedBox(
+                  fit: BoxFit.fill, child: Image.asset('assets/Edit.png')),
             ),
           ),
         ],
@@ -113,13 +115,28 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return AlertDialog(
-      title: const Text("Edit Settlement Name"),
+      title: const Text("정산 이름 수정"),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      backgroundColor: basic[0],
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text("New Settlement Name : "),
           TextField(
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+            ),
             onChanged: (value) {
               setState(() {
                 newName = value;
@@ -128,20 +145,41 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
           ),
         ],
       ),
+      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actionsPadding: const EdgeInsets.all(10),
       actions: [
-        TextButton(
-          onPressed: () {
-            context.pop();
-          },
-          child: const Text("취소하기"),
+        Container(
+          height: 45,
+          width: size.width * 0.35,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: basic[9],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              final provider = ref.watch(mainProvider);
+              provider.editSettlementName(newName);
+              context.pop();
+            },
+            child:
+                Text("이름 저장", style: TextStyle(color: basic[0], fontSize: 15)),
+          ),
         ),
-        TextButton(
-          onPressed: () {
-            final provider = ref.watch(mainProvider);
-            provider.editSettlementName(newName);
-            context.pop();
-          },
-          child: const Text("변경하기"),
+        Container(
+          height: 45,
+          width: size.width * 0.35,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: basic[2],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              context.pop();
+            },
+            child: Text("취소", style: TextStyle(color: basic[5])),
+          ),
         ),
       ],
     );

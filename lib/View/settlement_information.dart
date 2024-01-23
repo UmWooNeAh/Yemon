@@ -100,92 +100,97 @@ class _SettlementInformationState extends ConsumerState<SettlementInformation> {
     final rprovider = ref.watch(receiptProvider);
     final mprovider = ref.watch(mainProvider);
     Size size = MediaQuery.of(context).size;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        const SettlementMember(),
-        Expanded(
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 100),
-            decoration: BoxDecoration(
-              color: basic[1],
-              boxShadow: [
-                BoxShadow(
-                  color: basic[2],
-                  blurRadius: 5,
-                  spreadRadius: -5,
-                  offset: const Offset(0, 5),
-                  inset: true,
-                ),
-              ],
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          const SettlementMember(),
+          Expanded(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 100),
+              decoration: BoxDecoration(
+                color: basic[1],
+                boxShadow: [
+                  BoxShadow(
+                    color: basic[2],
+                    blurRadius: 5,
+                    spreadRadius: -5,
+                    offset: const Offset(0, 5),
+                    inset: true,
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Container(
+                      height: 60,
+                      width: size.width,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
+                      margin: const EdgeInsets.only(top: 5),
+                      child: const ReceiptUpperRow()),
+                  const Expanded(
+                    child: ReceiptList(),
+                  ),
+                ],
+              ),
             ),
-            child: Column(
-              children: [
-                Container(
-                    height: 60,
-                    width: size.width,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
+          ),
+          GestureDetector(
+            onTap: () {
+              mprovider.deleteReceiptItemList(rprovider.isReceiptItemSelected);
+              mprovider.deleteReceiptList(rprovider.isReceiptSelected);
+              rprovider.deleteSelected();
+              rprovider.setDeleteMode(
+                  mprovider.selectedSettlement.receipts.length,
+                  List.generate(
+                      mprovider.selectedSettlement.receipts.length,
+                      (index) => mprovider.selectedSettlement.receipts[index]
+                          .receiptItems.length));
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 100),
+              width: size.width,
+              height: rprovider.deleteMode ? 60 : 0,
+              decoration: BoxDecoration(
+                color: basic[0],
+                boxShadow: [
+                  BoxShadow(
+                    color: basic[6],
+                    blurRadius: 7,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 0),
+                  ),
+                ],
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 25,
+                      width: 25,
+                      margin: const EdgeInsets.only(top: 10, bottom: 5),
+                      child: FittedBox(
+                        fit: BoxFit.fill,
+                        child: Image.asset('assets/Bin.png'),
+                      ),
                     ),
-                    margin: const EdgeInsets.only(top: 5),
-                    child: const ReceiptUpperRow()),
-                const Expanded(
-                  child: ReceiptList(),
+                    Text("삭제"),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 100),
-          width: size.width,
-          height: rprovider.deleteMode ? 80 : 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Container(
-                height: 50,
-                width: (size.width - 40) * 0.5,
-                child: ElevatedButton(
-                  onPressed: () {
-                    rprovider.setDeleteMode(
-                        mprovider.selectedSettlement.receipts.length,
-                        List.generate(
-                            mprovider.selectedSettlement.receipts.length,
-                            (index) => mprovider.selectedSettlement
-                                .receipts[index].receiptItems.length));
-                  },
-                  child: const Text("취소하기"),
-                ),
-              ),
-              Container(
-                height: 50,
-                width: (size.width - 40) * 0.5,
-                child: ElevatedButton(
-                  onPressed: () {
-                    mprovider
-                        .deleteReceiptItemList(rprovider.isReceiptItemSelected);
-                    mprovider.deleteReceiptList(rprovider.isReceiptSelected);
-                    rprovider.deleteSelected();
-                    rprovider.setDeleteMode(
-                        mprovider.selectedSettlement.receipts.length,
-                        List.generate(
-                            mprovider.selectedSettlement.receipts.length,
-                            (index) => mprovider.selectedSettlement
-                                .receipts[index].receiptItems.length));
-                  },
-                  child: const Text("삭제하기"),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
-
-
 
 class SettlementMember extends ConsumerWidget {
   const SettlementMember({super.key});
@@ -261,6 +266,7 @@ class SettlementMember extends ConsumerWidget {
                   height: 40,
                   margin: const EdgeInsets.only(right: 5),
                   decoration: BoxDecoration(
+                      border: Border.all(color: basic[2], width: 1.5),
                       color: basic[0],
                       borderRadius: BorderRadius.circular(100),
                       boxShadow: [
@@ -271,7 +277,7 @@ class SettlementMember extends ConsumerWidget {
                           offset: const Offset(5, 5),
                         ),
                       ]),
-                  child: Icon(Icons.add, color: basic[2]),
+                  child: Icon(Icons.add, color: basic[3]),
                 ),
               ),
             ],
@@ -309,7 +315,7 @@ class MemberUpperRow extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: basic[4],
+                    color: basic[7],
                   ),
                 ),
               ],
@@ -362,17 +368,39 @@ class IncludedMember extends ConsumerWidget {
     final mprovider = ref.watch(mainProvider);
     return Stack(
       children: [
-        Container(
-          height: 40,
-          margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            color: basic[0],
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Center(
-            child: Text(mprovider
-                .selectedSettlement.settlementPapers[index].memberName),
+        GestureDetector(
+          onTap: () {
+            if (index == 0) {
+              return;
+            }
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return EditMemberName(index: index);
+                });
+          },
+          child: Container(
+            height: 40,
+            margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+                border: Border.all(color: basic[2], width: 1.5),
+                color: basic[0],
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: basic[5],
+                    spreadRadius: -4,
+                    blurRadius: 5,
+                    offset: const Offset(2, 2),
+                  ),
+                ]),
+            child: Center(
+              child: Text(
+                mprovider.selectedSettlement.settlementPapers[index].memberName,
+                style: TextStyle(color: index == 0 ? basic[3] : basic[5]),
+              ),
+            ),
           ),
         ),
         Positioned(
@@ -384,17 +412,126 @@ class IncludedMember extends ConsumerWidget {
             },
             child: SizedBox(
               width: 20,
-              height: 20,
+              height: index == 0 ? 0 : 20,
               child: FittedBox(
                 fit: BoxFit.fill,
-                child: Icon(
-                  Icons.close,
-                  color: basic[4],
-                ),
+                child: Image.asset('assets/Delete.png'),
               ),
             ),
           ),
         )
+      ],
+    );
+  }
+}
+
+class EditMemberName extends ConsumerStatefulWidget {
+  const EditMemberName({super.key, required this.index});
+  final int index;
+
+  @override
+  ConsumerState<EditMemberName> createState() => _EditMemberNameState();
+}
+
+class _EditMemberNameState extends ConsumerState<EditMemberName> {
+  String newName = '';
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    final mprovider = ref.watch(mainProvider);
+    return AlertDialog(
+      title: const Text("참여 인원 이름 수정"),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      backgroundColor: basic[0],
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+            ),
+            onChanged: (value) {
+              setState(() {
+                newName = value;
+              });
+            },
+          ),
+        ],
+      ),
+      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actionsPadding: const EdgeInsets.all(10),
+      actions: [
+        Wrap(
+          children: [
+            Container(
+              height: 45,
+              width: size.width * 0.7 + 20,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: basic[9],
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: () {
+                  context.pop();
+                  mprovider.editMemberName(newName, widget.index);
+                },
+                child: Text("변경한 이름으로 저장",
+                    style: TextStyle(color: basic[0], fontSize: 15)),
+              ),
+            ),
+            Container(
+              height: 45,
+              width: size.width * 0.35 + 5,
+              margin: const EdgeInsets.only(top: 10, right: 5),
+              decoration: BoxDecoration(
+                color: basic[2],
+                borderRadius: BorderRadius.circular(11),
+                border: Border.all(color: basic[5], width: 1.5),
+              ),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: basic[0],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () {
+                  context.pop();
+                  mprovider.deleteMember(widget.index);
+                },
+                child: Text("인원 삭제",
+                    style: TextStyle(color: basic[5], fontSize: 15)),
+              ),
+            ),
+            Container(
+              height: 45,
+              width: size.width * 0.35 + 5,
+              margin: const EdgeInsets.only(top: 10, left: 5),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: basic[2],
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: () {
+                  context.pop();
+                },
+                child: Text("취소", style: TextStyle(color: basic[5])),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -458,7 +595,7 @@ class ReceiptUpperRow extends ConsumerWidget {
       children: [
         const Text("정산할 제품",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 25,
               fontWeight: FontWeight.bold,
             )),
         InkWell(
@@ -471,12 +608,12 @@ class ReceiptUpperRow extends ConsumerWidget {
                         .receiptItems.length));
           },
           child: Container(
-            width: 120,
+            width: 130,
             height: 45,
             decoration: BoxDecoration(
               color: basic[0],
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: basic[2], width: 1),
+              border: Border.all(color: basic[8], width: 1.5),
               boxShadow: [
                 BoxShadow(
                   color: basic[3],
@@ -561,7 +698,7 @@ class IncludedReceipt extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       checkColor: Colors.white,
-                      activeColor: basic[6],
+                      activeColor: basic[8],
                       side: BorderSide(color: basic[1]),
                     ),
                   ),
@@ -585,12 +722,12 @@ class IncludedReceipt extends ConsumerWidget {
                         });
                   },
                   child: Container(
-                    margin: const EdgeInsets.only(left: 5),
-                    width: 20,
-                    height: 20,
-                    child: const FittedBox(
+                    margin: const EdgeInsets.only(left: 5, top: 5),
+                    width: 15,
+                    height: 15,
+                    child: FittedBox(
                       fit: BoxFit.fill,
-                      child: Icon(Icons.edit),
+                      child: Image.asset('assets/Edit.png'),
                     ),
                   ),
                 ),
@@ -626,14 +763,29 @@ class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
   String newName = '';
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     final mprovider = ref.watch(mainProvider);
     return AlertDialog(
-      title: const Text("Edit Receipt Name"),
+      title: const Text("영수증 이름 수정"),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      backgroundColor: basic[0],
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text("New Receipt Name : "),
           TextField(
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+            ),
             onChanged: (value) {
               setState(() {
                 newName = value;
@@ -642,19 +794,40 @@ class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
           ),
         ],
       ),
+      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actionsPadding: const EdgeInsets.all(10),
       actions: [
-        TextButton(
-          onPressed: () {
-            context.pop();
-          },
-          child: const Text("취소하기"),
+        Container(
+          height: 45,
+          width: size.width * 0.35,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: basic[9],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              context.pop();
+              mprovider.editReceiptName(newName, widget.index);
+            },
+            child:
+                Text("이름 저장", style: TextStyle(color: basic[0], fontSize: 15)),
+          ),
         ),
-        TextButton(
-          onPressed: () {
-            context.pop();
-            mprovider.editReceiptName(newName, widget.index);
-          },
-          child: const Text("변경하기"),
+        Container(
+          height: 45,
+          width: size.width * 0.35,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: basic[2],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              context.pop();
+            },
+            child: Text("취소", style: TextStyle(color: basic[5])),
+          ),
         ),
       ],
     );
@@ -673,40 +846,44 @@ class ReceiptItemUpperRow extends StatelessWidget {
         SizedBox(
             height: 40,
             width: (size.width - 60) * 0.3,
-            child: const Align(
+            child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 "제품명",
+                style: TextStyle(color: basic[3], fontSize: 17),
                 overflow: TextOverflow.ellipsis,
               ),
             )),
         SizedBox(
             height: 40,
             width: (size.width - 60) * 0.25,
-            child: const Align(
+            child: Align(
               alignment: Alignment.centerRight,
               child: Text(
                 "단가",
+                style: TextStyle(color: basic[3], fontSize: 17),
                 overflow: TextOverflow.ellipsis,
               ),
             )),
         SizedBox(
             height: 40,
             width: (size.width - 60) * 0.2,
-            child: const Align(
+            child: Align(
               alignment: Alignment.centerRight,
               child: Text(
                 "수량",
+                style: TextStyle(color: basic[3], fontSize: 17),
                 overflow: TextOverflow.ellipsis,
               ),
             )),
         SizedBox(
             height: 40,
             width: (size.width - 60) * 0.25,
-            child: const Align(
+            child: Align(
               alignment: Alignment.centerRight,
               child: Text(
                 "금액",
+                style: TextStyle(color: basic[3], fontSize: 17),
                 overflow: TextOverflow.ellipsis,
               ),
             )),
@@ -801,7 +978,7 @@ class IncludedReceiptItem extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         checkColor: Colors.white,
-                        activeColor: basic[6],
+                        activeColor: basic[8],
                         side: BorderSide(color: basic[1]),
                       ),
                     ),
@@ -816,6 +993,17 @@ class IncludedReceiptItem extends ConsumerWidget {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: TextField(
+                        decoration: InputDecoration(
+                          border: UnderlineInputBorder(
+                            borderSide: BorderSide(color: basic[5]),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: basic[8]),
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: basic[5]),
+                          ),
+                        ),
                         controller: mprovider
                             .receiptItemControllerList[receiptIndex][index][0],
                         onChanged: (value) {
@@ -824,10 +1012,22 @@ class IncludedReceiptItem extends ConsumerWidget {
                         },
                       ),
                     )),
-                SizedBox(
+                Container(
                     height: 20,
-                    width: (size.width - 60) * 0.25,
+                    width: (size.width - 60) * 0.25 - 20,
+                    margin: const EdgeInsets.only(left: 20),
                     child: TextField(
+                      decoration: InputDecoration(
+                        border: UnderlineInputBorder(
+                          borderSide: BorderSide(color: basic[5]),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: basic[8]),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: basic[5]),
+                        ),
+                      ),
                       controller: mprovider
                           .receiptItemControllerList[receiptIndex][index][1],
                       onChanged: (value) {
@@ -835,39 +1035,62 @@ class IncludedReceiptItem extends ConsumerWidget {
                           value = '0';
                         }
                         value = value.replaceAll(RegExp(r'[^0-9]'), '');
-                        print(value);
                         mprovider.editReceiptItemIndividualPrice(
                             double.parse(value), receiptIndex, index);
                       },
                       textAlign: TextAlign.right,
                     )),
-                SizedBox(
+                Container(
                     height: 20,
-                    width: (size.width - 60) * 0.2,
+                    width: (size.width - 60) * 0.2 - 30,
+                    margin: const EdgeInsets.only(left: 30),
                     child: TextField(
+                      decoration: InputDecoration(
+                        border: UnderlineInputBorder(
+                          borderSide: BorderSide(color: basic[5]),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: basic[8]),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: basic[5]),
+                        ),
+                      ),
                       controller: mprovider
                           .receiptItemControllerList[receiptIndex][index][2],
                       onChanged: (value) {
                         if (value == '') {
                           value = '0';
                         }
-                        value.replaceAll(RegExp(r'[^0-9]'), '');
+                        value = value.replaceAll(RegExp(r'[^0-9]'), '');
                         mprovider.editReceiptItemCount(
                             int.parse(value), receiptIndex, index);
                       },
                       textAlign: TextAlign.right,
                     )),
-                SizedBox(
+                Container(
                     height: 20,
-                    width: (size.width - 60) * 0.25,
+                    width: (size.width - 60) * 0.25 - 20,
+                    margin: const EdgeInsets.only(left: 20),
                     child: TextField(
+                      decoration: InputDecoration(
+                        border: UnderlineInputBorder(
+                          borderSide: BorderSide(color: basic[5]),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: basic[8]),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: basic[5]),
+                        ),
+                      ),
                       controller: mprovider
                           .receiptItemControllerList[receiptIndex][index][3],
                       onChanged: (value) {
                         if (value == '') {
                           value = '0';
                         }
-                        value.replaceAll(RegExp(r'[^0-9]'), '');
+                        value = value.replaceAll(RegExp(r'[^0-9]'), '');
                         mprovider.editReceiptItemPrice(
                             double.parse(value), receiptIndex, index);
                       },
