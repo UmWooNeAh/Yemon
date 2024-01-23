@@ -139,6 +139,41 @@ class Query {
     return 1;
   }
 
+  Future<int> matchingMembersToAllReceiptItem(List<String> stmPaperIds, List<String> rcpItemIds) async {
+    var res;
+    try {
+      res = await _db!.transaction((txn) async {
+        stmPaperIds.forEach((stmPaperId) async {
+          rcpItemIds.forEach((rcpItemId) async { 
+              await DBSettlementItem().createStmItemTxn(txn, stmPaperId, rcpItemId);
+          });
+        });
+      });
+    }
+    catch (e) {
+      print(e);
+      return 0;
+    }
+    return 1;
+
+  }
+
+  Future<int> matchingMembersToReceiptItem(List<String> stmPaperIds, String rcpItemId) async {
+    var res;
+    try {
+      res = await _db!.transaction((txn) async {
+        stmPaperIds.forEach((stmPaperId) async {
+          await DBSettlementItem().createStmItemTxn(txn, stmPaperId, rcpItemId);
+        });
+      });
+    }
+    catch (e) {
+      print(e);
+      return 0;
+    }
+    return 1;
+  }
+
   Future<int> unmatchingMemberFromAllReceiptItems(String stmPaperId, List<String> rcpItemIds) async {
 
     var res;
