@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide BoxShadow, BoxDecoration;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sqlite_test/View/settlement_matching.dart';
 import 'package:sqlite_test/ViewModel/mainviewmodel.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:sqlite_test/theme.dart';
@@ -412,6 +413,7 @@ class _AddMemberState extends ConsumerState<AddMember> {
   @override
   Widget build(BuildContext context) {
     final provider = ref.watch(mainProvider);
+    final sProvider = ref.watch(settlementMatchingProvider);
     return AlertDialog(
       title: const Text("Add Settlement Member"),
       content: Column(
@@ -437,6 +439,7 @@ class _AddMemberState extends ConsumerState<AddMember> {
         TextButton(
           onPressed: () {
             provider.addMember(newName);
+            sProvider.settingMemberIndexList(provider.selectedSettlement.settlementPapers.length);
             context.pop();
           },
           child: const Text("추가하기"),
@@ -723,6 +726,7 @@ class AddReceiptItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = ref.watch(mainProvider);
     final rprovider = ref.watch(receiptProvider);
+    final sProvider = ref.watch(settlementMatchingProvider);
     Size size = MediaQuery.of(context).size;
     return Container(
       height: 40,
@@ -736,6 +740,7 @@ class AddReceiptItem extends ConsumerWidget {
           onTap: () {
             rprovider.addReceiptItem(index);
             provider.addReceiptItem(index);
+            sProvider.settingReceiptItemIndexList(provider.selectedSettlement.receipts[index].receiptItems.length);
           },
           child: const Center(
               child: SizedBox(
@@ -936,6 +941,7 @@ class AddReceipt extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mprovider = ref.watch(mainProvider);
     final rprovider = ref.watch(receiptProvider);
+    final sProvider = ref.watch(settlementMatchingProvider);
     Size size = MediaQuery.of(context).size;
     return Container(
       width: size.width,
@@ -953,6 +959,7 @@ class AddReceipt extends ConsumerWidget {
           onTap: () {
             rprovider.addReceipt();
             mprovider.addReceipt();
+            sProvider.selectReceipt(mprovider.selectedSettlement.receipts.length-1, 0);
           },
           child: const Center(child: Text("영수증 추가")),
         ),
