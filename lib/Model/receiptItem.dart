@@ -6,7 +6,7 @@ class ReceiptItem{
   double price = 0;
   double individualPrice = 0;
   int count = 1;
-  Map<String,String> paperOwner = {};
+  Map<String,int> paperOwner = {};
 
   ReceiptItem(){
     receiptItemId = const Uuid().v4();

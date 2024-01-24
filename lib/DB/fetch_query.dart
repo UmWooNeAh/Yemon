@@ -57,7 +57,7 @@ class FetchQuery {
 
       res.forEach((row) async {
         String id = row["settlementPaperId"]; String memberName = row["memberName"];
-        newItem.paperOwner[id] = memberName;
+        //newItem.paperOwner[id] = memberName;
       });
       receiptItems.add(newItem);
     });

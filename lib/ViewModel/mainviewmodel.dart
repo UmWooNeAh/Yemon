@@ -13,21 +13,50 @@ class MainViewModel extends ChangeNotifier {
   Settlement selectedSettlement = Settlement();
   List<List<List<TextEditingController>>> receiptItemControllerList = [];
 
+  void unmatching(int receiptIndex,int receiptItemIndex,String paperId){
+    String menuName = selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex].receiptItemName;
+
+    //remove settlementItem from settlementPaper
+    selectedSettlement.settlementPapers.firstWhere((element) => element.settlementPaperId == paperId).settlementItems.removeWhere((element) => element.hashCode == selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex].paperOwner[paperId]);
+
+    //remove paperOwner from receiptItem
+    selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex].paperOwner.removeWhere((key, value) => key == paperId);
+
+    //change splitPrice
+    double splitPrice = selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex].price / selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex].paperOwner.length;
+
+    selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex].paperOwner.forEach((key, value) {
+      selectedSettlement.settlementPapers.firstWhere((element) => element.settlementPaperId == key).settlementItems.firstWhere((element) => element.name == menuName).splitPrice = splitPrice;
+    });
+
+    notifyListeners();
+  }
   void matching(int userIndex,int itemIndex,int receiptIndex){
     SettlementItem newSettlementItem = SettlementItem();
     ReceiptItem receiptItem = selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex];
     double splitPrice = receiptItem.price / (receiptItem.paperOwner.length + 1);
 
+    //if already matched
+    if(selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex].paperOwner.containsKey(selectedSettlement.settlementPapers[userIndex].settlementPaperId)){
+      return;
+    }
+
+    //change splitPrice
     selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex].paperOwner.forEach((key, value) {
       selectedSettlement.settlementPapers.firstWhere((element){return element.settlementPaperId == key;})
           .settlementItems.firstWhere((element){return element.name == receiptItem.receiptItemName;}).splitPrice = splitPrice;
     });
 
-    selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex].paperOwner[selectedSettlement.settlementPapers[userIndex].settlementPaperId] = selectedSettlement.settlementPapers[userIndex].memberName;
+    //add settlementItem to settlementPaper
     newSettlementItem.name = selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex].receiptItemName;
     newSettlementItem.splitPrice = splitPrice;
+    int testingIndex = selectedSettlement.settlementPapers[userIndex].settlementItems.length;
     selectedSettlement.settlementPapers[userIndex].settlementItems.add(newSettlementItem);
 
+    //add paperOwner to receiptItem
+    selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex].paperOwner[selectedSettlement.settlementPapers[userIndex].settlementPaperId] = selectedSettlement.settlementPapers[userIndex].settlementItems.last.hashCode;
+
+    //debugging code
     selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex].paperOwner.forEach((key, value) {
       print(selectedSettlement.settlementPapers.firstWhere((element) => element.settlementPaperId == key).memberName);
       print(selectedSettlement.settlementPapers.firstWhere((element) => element.settlementPaperId == key).settlementItems.firstWhere((element) => element.name == receiptItem.receiptItemName).splitPrice);
@@ -66,6 +95,15 @@ class MainViewModel extends ChangeNotifier {
       String newName, int receiptIndex, int receiptItemIndex) {
     selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex]
         .receiptItemName = newName;
+    selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex].paperOwner.values.forEach((code){
+      for (var papers in selectedSettlement.settlementPapers) {
+        for (var stmItem in papers.settlementItems) {
+          if(stmItem.hashCode == code){
+            stmItem.name = newName;
+          }
+        }
+      }
+    });
     notifyListeners();
   }
 

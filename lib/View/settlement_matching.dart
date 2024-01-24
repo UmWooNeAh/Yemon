@@ -18,6 +18,12 @@ class SettlementMatchingViewmodel extends ChangeNotifier{
   List<bool> selectedReceiptItemIndexList = [];
   List<bool> selectedMemberIndexList = [false,];
   bool showMemberDetail = false;
+  int showMatchingDetail = -1;
+
+  void toggleMatchingDetail(int index){
+    showMatchingDetail = index;
+    notifyListeners();
+  }
 
   void settingMemberIndexList(int length){
     selectedMemberIndexList = List.generate(length, (index) => false);

@@ -285,6 +285,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
           onPressed: () {
             provider.settlementList.insert(0,Settlement());
             provider.addMember("나");
+            provider.selectedSettlement = provider.settlementList[0];
             context.push('/SettlementManagementPage');
           },
           backgroundColor: basic[8],
