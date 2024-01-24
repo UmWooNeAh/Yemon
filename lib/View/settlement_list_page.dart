@@ -283,9 +283,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
         margin: EdgeInsets.only(bottom: editManagement.isEdit && editManagement.isSelected.contains(true) ? 80 : 0),
         child: FloatingActionButton(
           onPressed: () {
-            provider.settlementList.insert(0,Settlement());
-            provider.addMember("나");
-            provider.selectedSettlement = provider.settlementList[0];
+            provider.addNewSettlement();
             context.push('/SettlementManagementPage');
           },
           backgroundColor: basic[8],

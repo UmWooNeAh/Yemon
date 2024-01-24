@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqlite_test/DB/db_test.dart';
 import 'package:sqlite_test/View/settlement_matching.dart';
+import 'package:sqlite_test/shared_tool.dart';
 
 import '../Model/ReceiptItem.dart';
 import '../Model/SettlementItem.dart';
@@ -169,7 +170,7 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
                     ),
                     Container(
                       width: size.width *0.3,
-                      child: Text(rcpItem.price.toString()+"원",
+                      child: Text("${priceToString.format(rcpItem.price)}원",
                         textAlign: TextAlign.right,
                         style: const TextStyle(
                           fontSize: 17,

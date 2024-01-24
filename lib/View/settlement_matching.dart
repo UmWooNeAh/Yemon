@@ -115,7 +115,6 @@ class GroupMembers extends ConsumerWidget {
           decoration: BoxDecoration(
             color: basic[1],
             borderRadius: BorderRadius.only(topLeft:Radius.circular(20),topRight:Radius.circular(20)),
-
             boxShadow: [
               BoxShadow(
                   color: Colors.black.withOpacity(0.2),
