@@ -53,12 +53,13 @@ class FetchQuery {
       newItem.price = dbReceiptItem["price"];
       newItem.count = dbReceiptItem["count"];
       newItem.paperOwner = {}; // key: settlementPaperId, value: memberName
-      List<Map> res = await db!.rawQuery('SELECT SP.settlementPaperId, SP.memberName FROM (SettlementItem as SI INNER JOIN (SELECT settlementPaperId, memberName from SettlementPaper) as SP ON SI.settlementPaperId = SP.settlementPaperId) WHERE SI.receiptItemId = ?', [dbReceiptItem["receiptItemId"]]);
 
+      List<Map> res = await db!.rawQuery('SELECT SP.settlementPaperId FROM (SettlementItem as SI INNER JOIN (SELECT settlementPaperId from SettlementPaper) as SP ON SI.settlementPaperId = SP.settlementPaperId) WHERE SI.receiptItemId = ?', [dbReceiptItem["receiptItemId"]]);
       res.forEach((row) async {
-        String id = row["settlementPaperId"]; String memberName = row["memberName"];
-        newItem.paperOwner[id] = memberName;
+        String id = row["settlementPaperId"];
+        newItem.paperOwner[id] = 0;
       });
+
       receiptItems.add(newItem);
     });
 
