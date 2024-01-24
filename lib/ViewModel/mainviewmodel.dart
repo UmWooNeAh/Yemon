@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sqlite_test/shared_tool.dart';
 import '../Model/Receipt.dart';
 import '../Model/ReceiptItem.dart';
 import '../Model/Settlement.dart';
@@ -64,6 +65,48 @@ class MainViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void matching(int userIndex, int itemIndex, int receiptIndex) {
+    SettlementItem newSettlementItem = SettlementItem();
+    ReceiptItem receiptItem =
+        selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex];
+    double splitPrice = receiptItem.price / (receiptItem.paperOwner.length + 1);
+
+    selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex].paperOwner
+        .forEach((key, value) {
+      selectedSettlement.settlementPapers
+          .firstWhere((element) {
+            return element.settlementPaperId == key;
+          })
+          .settlementItems
+          .firstWhere((element) {
+            return element.name == receiptItem.receiptItemName;
+          })
+          .splitPrice = splitPrice;
+    });
+
+    selectedSettlement
+                .receipts[receiptIndex].receiptItems[itemIndex].paperOwner[
+            selectedSettlement.settlementPapers[userIndex].settlementPaperId] =
+        selectedSettlement.settlementPapers[userIndex].memberName;
+    newSettlementItem.name = selectedSettlement
+        .receipts[receiptIndex].receiptItems[itemIndex].receiptItemName;
+    newSettlementItem.splitPrice = splitPrice;
+    selectedSettlement.settlementPapers[userIndex].settlementItems
+        .add(newSettlementItem);
+
+    selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex].paperOwner
+        .forEach((key, value) {
+      print(selectedSettlement.settlementPapers
+          .firstWhere((element) => element.settlementPaperId == key)
+          .memberName);
+      print(selectedSettlement.settlementPapers
+          .firstWhere((element) => element.settlementPaperId == key)
+          .settlementItems
+          .firstWhere((element) => element.name == receiptItem.receiptItemName)
+          .splitPrice);
+    });
+    notifyListeners();
+  }
 
   void updateTotalPrice(receiptIndex) {
     double total = 0;
@@ -117,15 +160,13 @@ class MainViewModel extends ChangeNotifier {
             selectedSettlement
                 .receipts[receiptIndex].receiptItems[receiptItemIndex].count;
     receiptItemControllerList[receiptIndex][receiptItemIndex][1].text =
-        selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex]
-            .individualPrice
-            .truncate()
-            .toString();
+        priceToString.format(selectedSettlement.receipts[receiptIndex]
+            .receiptItems[receiptItemIndex].individualPrice
+            .truncate());
     receiptItemControllerList[receiptIndex][receiptItemIndex][3].text =
-        selectedSettlement
+        priceToString.format(selectedSettlement
             .receipts[receiptIndex].receiptItems[receiptItemIndex].price
-            .truncate()
-            .toString();
+            .truncate());
     updateTotalPrice(receiptIndex);
     notifyListeners();
   }
@@ -139,11 +180,16 @@ class MainViewModel extends ChangeNotifier {
         newCount *
             selectedSettlement.receipts[receiptIndex]
                 .receiptItems[receiptItemIndex].individualPrice;
-    receiptItemControllerList[receiptIndex][receiptItemIndex][3].text =
+
+    receiptItemControllerList[receiptIndex][receiptItemIndex][2].text =
         selectedSettlement
-            .receipts[receiptIndex].receiptItems[receiptItemIndex].price
+            .receipts[receiptIndex].receiptItems[receiptItemIndex].count
             .truncate()
             .toString();
+    receiptItemControllerList[receiptIndex][receiptItemIndex][3].text =
+        priceToString.format(selectedSettlement
+            .receipts[receiptIndex].receiptItems[receiptItemIndex].price
+            .truncate());
 
     updateTotalPrice(receiptIndex);
     notifyListeners();
@@ -159,15 +205,14 @@ class MainViewModel extends ChangeNotifier {
             selectedSettlement
                 .receipts[receiptIndex].receiptItems[receiptItemIndex].count;
     receiptItemControllerList[receiptIndex][receiptItemIndex][1].text =
-        selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex]
-            .individualPrice
-            .truncate()
-            .toString();
+        priceToString.format(selectedSettlement.receipts[receiptIndex]
+            .receiptItems[receiptItemIndex].individualPrice
+            .truncate());
+
     receiptItemControllerList[receiptIndex][receiptItemIndex][3].text =
-        selectedSettlement
+        priceToString.format(selectedSettlement
             .receipts[receiptIndex].receiptItems[receiptItemIndex].price
-            .truncate()
-            .toString();
+            .truncate());
 
     updateTotalPrice(receiptIndex);
     notifyListeners();
@@ -217,6 +262,7 @@ class MainViewModel extends ChangeNotifier {
         receiptItemControllerList.removeAt(i);
       }
     }
+    print(selectedSettlement.receipts.length);
     notifyListeners();
   }
 
