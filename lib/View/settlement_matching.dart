@@ -12,9 +12,9 @@ final settlementMatchingProvider =
     ChangeNotifierProvider((ref) => SettlementMatchingViewmodel());
 
 class SettlementMatchingViewmodel extends ChangeNotifier {
-  int presentReceiptIndex = 0;
-  bool showMemberDetail = false;
+  int presentReceiptIndex = -1;
   int showMatchingDetail = -1;
+  bool showMemberDetail = false;
 
   void toggleMatchingDetail(int index) {
     if (showMatchingDetail == index) {
@@ -22,6 +22,11 @@ class SettlementMatchingViewmodel extends ChangeNotifier {
     } else {
       showMatchingDetail = index;
     }
+    notifyListeners();
+  }
+
+  void toggleMemberDetail() {
+    showMemberDetail = !showMemberDetail;
     notifyListeners();
   }
 
@@ -41,7 +46,6 @@ class SettlementMatching extends ConsumerStatefulWidget {
 class _SettlementMatchingState extends ConsumerState<SettlementMatching> {
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Stack(
       children: [
         Container(
@@ -53,7 +57,7 @@ class _SettlementMatchingState extends ConsumerState<SettlementMatching> {
         const CustomBottomSheet(
           childWidget: MenuSheet(),
         ),
-        Positioned(bottom: 0, child: GroupMembers()),
+        const Positioned(bottom: 0, child: GroupMembers()),
       ],
     );
   }
@@ -70,13 +74,15 @@ class GroupMembers extends ConsumerWidget {
     return Stack(
       children: [
         AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 150),
             width: size.width,
             height: sProvider.showMemberDetail ? 250 : 100,
             decoration: BoxDecoration(
               color: basic[1],
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
               boxShadow: [
                 BoxShadow(
                     color: Colors.black.withOpacity(0.2),
@@ -101,21 +107,24 @@ class GroupMembers extends ConsumerWidget {
                       SizedBox(width: size.width * 0.2),
                       OutlinedButton(
                         onPressed: () {
-                          // sProvider.changeAllMember(!sProvider.selectedMemberIndexList.contains(true));
+                          provider.changeAllMember(!provider.selectedMemberIndexList.contains(true));
                         },
                         style: OutlinedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(
+                              color: provider.selectedMemberIndexList.contains(true) ? basic[2] : basic[8],
+                              width: 1.5,
+                            ),
                           ),
                           backgroundColor: Colors.white,
                         ),
                         child: Center(
                           child: Text(
-                            // sProvider.selectedMemberIndexList.contains(true)
-                            //     ? "선택 취소"
-                            //     : "전체 선택",
-                            "asdf",
-                            style: TextStyle(
+                            provider.selectedMemberIndexList.contains(true)
+                                ? "선택 취소"
+                                : "전체 선택",
+                            style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF848484),
@@ -150,16 +159,28 @@ class GroupMembers extends ConsumerWidget {
               ),
             )),
         Positioned(
-          left: size.width * 0.5 - 20,
+          top: 0,
+          left: size.width * 0.5 - 75,
           child: GestureDetector(
               onTap: () {
-                // sProvider.toggleMemberDetail();
+                sProvider.toggleMemberDetail();
               },
-              child: Transform.scale(
-                scale: 1.5,
-                child: sProvider.showMemberDetail
-                    ? Icon(Icons.keyboard_arrow_down)
-                    : Icon(Icons.keyboard_arrow_up),
+              child: Container(
+                height: 30,
+                width: 150,
+                color: basic[1],
+                child: Center(
+                  child: SizedBox(
+                    height: 30,
+                    width: 30,
+                    child: FittedBox(
+                      fit: BoxFit.fill,
+                      child: sProvider.showMemberDetail
+                          ? const Icon(Icons.keyboard_arrow_down)
+                          : const Icon(Icons.keyboard_arrow_up),
+                    ),
+                  ),
+                ),
               )),
         )
       ],
@@ -174,21 +195,20 @@ class SingleMember extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = ref.watch(mainProvider);
-    final sProvider = ref.watch(settlementMatchingProvider);
     return InkWell(
       onTap: () {
-        // sProvider.selectMember(index);
+        provider.selectMember(index);
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
         height: 35,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         margin: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
-          // color: sProvider.selectedMemberIndexList[index] ? basic[8] : basic[0],
+          color: provider.selectedMemberIndexList[index] ? basic[8] : basic[0],
           border: Border.all(
-            color:basic[0],
-                // sProvider.selectedMemberIndexList[index] ? basic[8] : basic[2],
+            color:
+                provider.selectedMemberIndexList[index] ? basic[8] : basic[2],
             width: 2,
           ),
           boxShadow: [
@@ -200,20 +220,15 @@ class SingleMember extends ConsumerWidget {
           ],
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Column(
-          children: [
-            const SizedBox(height: 5),
-            Text(
-              provider.selectedSettlement.settlementPapers[index].memberName,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                // color: sProvider.selectedMemberIndexList[index]
-                //     ? Colors.white
-                //     : Colors.black,
-              ),
-            ),
-          ],
+        child: Text(
+          provider.selectedSettlement.settlementPapers[index].memberName,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: provider.selectedMemberIndexList[index]
+                ? basic[0]
+                : basic[5],
+          ),
         ),
       ),
     );

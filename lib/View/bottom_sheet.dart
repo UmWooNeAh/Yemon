@@ -58,7 +58,7 @@ class CustomBottomSheet extends ConsumerWidget {
     if (bprovider.mode == -1) {
       ref
           .read(bottomSheetProvider)
-          .setHeight(size.height * 0.8, size.height * 0.4);
+          .setHeight(size.height * 0.8, size.height * 0.8 - 200);
     }
     return Positioned(
       bottom: 0,
@@ -83,6 +83,7 @@ class CustomBottomSheet extends ConsumerWidget {
               : const Duration(milliseconds: 0),
           height: bprovider.height,
           width: size.width,
+          padding: const EdgeInsets.only(top: 30),
           decoration: BoxDecoration(
               color: basic[0],
               borderRadius: const BorderRadius.only(

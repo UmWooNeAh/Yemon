@@ -30,6 +30,26 @@ class MainViewModel extends ChangeNotifier {
     return ["null", "null"];
   }
 
+  void changeAllMember(bool changeBool){
+    selectedMemberIndexList = List.generate(selectedMemberIndexList.length, (index) => changeBool);
+    notifyListeners();
+  }
+
+  void selectReceiptItem(int receiptIndex, int receiptItemIndex){
+    selectedReceiptItemIndexList[receiptIndex][receiptItemIndex] = true;
+    notifyListeners();
+  }
+
+  void selectMember(int index){
+    selectedMemberIndexList[index] = !selectedMemberIndexList[index];
+    notifyListeners();
+  }
+
+  void selectSettlement(int index){
+    selectedSettlement = settlementList[index];
+    notifyListeners();
+  }
+
   void unmatching(int receiptIndex, int receiptItemIndex, String paperId) {
     String menuName = selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex].receiptItemName;
@@ -79,6 +99,7 @@ class MainViewModel extends ChangeNotifier {
             matching(j, i, presentReceiptIndex);
           }
         }
+        selectedReceiptItemIndexList[presentReceiptIndex][i] = false;
         updateSettlementItemSplitPrice(presentReceiptIndex, i);
       }
     }

@@ -43,6 +43,7 @@ dependencies:
   flutter_inset_box_shadow: ^1.0.8
   dotted_border: ^2.1.0
   scroll_snap_list: ^0.9.1
+  image_gallery_saver: ^2.0.3
 
 dev_dependencies:
   flutter_test:
