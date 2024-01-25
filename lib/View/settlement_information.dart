@@ -385,7 +385,7 @@ class IncludedMember extends ConsumerWidget {
           child: Container(
             height: 40,
             margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             decoration: BoxDecoration(
                 border: Border.all(color: basic[2], width: 1.5),
                 color: basic[0],
@@ -401,7 +401,8 @@ class IncludedMember extends ConsumerWidget {
             child: Center(
               child: Text(
                 mprovider.selectedSettlement.settlementPapers[index].memberName,
-                style: TextStyle(color: index == 0 ? basic[3] : basic[5]),
+                style: TextStyle(
+                    color: index == 0 ? basic[3] : basic[5], fontSize: 17),
               ),
             ),
           ),
@@ -443,7 +444,8 @@ class _EditMemberNameState extends ConsumerState<EditMemberName> {
     Size size = MediaQuery.of(context).size;
     final mprovider = ref.watch(mainProvider);
     return AlertDialog(
-      title: const Text("참여 인원 이름 수정"),
+      elevation: 0,
+      title: const Text("이름을 수정합니다"),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
@@ -477,53 +479,19 @@ class _EditMemberNameState extends ConsumerState<EditMemberName> {
         Wrap(
           children: [
             Container(
-              height: 45,
-              width: size.width * 0.7 + 20,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: basic[9],
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                ),
-                onPressed: () {
-                  context.pop();
-                  mprovider.editMemberName(newName, widget.index);
-                },
-                child: Text("변경한 이름으로 저장",
-                    style: TextStyle(color: basic[0], fontSize: 15)),
-              ),
-            ),
-            Container(
-              height: 45,
+              height: 55,
               width: size.width * 0.35 + 5,
-              margin: const EdgeInsets.only(top: 10, right: 5),
+              margin: const EdgeInsets.only(bottom: 10, right: 5),
               decoration: BoxDecoration(
-                color: basic[2],
-                borderRadius: BorderRadius.circular(11),
-                border: Border.all(color: basic[5], width: 1.5),
-              ),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: basic[0],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                border: Border.all(
+                  color: basic[2],
                 ),
-                onPressed: () {
-                  context.pop();
-                  mprovider.deleteMember(widget.index);
-                },
-                child: Text("인원 삭제",
-                    style: TextStyle(color: basic[5], fontSize: 15)),
+                borderRadius: BorderRadius.circular(11),
               ),
-            ),
-            Container(
-              height: 45,
-              width: size.width * 0.35 + 5,
-              margin: const EdgeInsets.only(top: 10, left: 5),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: basic[2],
+                  elevation: 0,
+                  backgroundColor: basic[0],
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
@@ -531,6 +499,42 @@ class _EditMemberNameState extends ConsumerState<EditMemberName> {
                   context.pop();
                 },
                 child: Text("취소", style: TextStyle(color: basic[5])),
+              ),
+            ),
+            Container(
+              height: 55,
+              width: size.width * 0.35 + 5,
+              margin: const EdgeInsets.only(bottom: 10, left: 5),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: basic[8],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () {
+                  context.pop();
+                  mprovider.editMemberName(newName, widget.index);
+                },
+                child: Text("이름 저장",
+                    style: TextStyle(color: basic[0], fontSize: 15)),
+              ),
+            ),
+            Container(
+              height: 30,
+              width: size.width * 0.7 + 20,
+              child: TextButton(
+                onPressed: () {
+                  context.pop();
+                  mprovider.deleteMember(widget.index);
+                },
+                child: Text("이 멤버를 삭제하려면 이곳을 터치하세요",
+                    style: TextStyle(
+                        color: basic[3],
+                        fontSize: 15,
+                        decoration: TextDecoration.underline,
+                        decorationColor: basic[5],
+                        decorationThickness: 3)),
               ),
             ),
           ],
@@ -553,13 +557,29 @@ class _AddMemberState extends ConsumerState<AddMember> {
   Widget build(BuildContext context) {
     final provider = ref.watch(mainProvider);
     final sProvider = ref.watch(settlementMatchingProvider);
+    Size size = MediaQuery.of(context).size;
     return AlertDialog(
-      title: const Text("Add Settlement Member"),
+      elevation: 0,
+      title: const Text("새 멤버를 추가합니다"),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      backgroundColor: basic[0],
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text("New Member Name : "),
           TextField(
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+            ),
             onChanged: (value) {
               setState(() {
                 newName = value;
@@ -568,21 +588,47 @@ class _AddMemberState extends ConsumerState<AddMember> {
           ),
         ],
       ),
+      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actionsPadding: const EdgeInsets.all(10),
       actions: [
-        TextButton(
-          onPressed: () {
-            context.pop();
-          },
-          child: const Text("취소하기"),
+        Container(
+          height: 55,
+          width: size.width * 0.35,
+          decoration: BoxDecoration(
+            border: Border.all(color: basic[2], width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: basic[0],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              context.pop();
+            },
+            child: Text("취소", style: TextStyle(color: basic[5])),
+          ),
         ),
-        TextButton(
-          onPressed: () {
-            provider.addMember(newName);
-            sProvider.settingMemberIndexList(
-                provider.selectedSettlement.settlementPapers.length);
-            context.pop();
-          },
-          child: const Text("추가하기"),
+        Container(
+          height: 55,
+          width: size.width * 0.35,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: basic[9],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              provider.addMember(newName);
+              sProvider.settingMemberIndexList(
+                  provider.selectedSettlement.settlementPapers.length);
+              context.pop();
+            },
+            child:
+                Text("멤버 추가", style: TextStyle(color: basic[0], fontSize: 15)),
+          ),
         ),
       ],
     );
@@ -772,7 +818,8 @@ class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
     Size size = MediaQuery.of(context).size;
     final mprovider = ref.watch(mainProvider);
     return AlertDialog(
-      title: const Text("영수증 이름 수정"),
+      elevation: 0,
+      title: const Text("영수증의 이름을 수정합니다"),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
@@ -804,7 +851,27 @@ class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
       actionsPadding: const EdgeInsets.all(10),
       actions: [
         Container(
-          height: 45,
+          height: 55,
+          width: size.width * 0.35,
+          decoration: BoxDecoration(
+            border: Border.all(color: basic[2], width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: basic[0],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              context.pop();
+            },
+            child: Text("취소", style: TextStyle(color: basic[5])),
+          ),
+        ),
+        Container(
+          height: 55,
           width: size.width * 0.35,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -817,22 +884,7 @@ class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
               mprovider.editReceiptName(newName, widget.index);
             },
             child:
-                Text("이름 저장", style: TextStyle(color: basic[0], fontSize: 15)),
-          ),
-        ),
-        Container(
-          height: 45,
-          width: size.width * 0.35,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: basic[2],
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            onPressed: () {
-              context.pop();
-            },
-            child: Text("취소", style: TextStyle(color: basic[5])),
+                Text("이름 변경", style: TextStyle(color: basic[0], fontSize: 15)),
           ),
         ),
       ],
@@ -1201,7 +1253,6 @@ class AddReceipt extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mprovider = ref.watch(mainProvider);
     final rprovider = ref.watch(receiptProvider);
-    final sProvider = ref.watch(settlementMatchingProvider);
     Size size = MediaQuery.of(context).size;
     return Container(
       width: size.width,
@@ -1219,8 +1270,6 @@ class AddReceipt extends ConsumerWidget {
           onTap: () {
             rprovider.addReceipt();
             mprovider.addReceipt();
-            sProvider.selectReceipt(
-                mprovider.selectedSettlement.receipts.length - 1, 0);
           },
           child: const Center(child: Text("영수증 추가")),
         ),

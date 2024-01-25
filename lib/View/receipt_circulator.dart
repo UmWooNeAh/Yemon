@@ -17,15 +17,14 @@ class ReceiptCirculator extends ConsumerWidget {
       width: size.width,
       margin: const EdgeInsets.only(top: 50),
       child: ScrollSnapList(
-        itemCount: mprovider.selectedSettlement.receipts.length,
+        itemCount: mprovider.selectedSettlement.receipts.length + 1,
         itemSize: 100,
         onItemFocus: (index) {
-          sprovider.selectReceipt(index,
-              mprovider.selectedSettlement.receipts[index].receiptItems.length);
+          sprovider.selectReceipt(index - 1);
         },
         itemBuilder: (context, index) {
           return ListedReceiptShape(
-            index: index,
+            index: index - 1,
           );
         },
         dynamicItemSize: true,
@@ -57,9 +56,12 @@ class ListedReceiptShape extends ConsumerWidget {
           child: Align(
             alignment: const Alignment(0, 0.7),
             child: Text(
-              index < mprovider.selectedSettlement.receipts.length
-                  ? mprovider.selectedSettlement.receipts[index].receiptName
-                  : "",
+              index == -1
+                  ? "영수증 모아보기"
+                  : (index < mprovider.selectedSettlement.receipts.length
+                      ? mprovider
+                          .selectedSettlement.receipts[index].receiptName
+                      : ""),
             ),
           ),
         ),

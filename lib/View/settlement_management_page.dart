@@ -117,6 +117,7 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return AlertDialog(
+      elevation: 0,
       title: const Text("정산 이름 수정"),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -149,7 +150,27 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
       actionsPadding: const EdgeInsets.all(10),
       actions: [
         Container(
-          height: 45,
+          height: 55,
+          width: size.width * 0.35,
+          decoration: BoxDecoration(
+            border: Border.all(color: basic[2], width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: basic[0],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              context.pop();
+            },
+            child: Text("취소", style: TextStyle(color: basic[5])),
+          ),
+        ),
+        Container(
+          height: 55,
           width: size.width * 0.35,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -164,21 +185,6 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
             },
             child:
                 Text("이름 저장", style: TextStyle(color: basic[0], fontSize: 15)),
-          ),
-        ),
-        Container(
-          height: 45,
-          width: size.width * 0.35,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: basic[2],
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            onPressed: () {
-              context.pop();
-            },
-            child: Text("취소", style: TextStyle(color: basic[5])),
           ),
         ),
       ],

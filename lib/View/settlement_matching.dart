@@ -35,10 +35,8 @@ class SettlementMatchingViewmodel extends ChangeNotifier{
     notifyListeners();
   }
 
-  void selectReceipt(int index,int receiptItemLength){
+  void selectReceipt(int index){
     presentReceiptIndex = index;
-    selectedMemberIndexList = List.generate(selectedMemberIndexList.length, (index) => false);
-    selectedReceiptItemIndexList = List.generate(receiptItemLength, (index) => false);
     notifyListeners();
   }
 
