@@ -21,7 +21,11 @@ class SettlementMatchingViewmodel extends ChangeNotifier{
   int showMatchingDetail = -1;
 
   void toggleMatchingDetail(int index){
-    showMatchingDetail = index;
+    if(showMatchingDetail == index) {
+      showMatchingDetail = -1;
+    } else {
+      showMatchingDetail = index;
+    }
     notifyListeners();
   }
 

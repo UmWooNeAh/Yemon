@@ -27,19 +27,23 @@ class MainViewModel extends ChangeNotifier {
     }
     return ["null","null"];
   }
+
   void addNewSettlement(){
     settlementList.insert(0,Settlement());
     selectedSettlement = settlementList[0];
     addMember("나");
     notifyListeners();
   }
-  void calTotalPrice(String paperId){
-    SettlementPaper stmPaper = selectedSettlement.settlementPapers.firstWhere((element) => element.settlementPaperId == paperId);
-    stmPaper.totalPrice = 0;
-    stmPaper.settlementItems.forEach((element) {
-      stmPaper.totalPrice += element.splitPrice;
+
+  void updateUserTotalPrice(){
+    selectedSettlement.settlementPapers.forEach((element){
+      element.totalPrice = 0;
+      element.settlementItems.forEach((item) {
+        element.totalPrice += item.splitPrice;
+      });
     });
-    print("${stmPaper.totalPrice}원");
+
+    notifyListeners();
   }
 
   void unmatching(int receiptIndex,int receiptItemIndex,String paperId){
@@ -51,7 +55,6 @@ class MainViewModel extends ChangeNotifier {
 
     selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex].paperOwner.forEach((key, value) {
       selectedSettlement.settlementPapers.firstWhere((element) => element.settlementPaperId == key).settlementItems.firstWhere((element) => element.name == menuName).splitPrice = splitPrice == double.infinity ? 0 : splitPrice;
-      calTotalPrice(key);
     });
 
     //remove settlementItem from settlementPaper
@@ -60,6 +63,7 @@ class MainViewModel extends ChangeNotifier {
     //remove paperOwner from receiptItem
     selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex].paperOwner.removeWhere((key, value) => key == paperId);
 
+    updateUserTotalPrice();
     notifyListeners();
   }
 
@@ -67,7 +71,7 @@ class MainViewModel extends ChangeNotifier {
     SettlementItem newSettlementItem = SettlementItem();
     ReceiptItem receiptItem = selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex];
     double splitPrice = receiptItem.price / (receiptItem.paperOwner.length + 1);
-
+    print("splitPrice : ${splitPrice}");
     //if already matched
     if(selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex].paperOwner.containsKey(selectedSettlement.settlementPapers[userIndex].settlementPaperId)){
       return;
@@ -87,9 +91,7 @@ class MainViewModel extends ChangeNotifier {
     //add paperOwner to receiptItem
     selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex].paperOwner[selectedSettlement.settlementPapers[userIndex].settlementPaperId] = selectedSettlement.settlementPapers[userIndex].settlementItems.last.hashCode;
 
-    selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex].paperOwner.keys.forEach((stmPaperId) {
-      calTotalPrice(stmPaperId);
-    });
+    updateUserTotalPrice();
     //debugging code
     selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex].paperOwner.forEach((key, value) {
       print(selectedSettlement.settlementPapers.firstWhere((element) => element.settlementPaperId == key).memberName);
