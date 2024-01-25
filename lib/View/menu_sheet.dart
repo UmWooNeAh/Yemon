@@ -190,11 +190,13 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
           width: size.width,
-          height:sProvider.showMatchingDetail == widget.index ? 120 : 1,
+          height:sProvider.showMatchingDetail == widget.index ? 120 : 0,
           color: basic[1],
           margin: const EdgeInsets.symmetric(horizontal: 20),
-          child: Wrap(
-            children: List.generate(mProvider.selectedSettlement.receipts[sProvider.presentReceiptIndex].receiptItems[widget.index].paperOwner.length, (idx) => SingleSettlementMember(stmPaperId: mProvider.selectedSettlement.receipts[sProvider.presentReceiptIndex].receiptItems[widget.index].paperOwner.keys.toList()[idx],receiptItemId:widget.index)),
+          child: ClipRect(
+            child: Wrap(
+              children: List.generate(mProvider.selectedSettlement.receipts[sProvider.presentReceiptIndex].receiptItems[widget.index].paperOwner.length, (idx) => SingleSettlementMember(stmPaperId: mProvider.selectedSettlement.receipts[sProvider.presentReceiptIndex].receiptItems[widget.index].paperOwner.keys.toList()[idx],receiptItemId:widget.index)),
+            ),
           ),
         ),
         SizedBox(height:10)
