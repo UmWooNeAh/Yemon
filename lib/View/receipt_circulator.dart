@@ -40,7 +40,6 @@ class ListedReceiptShape extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final sprovider = ref.watch(settlementMatchingProvider);
     final mprovider = ref.watch(mainProvider);
     return Stack(
       children: [

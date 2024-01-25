@@ -1,6 +1,5 @@
 import 'package:uuid/uuid.dart';
-
-import 'ReceiptItem.dart';
+import 'receipt_item.dart';
 
 class Receipt{
   String receiptId = "";

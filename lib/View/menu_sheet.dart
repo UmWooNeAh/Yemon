@@ -2,12 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sqlite_test/DB/db_test.dart';
 import 'package:sqlite_test/View/settlement_matching.dart';
 import 'package:sqlite_test/shared_tool.dart';
-
-import '../Model/ReceiptItem.dart';
-import '../Model/SettlementItem.dart';
+import '../Model/receipt_item.dart';
+import '../Model/settlement_item.dart';
 import '../ViewModel/mainviewmodel.dart';
 import '../theme.dart';
 
@@ -53,20 +51,20 @@ class MenuSheet extends ConsumerWidget {
                     height: 45,
                     child: OutlinedButton(
                       onPressed: () {
-                        print("receipt item");
-                        mProvider.selectedSettlement.receipts[sProvider.presentReceiptIndex].receiptItems.forEach((element) {
-                          print(element.receiptItemName);
-                          element.paperOwner.forEach((key, value) {
-                            print("${key} : ${value}");
-                          });
-                        });
-                        print("stmPaper");
-                        mProvider.selectedSettlement.settlementPapers.forEach((paper) {
-                          print(paper.memberName);
-                          paper.settlementItems.forEach((element){
-                            print("${element.name} ${element.splitPrice}");
-                          });
-                        });
+                        // print("receipt item");
+                        // mProvider.selectedSettlement.receipts[sProvider.presentReceiptIndex].receiptItems.forEach((element) {
+                        //   print(element.receiptItemName);
+                        //   element.paperOwner.forEach((key, value) {
+                        //     print("${key} : ${value}");
+                        //   });
+                        // });
+                        // print("stmPaper");
+                        // mProvider.selectedSettlement.settlementPapers.forEach((paper) {
+                        //   print(paper.memberName);
+                        //   paper.settlementItems.forEach((element){
+                        //     print("${element.name} ${element.splitPrice}");
+                        //   });
+                        // });
                       },
                       style: OutlinedButton.styleFrom(
                         shape: RoundedRectangleBorder(
@@ -128,20 +126,20 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
       children: [
         InkWell(
           onTap:(){
-            if(sProvider.selectedMemberIndexList.contains(true)){
-              //print(mProvider.selectedSettlement.settlementPapers.length);
-              List<int> userIndexes = sProvider.matching();
-              for(int index in userIndexes){
-                mProvider.matching(index, widget.index, sProvider.presentReceiptIndex);
-              }
-            } else {
-              sProvider.toggleMatchingDetail(widget.index);
-            }
+            // if(sProvider.selectedMemberIndexList.contains(true)){
+            //   //print(mProvider.selectedSettlement.settlementPapers.length);
+            //   List<int> userIndexes = sProvider.matching();
+            //   for(int index in userIndexes){
+            //     mProvider.matching(index, widget.index, sProvider.presentReceiptIndex);
+            //   }
+            // } else {
+            //   sProvider.toggleMatchingDetail(widget.index);
+            // }
           },
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             height: sProvider.showMatchingDetail == widget.index ? 50 : 50,
-            color: sProvider.selectedReceiptItemIndexList[widget.index] ? basic[1] : Colors.white,
+            // color: sProvider.selectedReceiptItemIndexList[widget.index] ? basic[1] : Colors.white,
             child: Column(
               children: [
                 Row(

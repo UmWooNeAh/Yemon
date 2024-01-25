@@ -622,8 +622,6 @@ class _AddMemberState extends ConsumerState<AddMember> {
             ),
             onPressed: () {
               provider.addMember(newName);
-              sProvider.settingMemberIndexList(
-                  provider.selectedSettlement.settlementPapers.length);
               context.pop();
             },
             child:
@@ -972,8 +970,6 @@ class AddReceiptItem extends ConsumerWidget {
           onTap: () {
             rprovider.addReceiptItem(index);
             provider.addReceiptItem(index);
-            sProvider.settingReceiptItemIndexList(provider
-                .selectedSettlement.receipts[index].receiptItems.length);
           },
           child: const Center(
               child: SizedBox(
