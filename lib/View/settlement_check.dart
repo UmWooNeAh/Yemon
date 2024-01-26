@@ -156,14 +156,14 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
         ),
         showOverall
             ? showAll
-                ? RepaintBoundary(
-                  key: _globalKey1,
-                  child: Expanded(
+                ? Expanded(
+                  child: RepaintBoundary(
+                    key: _globalKey1,
                     child: ListView(
                       shrinkWrap: true,
                       scrollDirection: Axis.vertical,
                       children: [
-                        OverallStmPaper(),
+                        const OverallStmPaper(),
                         Column(
                           children: List.generate(
                               mProvider
@@ -174,14 +174,18 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                     ),
                   ),
                 )
-                : const Expanded(child: OverallStmPaper())
-                // : RepaintBoundary(
-                //   key: _globalKey2,
-                //   child: const Expanded(child: OverallStmPaper()),
-                // )
-            : RepaintBoundary(
+                : Expanded(
+                  child: RepaintBoundary(
+                    key: _globalKey2,
+                    child: OverallStmPaper(),
+                  ),
+                )
+            : Expanded(
+              child: RepaintBoundary(
                 key: _globalKey3,
-                child: Expanded(child: oneStmPaper(index: index))),
+                child: oneStmPaper(index: index),
+              ),
+            ),
         Column(
           children: [
             showOverall
@@ -333,20 +337,14 @@ class OverallStmPaper extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mProvider = ref.watch(mainProvider);
     return mProvider.selectedSettlement.totalPrice == 0
-        ? Flex(
-            direction: Axis.vertical,
-            children: [
-              Expanded(
-                  child: Center(
-                      child: Text(
-                "정산할 내역이 없습니다.",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ))),
-            ],
-          )
+        ? Center(
+            child: Text(
+                        "정산할 내역이 없습니다.",
+                        style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+                        ),
+                      ))
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
