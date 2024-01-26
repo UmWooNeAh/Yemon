@@ -621,7 +621,7 @@ class _AddMemberState extends ConsumerState<AddMember> {
                   borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
-              provider.addMember(newName);
+              provider.addMember([newName]);
               context.pop();
             },
             child:

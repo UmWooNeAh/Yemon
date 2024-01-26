@@ -8,7 +8,7 @@ import 'View/load_member_page.dart';
 import 'View/settlement_list_page.dart';
 import 'View/settlement_management_page.dart';
 
-var db = SqlFliteDB().database;
+
 
 void main() {
   runApp(const ProviderScope(child: MainApp()));
@@ -19,6 +19,10 @@ class MainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+      SqlFliteDB().database.then((Database db){
+      ref.watch(mainProvider).setDB(db);
+    });
+
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
