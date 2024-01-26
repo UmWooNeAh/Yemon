@@ -174,7 +174,7 @@ class MainViewModel extends ChangeNotifier {
   void editAllSettlementItemName(
       int receiptIndex, int receiptItemIndex, String newName) {
     List<int> hashcodes = selectedSettlement.receipts[receiptIndex]
-        .receiptItems[receiptItemIndex].paperOwner.values as List<int>;
+        .receiptItems[receiptItemIndex].paperOwner.values.toList();
 
     for (var papers in selectedSettlement.settlementPapers) {
       for (var stmItem in papers.settlementItems) {
@@ -188,7 +188,7 @@ class MainViewModel extends ChangeNotifier {
 
 //ReceiptItem 값 수정
   void editReceiptItemIndividualPrice(
-      double newIndividualPrice, int receiptIndex, int receiptItemIndex) {
+      double newIndividualPrice, int receiptIndex, int receiptItemIndex) async {
     int count = selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex].count;
 
@@ -203,11 +203,15 @@ class MainViewModel extends ChangeNotifier {
         priceToString.format(newIndividualPrice * count.truncate());
 
     updateReceiptTotalPrice(receiptIndex);
+
+
+    updateSettlementItemSplitPrice(receiptIndex, receiptItemIndex);
+    await Query(db).updateReceiptItem(selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex]);
     notifyListeners();
   }
 
   void editReceiptItemCount(
-      int newCount, int receiptIndex, int receiptItemIndex) {
+      int newCount, int receiptIndex, int receiptItemIndex) async {
     double individualPrice = selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex].individualPrice;
 
@@ -222,11 +226,15 @@ class MainViewModel extends ChangeNotifier {
         priceToString.format(newCount * individualPrice.truncate());
 
     updateReceiptTotalPrice(receiptIndex);
+
+
+    updateSettlementItemSplitPrice(receiptIndex, receiptItemIndex);
+    await Query(db).updateReceiptItem(selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex]);
     notifyListeners();
   }
 
   void editReceiptItemPrice(
-      double newPrice, int receiptIndex, int receiptItemIndex) {
+      double newPrice, int receiptIndex, int receiptItemIndex) async {
     selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex].price = newPrice;
     int count = selectedSettlement
@@ -241,6 +249,9 @@ class MainViewModel extends ChangeNotifier {
         priceToString.format(newPrice.truncate());
 
     updateReceiptTotalPrice(receiptIndex);
+
+    updateSettlementItemSplitPrice(receiptIndex, receiptItemIndex);
+    await Query(db).updateReceiptItem(selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex]);
     notifyListeners();
   }
 
@@ -308,9 +319,10 @@ class MainViewModel extends ChangeNotifier {
   }
 
 //Receipt List로 삭제
-  void deleteReceiptList(List<bool> isSelectedReceiptList) {
+  void deleteReceiptList(List<bool> isSelectedReceiptList) async {
     for (int i = isSelectedReceiptList.length - 1; i >= 0; i--) {
       if (isSelectedReceiptList[i]) {
+        await Query(db).deleteReceipt(selectedSettlement.receipts[i].receiptId);
         selectedSettlement.receipts.removeAt(i);
         receiptItemControllerList.removeAt(i);
         selectedReceiptItemIndexList.removeAt(i);
@@ -319,7 +331,7 @@ class MainViewModel extends ChangeNotifier {
     notifyListeners();
   }
   //ReceiptItem과 연관되어 있는 모든 SettlementItem 삭제
-  void deleteSettlementItem(ReceiptItem rcpItem){
+  void deleteSettlementItem(ReceiptItem rcpItem) async {
     rcpItem.paperOwner
         .forEach((key,value) {
       selectedSettlement.settlementPapers.firstWhere(
@@ -328,7 +340,7 @@ class MainViewModel extends ChangeNotifier {
     });
   }
 //ReceiptList에 대해 ReceiptItemList로 삭제
-  void deleteReceiptItemList(List<List<bool>> receiptItems) {
+  void deleteReceiptItemList(List<List<bool>> receiptItems) async {
     for (int i = receiptItems.length - 1; i >= 0; i--) {
       for (int j = receiptItems[i].length - 1; j >= 0; j--) {
         if (receiptItems[i][j]) {
