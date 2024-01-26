@@ -76,7 +76,7 @@ class Query {
       print(e);
       return 0;
     }
-    return 2;
+    return 1;
   }
 
   Future<int> updateMemberName(String newmemberName, String stmPaperId) async {
@@ -91,8 +91,23 @@ class Query {
     return DBReceipt().updateRcp(_db!, rcpName, rcpId);
   }
 
-  Future<int> deleteReceipt(String rcpId) async {
-    return DBReceipt().deleteRcp(_db!, rcpId);
+  Future<int> deleteReceipts(List<String> rcpIds) async {
+    var res;
+    try {
+        res = await _db!.transaction((txn) async {
+          rcpIds.forEach((rcpId) async {
+            await DBReceipt().deleteRcpTxn(txn, rcpId);
+          });
+
+      });
+    }
+    catch (e) {
+      print(e);
+      return 0;
+    }
+
+    return 1;
+
   }
 
   Future<int> createReceiptItem(String rcpId, ReceiptItem rcpItem) async {
@@ -103,8 +118,24 @@ class Query {
     return DBReceiptItem().updateReceiptItem(_db!, rcpItem);
   }
 
-  Future<int> deleteReceiptItem(String rcpItemId) async {
-   return DBReceiptItem().deleteReceiptItem(_db!, rcpItemId);
+  Future<int> deleteReceiptItems(List<String> rcpItemIds) async {
+
+    var res;
+    try {
+        res = await _db!.transaction((txn) async {
+          rcpItemIds.forEach((rcpItemId) async {
+            await DBReceiptItem().deleteReceiptItemTxn(txn, rcpItemId);
+          });
+
+      });
+    }
+    catch (e) {
+      print(e);
+      return 0;
+    }
+
+    return 1;
+
   }
 
   //정산 매칭 시의 쿼리들

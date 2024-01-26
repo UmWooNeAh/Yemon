@@ -23,5 +23,9 @@ class DBReceipt {
     return await db!.rawDelete('DELETE FROM Receipt WHERE receiptId = ?', [rcpId]);
   }
 
+  Future<int> deleteRcpTxn(Transaction txn, String rcpId) async {
+    return await txn.rawDelete('DELETE FROM Receipt WHERE receiptId = ?', [rcpId]);
+  }
+
 
 }
