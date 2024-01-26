@@ -337,14 +337,16 @@ void editSettlementName(String newName, int index) async {
 
 //Receipt List로 삭제
   void deleteReceiptList(List<bool> isSelectedReceiptList) async {
+    List<String> receiptIds = [];
     for (int i = isSelectedReceiptList.length - 1; i >= 0; i--) {
       if (isSelectedReceiptList[i]) {
-        await Query(db).deleteReceipt(selectedSettlement.receipts[i].receiptId);
+        receiptIds.add(selectedSettlement.receipts[i].receiptId);
         selectedSettlement.receipts.removeAt(i);
         receiptItemControllerList.removeAt(i);
         selectedReceiptItemIndexList.removeAt(i);
       }
     }
+    await Query(db).deleteReceiptItems(receiptIds);
     notifyListeners();
   }
 
