@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'modeluuid.dart';
 
 class SqlFliteDB {
   Database? _db;

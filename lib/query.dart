@@ -7,10 +7,10 @@ import 'package:sqlite_test/DB/db_settlement.dart';
 import 'package:sqlite_test/DB/db_settlementitem.dart';
 import 'package:sqlite_test/DB/db_settlementpaper.dart';
 import 'DB/savepoint.dart';
-import 'Model/Receipt.dart';
-import 'Model/ReceiptItem.dart';
-import 'Model/SettlementItem.dart';
-import 'Model/SettlementPaper.dart';
+import 'Model/receipt.dart';
+import 'Model/receipt_item.dart';
+import 'Model/settlement_item.dart';
+import 'Model/settlementpaper.dart';
 import 'Model/settlement.dart';
 
 class Query {

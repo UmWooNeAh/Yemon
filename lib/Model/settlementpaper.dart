@@ -1,6 +1,5 @@
 import 'package:uuid/uuid.dart';
-
-import 'SettlementItem.dart';
+import 'settlement_item.dart';
 
 class SettlementPaper{
   String settlementPaperId = "";
@@ -11,4 +10,6 @@ class SettlementPaper{
   SettlementPaper(){
     settlementPaperId = const Uuid().v4();
   }
+
+  
 }
