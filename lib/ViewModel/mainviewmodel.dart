@@ -239,8 +239,8 @@ class MainViewModel extends ChangeNotifier {
   void updateSettlementItemSplitPrice(int receiptIndex, int itemIndex) {
     double splitPrice = selectedSettlement
             .receipts[receiptIndex].receiptItems[itemIndex].price /
-        selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex].count;
-
+        selectedSettlement.receipts[receiptIndex]
+            .receiptItems[itemIndex].paperOwner.length;
     selectedSettlement.receipts[receiptIndex].receiptItems[itemIndex].paperOwner
         .forEach((key, value) {
       selectedSettlement.settlementPapers
@@ -308,12 +308,21 @@ class MainViewModel extends ChangeNotifier {
     }
     notifyListeners();
   }
-
+  //ReceiptItem과 연관되어 있는 모든 SettlementItem 삭제
+  void deleteSettlementItem(ReceiptItem rcpItem){
+    rcpItem.paperOwner
+        .forEach((key,value) {
+      selectedSettlement.settlementPapers.firstWhere(
+              (element) => element.settlementPaperId == key)
+          .settlementItems.removeWhere((element) => element.hashCode == value);
+    });
+  }
 //ReceiptList에 대해 ReceiptItemList로 삭제
   void deleteReceiptItemList(List<List<bool>> receiptItems) {
     for (int i = receiptItems.length - 1; i >= 0; i--) {
       for (int j = receiptItems[i].length - 1; j >= 0; j--) {
         if (receiptItems[i][j]) {
+          deleteSettlementItem(selectedSettlement.receipts[i].receiptItems[j]);
           selectedSettlement.receipts[i].receiptItems.removeAt(j);
           receiptItemControllerList[i].removeAt(j);
           selectedReceiptItemIndexList[i].removeAt(j);
