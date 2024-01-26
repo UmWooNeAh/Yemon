@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
-import '../Model/ReceiptItem.dart';
+import '../Model/receipt_item.dart';
 
 class DBReceiptItem {
 

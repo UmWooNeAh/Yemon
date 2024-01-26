@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqlite_test/DB/sqlflite_db.dart';
 import 'package:sqlite_test/shared_tool.dart';
 import '../Model/receipt.dart';
 import '../Model/receipt_item.dart';
@@ -10,6 +12,7 @@ import '../Model/settlementpaper.dart';
 final mainProvider = ChangeNotifierProvider((ref) => MainViewModel());
 
 class MainViewModel extends ChangeNotifier {
+  var db = SqlFliteDB().database;
   List<Settlement> settlementList = [];
   Settlement selectedSettlement = Settlement();
 
@@ -336,6 +339,7 @@ class MainViewModel extends ChangeNotifier {
     settlementList.insert(0, Settlement());
     selectedSettlement = settlementList[0];
     addMember("나");
+    
     notifyListeners();
   }
 
