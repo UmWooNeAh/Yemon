@@ -57,6 +57,14 @@ class _SettlementMatchingState extends ConsumerState<SettlementMatching> {
         const CustomBottomSheet(
           childWidget: MenuSheet(),
         ),
+        Positioned(
+          bottom: 0,
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: 101,
+            color: basic[0],
+          ),
+        ),
         const Positioned(bottom: 0, child: GroupMembers()),
       ],
     );
@@ -80,59 +88,82 @@ class GroupMembers extends ConsumerWidget {
             decoration: BoxDecoration(
               color: basic[1],
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
               ),
               boxShadow: [
                 BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 1,
-                    spreadRadius: 3),
+                  color: basic[6],
+                  blurRadius: 5,
+                ),
               ],
             ),
             child: SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      const Text(
-                        "정산에 참여하는 사람",
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
+                  GestureDetector(
+                    onTap: () => sProvider.toggleMemberDetail(),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: basic[1],
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
                         ),
                       ),
-                      SizedBox(width: size.width * 0.2),
-                      OutlinedButton(
-                        onPressed: () {
-                          provider.changeAllMember(!provider.selectedMemberIndexList.contains(true));
-                        },
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: BorderSide(
-                              color: provider.selectedMemberIndexList.contains(true) ? basic[2] : basic[8],
-                              width: 1.5,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 20),
+                            child: const Text(
+                              "정산에 참여하는 사람",
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                          backgroundColor: Colors.white,
-                        ),
-                        child: Center(
-                          child: Text(
-                            provider.selectedMemberIndexList.contains(true)
-                                ? "선택 취소"
-                                : "전체 선택",
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF848484),
+                          Container(
+                            margin: const EdgeInsets.only(top: 10, right: 15),
+                            height: 37,
+                            width: 100,
+                            child: OutlinedButton(
+                              onPressed: () {
+                                provider.changeAllMember(!provider
+                                    .selectedMemberIndexList
+                                    .contains(true));
+                              },
+                              style: OutlinedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  backgroundColor: Colors.white,
+                                  side: BorderSide(
+                                      color: provider.selectedMemberIndexList
+                                              .contains(true)
+                                          ? basic[2]
+                                          : basic[8],
+                                      width: 1.5)),
+                              child: Center(
+                                child: Text(
+                                  provider.selectedMemberIndexList
+                                          .contains(true)
+                                      ? "선택 취소"
+                                      : "전체 선택",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: basic[5],
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                   Container(
                     width: size.width * 0.95,
@@ -160,28 +191,20 @@ class GroupMembers extends ConsumerWidget {
             )),
         Positioned(
           top: 0,
-          left: size.width * 0.5 - 75,
+          left: size.width * 0.5 - 15,
           child: GestureDetector(
-              onTap: () {
-                sProvider.toggleMemberDetail();
-              },
-              child: Container(
-                height: 30,
-                width: 150,
-                color: basic[1],
-                child: Center(
-                  child: SizedBox(
-                    height: 30,
-                    width: 30,
-                    child: FittedBox(
-                      fit: BoxFit.fill,
-                      child: sProvider.showMemberDetail
-                          ? const Icon(Icons.keyboard_arrow_down)
-                          : const Icon(Icons.keyboard_arrow_up),
-                    ),
-                  ),
-                ),
-              )),
+            onTap: () => sProvider.toggleMemberDetail(),
+            child: SizedBox(
+              height: 30,
+              width: 30,
+              child: FittedBox(
+                fit: BoxFit.fill,
+                child: sProvider.showMemberDetail
+                    ? const Icon(Icons.keyboard_arrow_down)
+                    : const Icon(Icons.keyboard_arrow_up),
+              ),
+            ),
+          ),
         )
       ],
     );
@@ -203,13 +226,13 @@ class SingleMember extends ConsumerWidget {
         duration: const Duration(milliseconds: 100),
         height: 35,
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        margin: const EdgeInsets.symmetric(horizontal: 5),
+        margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         decoration: BoxDecoration(
           color: provider.selectedMemberIndexList[index] ? basic[8] : basic[0],
           border: Border.all(
             color:
                 provider.selectedMemberIndexList[index] ? basic[8] : basic[2],
-            width: 2,
+            width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
@@ -225,9 +248,8 @@ class SingleMember extends ConsumerWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: provider.selectedMemberIndexList[index]
-                ? basic[0]
-                : basic[5],
+            color:
+                provider.selectedMemberIndexList[index] ? basic[0] : basic[5],
           ),
         ),
       ),

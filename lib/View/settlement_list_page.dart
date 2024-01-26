@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide BoxShadow, BoxDecoration;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import '../shared_tool.dart';
 import '../theme.dart';
 import '../ViewModel/mainviewmodel.dart';
 
@@ -10,6 +11,11 @@ class EditManagement extends ChangeNotifier {
   bool isAllSelect = false;
   List<bool> isSelected = [];
 
+  void deleteSettlement(){
+    isSelected = List.generate(isSelected.where((element) => element == false).length, (index) => false);
+    notifyListeners();
+  }
+  
   void addSettlement() {
     isSelected.insert(0, false);
     notifyListeners();
@@ -53,12 +59,13 @@ class SettlementListPage extends ConsumerStatefulWidget {
 class _SettlementListPageState extends ConsumerState<SettlementListPage> {
   @override
   Widget build(BuildContext context) {
+    String newName = "";
     final eprovider = ref.watch(editManagementProvider);
     final provider = ref.watch(mainProvider);
     final sizes = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: basic[0],
         elevation: 0,
         title: Row(
           children: [
@@ -120,9 +127,13 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                           Text(
                             "${eprovider.isSelected.where((element) => element == true).length}개 선택됨",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 23,
                               fontWeight: FontWeight.w700,
-                              color: basic[3],
+                              color: eprovider.isSelected
+                                      .where((element) => element == true)
+                                      .isEmpty
+                                  ? basic[3]
+                                  : basic[5],
                             ),
                           ),
                         ],
@@ -131,13 +142,15 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                         child: Text(
                           "최근 정산 목록",
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 25,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
               ),
               Container(
+                height: 50,
+                width: 130,
                 margin: const EdgeInsets.only(right: 20),
                 child: OutlinedButton(
                   onPressed: () {
@@ -151,16 +164,12 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 12),
-                    child: Text(
-                      eprovider.isEdit ? "편집 취소" : "목록 편집",
-                      style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black),
-                    ),
+                  child: Text(
+                    eprovider.isEdit ? "편집 취소" : "목록 편집",
+                    style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black),
                   ),
                 ),
               ),
@@ -248,6 +257,8 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                                                 BorderRadius.circular(10)),
                                       ),
                                       onPressed: () {
+                                        provider.deleteSettlement(eprovider.isSelected);
+                                        eprovider.deleteSettlement();
                                         context.pop();
                                       },
                                       child: Text("정산 삭제",
@@ -318,7 +329,9 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                                             ),
                                           ),
                                           onChanged: (value) {
-                                            setState(() {});
+                                            setState(() {
+                                              newName = value;
+                                            });
                                           },
                                         ),
                                       ],
@@ -363,6 +376,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                                                     BorderRadius.circular(10)),
                                           ),
                                           onPressed: () {
+                                            provider.editSettlementName(newName, eprovider.isSelected.indexOf(true));
                                             context.pop();
                                           },
                                           child: Text("이름 변경",
@@ -419,7 +433,8 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                                       ),
                                     ),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderRadius:
+                                          BorderRadius.circular(10.0),
                                     ),
                                     backgroundColor: basic[0],
                                     actionsAlignment:
@@ -441,7 +456,8 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                                             backgroundColor: basic[0],
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(10)),
+                                                    BorderRadius.circular(
+                                                        10)),
                                           ),
                                           onPressed: () {
                                             context.pop();
@@ -459,9 +475,12 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                                             backgroundColor: basic[7],
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(10)),
+                                                    BorderRadius.circular(
+                                                        10)),
                                           ),
                                           onPressed: () {
+                                            provider.deleteSettlement(eprovider.isSelected);
+                                            eprovider.deleteSettlement();
                                             context.pop();
                                           },
                                           child: Text("정산 삭제",
@@ -474,98 +493,23 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                                   );
                                 });
                           },
-                          child: InkWell(
-                            onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      elevation: 0,
-                                      title: Text(
-                                        "정산의 삭제하면 다시 되돌릴 수 없습니다\n선택한 정산을 삭제하시겠습니까?",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                          color: basic[4],
-                                        ),
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      backgroundColor: basic[0],
-                                      actionsAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      actionsPadding: const EdgeInsets.all(10),
-                                      actions: [
-                                        Container(
-                                          height: 55,
-                                          width: sizes.width * 0.35,
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: basic[2], width: 1.5),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              elevation: 0,
-                                              backgroundColor: basic[0],
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10)),
-                                            ),
-                                            onPressed: () {
-                                              context.pop();
-                                            },
-                                            child: Text("취소",
-                                                style:
-                                                    TextStyle(color: basic[5])),
-                                          ),
-                                        ),
-                                        Container(
-                                          height: 55,
-                                          width: sizes.width * 0.35,
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: basic[7],
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10)),
-                                            ),
-                                            onPressed: () {
-                                              context.pop();
-                                            },
-                                            child: Text("정산 삭제",
-                                                style: TextStyle(
-                                                    color: basic[0],
-                                                    fontSize: 15)),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  });
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(
-                                  left: 40, right: 40, top: 10, bottom: 10),
-                              child: const SingleChildScrollView(
-                                physics: NeverScrollableScrollPhysics(),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.delete),
-                                    Text(
-                                      "삭제",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                          child: Container(
+                            margin: const EdgeInsets.only(
+                                left: 40, right: 40, top: 10, bottom: 10),
+                            child: const SingleChildScrollView(
+                              physics: NeverScrollableScrollPhysics(),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.delete),
+                                  Text(
+                                    "삭제",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -604,10 +548,7 @@ class SingleSettlement extends ConsumerWidget {
     final provider = ref.watch(mainProvider);
     final size = MediaQuery.of(context).size;
     return Container(
-      color: editManagement.isSelected[index]
-          ? const Color(0xFFD9D9D9).withOpacity(0.85)
-          : Colors.transparent,
-      //margin: const EdgeInsets.only(left:20,right:20),
+      color: editManagement.isSelected[index] ? basic[1] : basic[0],
       width: size.width - 40,
       child: Column(
         children: [
@@ -617,13 +558,15 @@ class SingleSettlement extends ConsumerWidget {
             child: Row(
               children: [
                 AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  width: editManagement.isEdit ? size.width * 0.1 : 0,
-                  child: Transform.scale(
-                    scale: 1.6,
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 200),
-                      opacity: editManagement.isEdit ? 1 : 0,
+                  duration: const Duration(milliseconds: 100),
+                  margin: EdgeInsets.symmetric(
+                      horizontal: editManagement.isEdit ? 10 : 0),
+                  width: editManagement.isEdit ? 30 : 0,
+                  height: 30,
+                  child: Visibility(
+                    visible: editManagement.isEdit,
+                    child: Transform.scale(
+                      scale: 1.3,
                       child: Checkbox(
                         value: editManagement.isSelected[index],
                         onChanged: (value) {
@@ -656,61 +599,87 @@ class SingleSettlement extends ConsumerWidget {
                     editManagement.toggleSelect(index);
                   },
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    width: size.width * 0.7,
-                    height: size.height * 0.1,
-                    margin: const EdgeInsets.only(
-                        left: 20, right: 40, top: 25, bottom: 10),
+                    duration: const Duration(milliseconds: 100),
+                    width: size.width - (editManagement.isEdit ? 90 : 70),
+                    height: 100,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          provider.settlementList[index].settlementName,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
+                        Container(
+                          height: 35,
+                          width: size.width - 70,
+                          margin: const EdgeInsets.only(top: 5),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              provider.settlementList[index].settlementName,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
                         ),
-                        Flexible(
-                          child: Container(
-                            margin: const EdgeInsets.only(top: 5, bottom: 5),
-                            child: Row(
+                        Container(
+                          height: 25,
+                          width: size.width - 90,
+                          margin: const EdgeInsets.only(bottom: 5),
+                          child: RichText(
+                            overflow: TextOverflow.ellipsis,
+                            text: TextSpan(
                               children: [
-                                Text(
-                                  "${provider.settlementList[index].settlementPapers.length} 명",
+                                TextSpan(
+                                  text:
+                                      "${provider.settlementList[index].settlementPapers.length} 명 : ",
                                   style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                       color: Colors.black),
                                 ),
-                                Row(
-                                  children: List.generate(
+                                TextSpan(
+                                  text: List.generate(
                                       provider.settlementList[index]
-                                          .settlementPapers.length, (pindex) {
-                                    return Text(provider
-                                              .settlementList[index]
-                                              .settlementPapers[pindex]
-                                              .memberName,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: basic[3],
-                                      ),
-                                    );
-                                  }),
+                                          .settlementPapers.length,
+                                      (pindex) => provider
+                                          .settlementList[index]
+                                          .settlementPapers[pindex]
+                                          .memberName).join(", "),
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: basic[3],
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                         ),
-                        Text(
-                          provider.settlementList[index].date
-                              .toString()
-                              .substring(0, 10),
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: basic[3]),
+                        SizedBox(
+                          width: size.width - 70,
+                          height: 25,
+                          child: Row(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(top:2 ),
+                                child: Text(
+                                  provider.settlementList[index].date
+                                      .toString()
+                                      .substring(0, 10),
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w400,
+                                      color: basic[3]),
+                                ),
+                              ),
+                              Text(
+                                "  ${intToWeekDay(provider.settlementList[index].date.weekday)}",
+                                style: TextStyle(
+                                    color: basic[3],
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w400),
+                              )
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -720,10 +689,10 @@ class SingleSettlement extends ConsumerWidget {
             ),
           ),
           Container(
-              margin: const EdgeInsets.only(right: 20),
-              color: basic[2],
-              height: 1,
-              width: size.width)
+            color: basic[2],
+            height: 1,
+            width: size.width,
+          )
         ],
       ),
     );

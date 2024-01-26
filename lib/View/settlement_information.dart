@@ -107,44 +107,165 @@ class _SettlementInformationState extends ConsumerState<SettlementInformation> {
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          const SettlementMember(),
-          Expanded(
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 100),
-              decoration: BoxDecoration(
-                color: basic[1],
-                boxShadow: [
-                  BoxShadow(
-                    color: basic[2],
-                    blurRadius: 5,
-                    spreadRadius: -5,
-                    offset: const Offset(0, 5),
-                    inset: true,
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Container(
-                      height: 60,
-                      width: size.width,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                      ),
-                      margin: const EdgeInsets.only(top: 5),
-                      child: const ReceiptUpperRow()),
-                  const Expanded(
-                    child: ReceiptList(),
-                  ),
-                ],
+      child: Container(
+        color: basic[0],
+        child: Column(
+          children: [
+            const SettlementMember(),
+            Expanded(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 100),
+                decoration: BoxDecoration(
+                  color: basic[1],
+                  boxShadow: [
+                    BoxShadow(
+                      color: basic[2],
+                      blurRadius: 5,
+                      spreadRadius: -5,
+                      offset: const Offset(0, 5),
+                      inset: true,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                        height: 60,
+                        width: size.width,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                        ),
+                        margin: const EdgeInsets.only(top: 5),
+                        child: const ReceiptUpperRow()),
+                    const Expanded(
+                      child: ReceiptList(),
+                    ),
+                  ],
+                ),
               ),
             ),
+            GestureDetector(
+              onTap: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return const RealDeletePopUp();
+                    });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 100),
+                width: size.width,
+                height: rprovider.deleteMode ? 60 : 0,
+                decoration: BoxDecoration(
+                  color: basic[0],
+                  boxShadow: [
+                    BoxShadow(
+                      color: basic[6],
+                      blurRadius: 7,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 0),
+                    ),
+                  ],
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 25,
+                        width: 25,
+                        margin: const EdgeInsets.only(top: 10, bottom: 5),
+                        child: FittedBox(
+                          fit: BoxFit.fill,
+                          child: Image.asset('assets/Bin.png'),
+                        ),
+                      ),
+                      const Text("삭제"),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class RealDeletePopUp extends ConsumerStatefulWidget {
+  const RealDeletePopUp({super.key});
+
+  @override
+  ConsumerState<RealDeletePopUp> createState() => _RealDeletePopUpState();
+}
+
+class _RealDeletePopUpState extends ConsumerState<RealDeletePopUp> {
+  @override
+  Widget build(BuildContext context) {
+    final rprovider = ref.watch(receiptProvider);
+    final mprovider = ref.watch(mainProvider);
+    Size size = MediaQuery.of(context).size;
+    return AlertDialog(
+      elevation: 0,
+      title: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "삭제를 진행하면 다시 되돌릴 수 없습니다.",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: basic[4],
+            ),
           ),
-          GestureDetector(
-            onTap: () {
+          Text(
+            "선택한 항목을 삭제하시겠습니까?",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: basic[4],
+            ),
+          ),
+        ],
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      backgroundColor: basic[0],
+      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actionsPadding: const EdgeInsets.all(10),
+      actions: [
+        Container(
+          height: 55,
+          width: size.width * 0.35,
+          decoration: BoxDecoration(
+            border: Border.all(color: basic[2], width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: basic[0],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              context.pop();
+            },
+            child: Text("취소", style: TextStyle(color: basic[5])),
+          ),
+        ),
+        Container(
+          height: 55,
+          width: size.width * 0.35,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: basic[7],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
               mprovider.deleteReceiptItemList(rprovider.isReceiptItemSelected);
               mprovider.deleteReceiptList(rprovider.isReceiptSelected);
               rprovider.deleteSelected();
@@ -154,43 +275,14 @@ class _SettlementInformationState extends ConsumerState<SettlementInformation> {
                       mprovider.selectedSettlement.receipts.length,
                       (index) => mprovider.selectedSettlement.receipts[index]
                           .receiptItems.length));
+              ref.watch(settlementMatchingProvider).selectReceipt(-1);
+              context.pop();
             },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 100),
-              width: size.width,
-              height: rprovider.deleteMode ? 60 : 0,
-              decoration: BoxDecoration(
-                color: basic[0],
-                boxShadow: [
-                  BoxShadow(
-                    color: basic[6],
-                    blurRadius: 7,
-                    spreadRadius: 2,
-                    offset: const Offset(0, 0),
-                  ),
-                ],
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 25,
-                      width: 25,
-                      margin: const EdgeInsets.only(top: 10, bottom: 5),
-                      child: FittedBox(
-                        fit: BoxFit.fill,
-                        child: Image.asset('assets/Bin.png'),
-                      ),
-                    ),
-                    Text("삭제"),
-                  ],
-                ),
-              ),
-            ),
+            child:
+                Text("항목 삭제", style: TextStyle(color: basic[0], fontSize: 15)),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -204,7 +296,7 @@ class SettlementMember extends ConsumerWidget {
     return Container(
       width: size.width,
       height: 150,
-      margin: const EdgeInsets.symmetric(vertical: 5),
+      margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: basic[1],
@@ -661,9 +753,15 @@ class ReceiptUpperRow extends ConsumerWidget {
             width: 130,
             height: 45,
             decoration: BoxDecoration(
-              color: basic[0],
+              color: mprovider.selectedSettlement.receipts.isEmpty
+                  ? basic[2]
+                  : basic[0],
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: basic[8], width: 1.5),
+              border: Border.all(
+                  color: mprovider.selectedSettlement.receipts.isEmpty
+                      ? basic[2]
+                      : basic[8],
+                  width: 1.5),
               boxShadow: [
                 BoxShadow(
                   color: basic[3],
@@ -673,7 +771,15 @@ class ReceiptUpperRow extends ConsumerWidget {
                 ),
               ],
             ),
-            child: const Center(child: Text("항목 삭제")),
+            child: Center(
+                child: Text(
+              "항목 삭제",
+              style: TextStyle(
+                  color: mprovider.selectedSettlement.receipts.isEmpty
+                      ? basic[3]
+                      : basic[5],
+                  fontSize: 17),
+            )),
           ),
         ),
       ],
@@ -740,16 +846,18 @@ class IncludedReceipt extends ConsumerWidget {
                   child: Visibility(
                     visible: rprovider.deleteMode,
                     child: Checkbox(
-                      value: rprovider.isReceiptSelected[index],
+                      value: index < rprovider.isReceiptItemSelected.length
+                          ? rprovider.isReceiptSelected[index]
+                          : false,
                       onChanged: (value) {
                         rprovider.selectReceipt(index);
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      checkColor: Colors.white,
+                      checkColor: basic[0],
                       activeColor: basic[8],
-                      side: BorderSide(color: basic[1]),
+                      side: BorderSide(color: basic[2], width: 1.5),
                     ),
                   ),
                 ),
@@ -1036,7 +1144,7 @@ class IncludedReceiptItem extends ConsumerWidget {
                         ),
                         checkColor: Colors.white,
                         activeColor: basic[8],
-                        side: BorderSide(color: basic[1]),
+                        side: BorderSide(color: basic[2], width: 1.5),
                       ),
                     ),
                   ),
@@ -1148,45 +1256,54 @@ class IncludedReceiptItem extends ConsumerWidget {
                       textAlign: TextAlign.right,
                     )),
                 SizedBox(
-                    height: 30,
-                    width: (size.width - 60) * 0.25,
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        mprovider
-                            .receiptItemControllerList[receiptIndex][index][3]
-                            .text,
-                        style: TextStyle(
-                          color: basic[5],
-                          fontSize: 17,
-                        ),
+                  height: 30,
+                  width: (size.width - 60) * 0.25,
+                  // child: Align(
+                  //   alignment: Alignment.centerRight,
+                  //   child: Text(
+                  //     mprovider
+                  //         .receiptItemControllerList[receiptIndex][index][3]
+                  //         .text,
+                  //     style: TextStyle(
+                  //       color: basic[5],
+                  //       fontSize: 17,
+                  //     ),
+                  //   ),
+                  // )
+                  child: TextField(
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      border: UnderlineInputBorder(
+                        borderSide: BorderSide(color: basic[0]),
                       ),
-                    )
-                    // child: TextField(
-                    //   decoration: InputDecoration(
-                    //     border: UnderlineInputBorder(
-                    //       borderSide: BorderSide(color: basic[5]),
-                    //     ),
-                    //     focusedBorder: UnderlineInputBorder(
-                    //       borderSide: BorderSide(color: basic[8]),
-                    //     ),
-                    //     enabledBorder: UnderlineInputBorder(
-                    //       borderSide: BorderSide(color: basic[5]),
-                    //     ),
-                    //   ),
-                    //   controller: mprovider
-                    //       .receiptItemControllerList[receiptIndex][index][3],
-                    //   onChanged: (value) {
-                    //     if (value == '') {
-                    //       value = '0';
-                    //     }
-                    //     value = value.replaceAll(RegExp(r'[^0-9]'), '');
-                    //     mprovider.editReceiptItemPrice(
-                    //         double.parse(value), receiptIndex, index);
-                    //   },
-                    //   textAlign: TextAlign.right,
-                    // ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: basic[0]),
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: basic[0]),
+                      ),
                     ),
+                    controller: mprovider
+                        .receiptItemControllerList[receiptIndex][index][3],
+                    onChanged: (value) {
+                      if (value == '') {
+                        value = '0';
+                      }
+                      value = value.replaceAll(RegExp(r'[^0-9]'), '');
+                      mprovider.editReceiptItemPrice(
+                          double.parse(value), receiptIndex, index);
+                    },
+                    buildCounter: (context,
+                        {required currentLength,
+                        required isFocused,
+                        maxLength}) {
+                      return const SizedBox.shrink();
+                    },
+                    maxLength: 10,
+                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                    textAlign: TextAlign.right,
+                  ),
+                ),
               ],
             ),
           );
@@ -1267,7 +1384,22 @@ class AddReceipt extends ConsumerWidget {
             rprovider.addReceipt();
             mprovider.addReceipt();
           },
-          child: const Center(child: Text("영수증 추가")),
+          child: const Center(
+              child: SizedBox(
+            width: 100,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: FittedBox(
+                        fit: BoxFit.fill,
+                        child: Icon(Icons.add_circle_outline_outlined))),
+                Text(" 영수증 추가"),
+              ],
+            ),
+          )),
         ),
       ),
     );

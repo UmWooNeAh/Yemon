@@ -37,6 +37,9 @@ class _SettlementManagementPageState
         onTap: (index) {
           setState(() {
             selectedIndex = index;
+            if (selectedIndex == 2){
+              ref.watch(mainProvider).updateMemberTotalPrice();
+            }
           });
         },
         items: const [
@@ -180,7 +183,7 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
             ),
             onPressed: () {
               final provider = ref.watch(mainProvider);
-              provider.editSettlementName(newName);
+              provider.editSelectedSettlementName(newName);
               context.pop();
             },
             child:

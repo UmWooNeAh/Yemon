@@ -15,98 +15,167 @@ class MenuSheet extends ConsumerWidget {
     final size = MediaQuery.of(context).size;
     final mProvider = ref.watch(mainProvider);
     final sProvider = ref.watch(settlementMatchingProvider);
-    return Container(
-      child: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        child: Column(
+    return Column(
+      children: [
+        Container(
+          width: size.width * 0.15,
+          height: 3,
+          margin: const EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+              color: basic[2], borderRadius: BorderRadius.circular(10)),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                const Text(
-                  "메뉴 목록",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
+            Container(
+              width: size.width - 120 - 30 - 30,
+              margin: const EdgeInsets.symmetric(horizontal: 15),
+              child: Text(
+                sProvider.presentReceiptIndex == -1
+                    ? "영수증 모아보기 "
+                    : mProvider.selectedSettlement
+                        .receipts[sProvider.presentReceiptIndex].receiptName,
+                        overflow: TextOverflow.fade,
+                        softWrap: false,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color:
+                      sProvider.presentReceiptIndex == -1 ? basic[8] : basic[5],
                 ),
-                SizedBox(width: size.width * 0.15),
-                Container(
-                  width: 120,
-                  height: 45,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      // print("receipt item");
-                      // mProvider.selectedSettlement.receipts[sProvider.presentReceiptIndex].receiptItems.forEach((element) {
-                      //   print(element.receiptItemName);
-                      //   element.paperOwner.forEach((key, value) {
-                      //     print("${key} : ${value}");
-                      //   });
-                      // });
-                      // print("stmPaper");
-                      // mProvider.selectedSettlement.settlementPapers.forEach((paper) {
-                      //   print(paper.memberName);
-                      //   paper.settlementItems.forEach((element){
-                      //     print("${element.name} ${element.splitPrice}");
-                      //   });
-                      // });
-                    },
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      backgroundColor: basic[1],
-                    ),
-                    child: Center(
-                      child: Text(
-                        "전체 매칭",
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: basic[2],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-            SizedBox(
-                height:
-                    mProvider.selectedSettlement.receipts.isEmpty ? 50 : 10),
-            sProvider.presentReceiptIndex == -1
-                ? Container(
-                    height: 50,
-                    width: 50,
-                    color: Colors.red,
-                    child: Text("전체영수증 만들어줘"),
-                  )
-                : (mProvider.selectedSettlement.receipts.isEmpty
-                    ? const Text("메뉴가 없습니다.",
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ))
-                    : SingleChildScrollView(
-                        child: Column(
-                            children: List.generate(
-                        mProvider
-                            .selectedSettlement
-                            .receipts[sProvider.presentReceiptIndex]
-                            .receiptItems
-                            .length,
-                        (index) => SingleMenu(index: index),
-                      ))))
+            Container(
+              width: 120,
+              height: 45,
+              margin: const EdgeInsets.symmetric(horizontal: 15),
+              child: ElevatedButton(
+                onPressed: () {
+                  for (int i = 0;
+                      i <
+                          mProvider
+                              .selectedReceiptItemIndexList[
+                                  sProvider.presentReceiptIndex]
+                              .length;
+                      i++) {
+                    mProvider.selectReceiptItem(
+                        sProvider.presentReceiptIndex, i);
+                  }
+                  mProvider.batchMatching(sProvider.presentReceiptIndex);
+                  // print("receipt item");
+                  // mProvider.selectedSettlement
+                  //     .receipts[sProvider.presentReceiptIndex].receiptItems
+                  //     .forEach((element) {
+                  //   print(element.receiptItemName);
+                  //   element.paperOwner.forEach((key, value) {
+                  //     print("${key} : ${value}");
+                  //   });
+                  // });
+                  // print("stmPaper");
+                  // mProvider.selectedSettlement.settlementPapers
+                  //     .forEach((paper) {
+                  //   print(paper.memberName);
+                  //   paper.settlementItems.forEach((element) {
+                  //     print("${element.name} ${element.splitPrice}");
+                  //   });
+                  // });
+                },
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  backgroundColor:
+                      mProvider.selectedMemberIndexList.contains(true)
+                          ? basic[8]
+                          : basic[2],
+                ),
+                child: Center(
+                  child: Text(
+                    "전체 매칭",
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      color: mProvider.selectedMemberIndexList.contains(true)
+                          ? basic[0]
+                          : basic[3],
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
-      ),
+        SizedBox(
+            height: mProvider.selectedSettlement.receipts.isEmpty ? 50 : 10),
+        sProvider.presentReceiptIndex == -1
+            ? Expanded(
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: mProvider.selectedSettlement.receipts.length,
+                    itemBuilder: (context, receiptIndex) {
+                      return Column(
+                        children: [
+                          Container(
+                            height: 50,
+                            width: size.width,
+                            padding: const EdgeInsets.only(left: 20, top: 5),
+                            child: Text(
+                              mProvider.selectedSettlement
+                                  .receipts[receiptIndex].receiptName,
+                              style: TextStyle(
+                                color: basic[3],
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          Column(
+                              children: List.generate(
+                            mProvider.selectedSettlement.receipts[receiptIndex]
+                                .receiptItems.length,
+                            (index) => SingleMenu(
+                              index: index,
+                              receiptIndex: receiptIndex,
+                            ),
+                          )),
+                        ],
+                      );
+                    }),
+              )
+            : (mProvider.selectedSettlement.receipts.isEmpty
+                ? const Text("메뉴가 없습니다.",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ))
+                : Expanded(
+                    child: SingleChildScrollView(
+                        child: Column(
+                            children: List.generate(
+                      mProvider
+                          .selectedSettlement
+                          .receipts[sProvider.presentReceiptIndex]
+                          .receiptItems
+                          .length,
+                      (index) => SingleMenu(
+                        index: index,
+                        receiptIndex: sProvider.presentReceiptIndex,
+                      ),
+                    ))),
+                  ))
+      ],
     );
   }
 }
 
 class SingleMenu extends ConsumerStatefulWidget {
+  final int receiptIndex;
   final int index;
-  const SingleMenu({super.key, required this.index});
+  const SingleMenu(
+      {super.key, required this.index, required this.receiptIndex});
 
   @override
   ConsumerState<SingleMenu> createState() => _SingleMenuState();
@@ -118,63 +187,60 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
     final size = MediaQuery.of(context).size;
     final sProvider = ref.watch(settlementMatchingProvider);
     final mProvider = ref.watch(mainProvider);
-    final rcpItem = mProvider.selectedSettlement
-        .receipts[sProvider.presentReceiptIndex].receiptItems[widget.index];
+    final rcpItem = mProvider.selectedSettlement.receipts[widget.receiptIndex]
+        .receiptItems[widget.index];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         InkWell(
           onTap: () {
-            mProvider.selectReceiptItem(sProvider.presentReceiptIndex, widget.index);
             if (mProvider.selectedMemberIndexList.contains(true)) {
-              mProvider.batchMatching(sProvider.presentReceiptIndex);
+              mProvider.selectReceiptItem(widget.receiptIndex, widget.index);
+              mProvider.batchMatching(widget.receiptIndex);
             } else {
               sProvider.toggleMatchingDetail(widget.index);
             }
           },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            height: sProvider.showMatchingDetail == widget.index ? 50 : 50,
-            child: Column(
+          child: Container(
+            height: 60,
+            width: size.width - 40,
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 40),
-                      width: size.width * 0.25,
-                      child: Text(
+                Container(
+                  width: (size.width - 80) * 0.6,
+                  margin: const EdgeInsets.only(left: 20),
+                  child: Row(
+                    children: [
+                      Text(
                         rcpItem.receiptItemName,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontSize: 17,
+                          fontSize: 19,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ),
-                    Container(
-                      //margin: const EdgeInsets.only(right:20,left:10),
-                      width: size.width * 0.25,
-                      child: Text(
-                        "${mProvider.selectedSettlement.receipts[sProvider.presentReceiptIndex].receiptItems[widget.index].paperOwner.length} 명",
+                      Text(
+                        "    ${mProvider.selectedSettlement.receipts[widget.receiptIndex].receiptItems[widget.index].paperOwner.length} 명",
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 17,
                           fontWeight: FontWeight.w600,
                           color: basic[2],
                         ),
                       ),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: (size.width - 80) * 0.4,
+                  margin: const EdgeInsets.only(right: 20),
+                  child: Text(
+                    "${priceToString.format(rcpItem.price)} 원",
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.w600,
                     ),
-                    Container(
-                      width: size.width * 0.3,
-                      child: Text(
-                        "${priceToString.format(rcpItem.price)} 원",
-                        textAlign: TextAlign.right,
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),
@@ -182,106 +248,181 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
         ),
         AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
+          curve: Curves.decelerate,
           width: size.width,
-          height: sProvider.showMatchingDetail == widget.index ? 120 : 0,
+          height: sProvider.showMatchingDetail == widget.index ? 170 : 0,
           color: basic[1],
-          margin: const EdgeInsets.symmetric(horizontal: 20),
-          child: ClipRect(
-            child: Wrap(
-              children: List.generate(
-                  mProvider
-                      .selectedSettlement
-                      .receipts[sProvider.presentReceiptIndex]
-                      .receiptItems[widget.index]
-                      .paperOwner
-                      .length,
-                  (idx) => SingleSettlementMember(
-                      stmPaperId: mProvider
-                          .selectedSettlement
-                          .receipts[sProvider.presentReceiptIndex]
-                          .receiptItems[widget.index]
-                          .paperOwner
-                          .keys
-                          .toList()[idx],
-                      receiptItemIndex: widget.index)),
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+          child: SingleChildScrollView(
+            physics: const NeverScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.decelerate,
+                  width: size.width,
+                  height:
+                      sProvider.showMatchingDetail == widget.index ? 140 : 0,
+                  child: SingleChildScrollView(
+                    child: ClipRect(
+                      child: Wrap(
+                        children: List.generate(
+                            mProvider
+                                .selectedSettlement
+                                .receipts[widget.receiptIndex]
+                                .receiptItems[widget.index]
+                                .paperOwner
+                                .length,
+                            (idx) => SingleSettlementItemMember(
+                                  stmPaperId: mProvider
+                                      .selectedSettlement
+                                      .receipts[widget.receiptIndex]
+                                      .receiptItems[widget.index]
+                                      .paperOwner
+                                      .keys
+                                      .toList()[idx],
+                                  receiptItemIndex: widget.index,
+                                  receiptIndex: widget.receiptIndex,
+                                )),
+                      ),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    sProvider.toggleMatchingDetail(widget.index);
+                  },
+                  child: Container(
+                    width: size.width,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          height: 1,
+                          width: size.width * 0.2,
+                          color: basic[2],
+                        ),
+                        Text("  접기 ∧  "),
+                        Container(
+                          width: size.width * 0.2,
+                          height: 1,
+                          color: basic[2],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-        const SizedBox(height: 10)
+        Container(
+          height: 1,
+          width: size.width - 40,
+          color: basic[2],
+        ),
       ],
     );
   }
 }
 
-class SingleSettlementMember extends ConsumerWidget {
+class SingleSettlementItemMember extends ConsumerStatefulWidget {
   final String stmPaperId;
+  final int receiptIndex;
   final int receiptItemIndex;
-  const SingleSettlementMember(
-      {Key? key, required this.stmPaperId, required this.receiptItemIndex})
+  const SingleSettlementItemMember(
+      {Key? key,
+      required this.stmPaperId,
+      required this.receiptItemIndex,
+      required this.receiptIndex})
       : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SingleSettlementItemMember> createState() =>
+      _SingleSettlementItemMemberState();
+}
+
+class _SingleSettlementItemMemberState
+    extends ConsumerState<SingleSettlementItemMember> {
+  String stmPaperId = "";
+  int receiptItemIndex = -1;
+  int receiptIndex = -1;
+  double opacity = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    stmPaperId = widget.stmPaperId;
+    receiptItemIndex = widget.receiptItemIndex;
+    receiptIndex = widget.receiptIndex;
+    Future.delayed(const Duration(milliseconds: 1), () {
+      setState(() {
+        opacity = 1;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final sProvider = ref.watch(settlementMatchingProvider);
     final mProvider = ref.watch(mainProvider);
-    return Stack(
-      children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 100),
-          height: 35,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          margin: const EdgeInsets.symmetric(horizontal: 5),
-          decoration: BoxDecoration(
-            color: basic[0],
-            border: Border.all(
-              color: basic[2],
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 1,
-                offset: const Offset(1.5, 1.5),
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 1000),
+      curve: Curves.easeInOutExpo,
+      opacity: opacity,
+      child: Stack(
+        children: [
+          Container(
+            height: 35,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+            decoration: BoxDecoration(
+              color: basic[0],
+              border: Border.all(
+                color: basic[2],
+                width: 1.5,
               ),
-            ],
-            borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 1,
+                  offset: const Offset(1.5, 1.5),
+                ),
+              ],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              mProvider.selectedSettlement.settlementPapers
+                  .firstWhere(
+                      (element) => element.settlementPaperId == stmPaperId)
+                  .memberName,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
           ),
-          child: Column(
-            children: [
-              const SizedBox(height: 5),
-              Text(
-                mProvider.selectedSettlement.settlementPapers
-                    .firstWhere(
-                        (element) => element.settlementPaperId == stmPaperId)
-                    .memberName,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
+          Positioned(
+            right: 0,
+            child: InkWell(
+              onTap: () {
+                mProvider.unmatching(sProvider.presentReceiptIndex,
+                    receiptItemIndex, stmPaperId);
+              },
+              child: Container(
+                width: 15,
+                height: 15,
+                child: FittedBox(
+                  fit: BoxFit.fill,
+                  child: Image.asset('assets/Delete.png'),
                 ),
               ),
-            ],
-          ),
-        ),
-        Positioned(
-          right: 0,
-          child: InkWell(
-            onTap: () {
-              mProvider.unmatching(
-                  sProvider.presentReceiptIndex, receiptItemIndex, stmPaperId);
-            },
-            child: Container(
-              width: 15,
-              height: 15,
-              child: FittedBox(
-                fit: BoxFit.fill,
-                child: Image.asset('assets/Delete.png'),
-              ),
             ),
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 }

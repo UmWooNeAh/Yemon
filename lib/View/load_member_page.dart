@@ -69,19 +69,9 @@ class _LoadMemberPageState extends ConsumerState<LoadMemberPage> {
                 width: size.width,
                 margin: const EdgeInsets.all(20),
                 child: const Text(
-                  "정산에 참여하는 사람 불러오기",
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w300),
+                  "기존 정산에서 정산 인원을 불러옵니다",
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w300),
                 )),
-            Container(
-              width: size.width,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text("생성된 정산에서 정산에서 정산할 사람들을 불러옵니다",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w100,
-                    color: basic[2],
-                  )),
-            ),
             const Expanded(
               child: SettlementList(),
             ),
@@ -171,16 +161,17 @@ class UnitSettlement extends ConsumerWidget {
             lprovider.settlementSelected(index);
           },
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
               color: lprovider.selectedIndex == index ? basic[1] : basic[0],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
+                Container(
                   width: size.width - 80,
                   height: 20,
+                  margin: const EdgeInsets.only(bottom: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

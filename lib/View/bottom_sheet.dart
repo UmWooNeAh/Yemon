@@ -58,10 +58,10 @@ class CustomBottomSheet extends ConsumerWidget {
     if (bprovider.mode == -1) {
       ref
           .read(bottomSheetProvider)
-          .setHeight(size.height * 0.8, size.height * 0.8 - 200);
+          .setHeight(size.height * 0.8 - 100, size.height * 0.8 - 300);
     }
     return Positioned(
-      bottom: 0,
+      bottom: 100,
       child: GestureDetector(
         onVerticalDragUpdate: (details) {
           bprovider.changeHeight(details.delta.dy);
@@ -83,7 +83,7 @@ class CustomBottomSheet extends ConsumerWidget {
               : const Duration(milliseconds: 0),
           height: bprovider.height,
           width: size.width,
-          padding: const EdgeInsets.only(top: 30),
+          padding: const EdgeInsets.only(top: 17),
           decoration: BoxDecoration(
               color: basic[0],
               borderRadius: const BorderRadius.only(
