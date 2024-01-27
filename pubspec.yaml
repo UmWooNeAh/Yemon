@@ -61,13 +61,9 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  uses-material-design: true
   assets:
     - assets/
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
-  uses-material-design: true
-
   fonts:
   - family: NotoSansKR
     fonts:
@@ -87,8 +83,12 @@ flutter:
         weight: 700
       - asset: assets/fonts/NotoSansKR-ExtraBold.ttf
         weight: 800
-      - asset: fonts/NotoSansKR-Black.ttf
+      - asset: assets/fonts/NotoSansKR-Black.ttf
         weight: 900
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+
 
 
   # To add assets to your application, add an assets section, like this:

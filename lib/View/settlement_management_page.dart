@@ -37,17 +37,38 @@ class _SettlementManagementPageState
         onTap: (index) {
           setState(() {
             selectedIndex = index;
-            if (selectedIndex == 2){
+            if (selectedIndex == 2) {
               ref.watch(mainProvider).updateMemberTotalPrice();
             }
           });
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.add), label: "정산 정보 입력"),
+        backgroundColor: basic[0],
+        selectedFontSize: 16,
+        selectedItemColor: basic[5],
+        unselectedItemColor: basic[5],
+        unselectedFontSize: 14,
+        items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.account_balance_sharp), label: "정산 매칭"),
+              icon: Image.asset(
+                'assets/Enter.png',
+                height: 22,
+                width: 22,
+              ),
+              label: "정산 정보 입력"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.adb_outlined), label: "정산 결과"),
+              icon: Image.asset(
+                'assets/Matching.png',
+                height: 22,
+                width: 22,
+              ),
+              label: "정산 매칭"),
+          BottomNavigationBarItem(
+              icon: Image.asset(
+                'assets/Check.png',
+                height: 22,
+                width: 22,
+              ),
+              label: "정산 결과"),
         ],
       ),
     );

@@ -149,11 +149,12 @@ class MainViewModel extends ChangeNotifier {
   }
 
 //특정 인덱스의 정산 이름 수정
-void editSettlementName(String newName, int index) async {
+  void editSettlementName(String newName, int index) async {
     settlementList[index].settlementName = newName;
     await Query(db).updateSettlement(settlementList[index]);
     notifyListeners();
   }
+
 //정산 이름 수정
   void editSelectedSettlementName(String newName) async {
     selectedSettlement.settlementName = newName;
@@ -264,6 +265,18 @@ void editSettlementName(String newName, int index) async {
     updateSettlementItemSplitPrice(receiptIndex, receiptItemIndex);
     await Query(db).updateReceiptItem(selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex]);
+    notifyListeners();
+  }
+
+  // ReceipitItemController에 접근할 때 가장 오른쪽 으로 Cursor 이동
+  void moveReceiptItemControllerCursor(
+      int receiptIndex, int receiptItemIndex, int index) {
+    receiptItemControllerList[receiptIndex][receiptItemIndex][index].selection =
+        TextSelection.fromPosition(TextPosition(
+            offset: receiptItemControllerList[receiptIndex][receiptItemIndex]
+                    [index]
+                .text
+                .length));
     notifyListeners();
   }
 

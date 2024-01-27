@@ -26,7 +26,7 @@ class MainApp extends ConsumerWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'NotoSansKR',
+        // fontFamily: 'NotoSansKR',
         colorScheme: ColorScheme.fromSwatch(
           primarySwatch: Colors.grey,
         ).copyWith(

@@ -128,7 +128,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                           ),
                           const SizedBox(width: 15),
                           Text(
-                            "${eprovider.isSelected.where((element) => element == true).length}명 선택됨",
+                            "${eprovider.isSelected.where((element) => element == true).length}개 선택됨",
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,

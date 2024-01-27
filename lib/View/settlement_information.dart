@@ -55,6 +55,9 @@ class ReceiptInformationViewModel extends ChangeNotifier {
   void selectReceiptItem(int receiptIndex, int itemIndex) {
     isReceiptItemSelected[receiptIndex][itemIndex] =
         !isReceiptItemSelected[receiptIndex][itemIndex];
+    if (!isReceiptItemSelected[receiptIndex][itemIndex]) {
+      isReceiptSelected[receiptIndex] = false;
+    }
     notifyListeners();
   }
 
@@ -336,9 +339,9 @@ class SettlementMember extends ConsumerWidget {
                         boxShadow: [
                           BoxShadow(
                             color: basic[1],
-                            blurRadius: 15,
-                            spreadRadius: -20,
-                            offset: const Offset(-30, 0),
+                            blurRadius: 5,
+                            spreadRadius: -15,
+                            offset: const Offset(-20, 0),
                             inset: true,
                           ),
                         ],
@@ -443,8 +446,14 @@ class MemberList extends ConsumerWidget {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: List.generate(
-            provider.selectedSettlement.settlementPapers.length,
+            provider.selectedSettlement.settlementPapers.length + 1,
             (index) {
+              if (index ==
+                  provider.selectedSettlement.settlementPapers.length) {
+                return const SizedBox(
+                  width: 5,
+                );
+              }
               return IncludedMember(index: index);
             },
           ),
@@ -506,12 +515,21 @@ class IncludedMember extends ConsumerWidget {
             onTap: () {
               mprovider.deleteMember(index);
             },
-            child: SizedBox(
-              width: 20,
-              height: index == 0 ? 0 : 20,
-              child: FittedBox(
-                fit: BoxFit.fill,
-                child: Image.asset('assets/Delete.png'),
+            child: Container(
+              width: 25,
+              height: 25,
+              color: Colors.transparent,
+              // color: Colors.red,
+              child: Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: 15,
+                  height: index == 0 ? 0 : 15,
+                  child: FittedBox(
+                    fit: BoxFit.fill,
+                    child: Image.asset('assets/Delete.png'),
+                  ),
+                ),
               ),
             ),
           ),
@@ -742,6 +760,9 @@ class ReceiptUpperRow extends ConsumerWidget {
             )),
         InkWell(
           onTap: () {
+            if (mprovider.selectedSettlement.receipts.isEmpty) {
+              return;
+            }
             rprovider.setDeleteMode(
                 mprovider.selectedSettlement.receipts.length,
                 List.generate(
@@ -750,8 +771,8 @@ class ReceiptUpperRow extends ConsumerWidget {
                         .receiptItems.length));
           },
           child: Container(
-            width: 130,
-            height: 45,
+            width: 115,
+            height: 40,
             decoration: BoxDecoration(
               color: mprovider.selectedSettlement.receipts.isEmpty
                   ? basic[2]
@@ -760,7 +781,9 @@ class ReceiptUpperRow extends ConsumerWidget {
               border: Border.all(
                   color: mprovider.selectedSettlement.receipts.isEmpty
                       ? basic[2]
-                      : basic[8],
+                      : rprovider.deleteMode
+                          ? basic[2]
+                          : basic[8],
                   width: 1.5),
               boxShadow: [
                 BoxShadow(
@@ -773,12 +796,12 @@ class ReceiptUpperRow extends ConsumerWidget {
             ),
             child: Center(
                 child: Text(
-              "항목 삭제",
+              rprovider.deleteMode ? "삭제 취소" : "항목 삭제",
               style: TextStyle(
                   color: mprovider.selectedSettlement.receipts.isEmpty
                       ? basic[3]
                       : basic[5],
-                  fontSize: 17),
+                  fontSize: 18),
             )),
           ),
         ),
@@ -1169,6 +1192,10 @@ class IncludedReceiptItem extends ConsumerWidget {
                             borderSide: BorderSide(color: basic[5]),
                           ),
                         ),
+                        onTap: () {
+                          mprovider.moveReceiptItemControllerCursor(
+                              receiptIndex, index, 0);
+                        },
                         buildCounter: (context,
                             {required currentLength,
                             required isFocused,
@@ -1188,6 +1215,10 @@ class IncludedReceiptItem extends ConsumerWidget {
                     width: (size.width - 60) * 0.25 - 20,
                     margin: const EdgeInsets.only(left: 20),
                     child: TextField(
+                      onTap: () {
+                        mprovider.moveReceiptItemControllerCursor(
+                            receiptIndex, index, 1);
+                      },
                       decoration: InputDecoration(
                         border: UnderlineInputBorder(
                           borderSide: BorderSide(color: basic[5]),
@@ -1241,6 +1272,10 @@ class IncludedReceiptItem extends ConsumerWidget {
                           maxLength}) {
                         return const SizedBox.shrink();
                       },
+                      onTap: () {
+                        mprovider.moveReceiptItemControllerCursor(
+                            receiptIndex, index, 2);
+                      },
                       controller: mprovider
                           .receiptItemControllerList[receiptIndex][index][2],
                       onChanged: (value) {
@@ -1293,6 +1328,10 @@ class IncludedReceiptItem extends ConsumerWidget {
                       mprovider.editReceiptItemPrice(
                           double.parse(value), receiptIndex, index);
                     },
+                    onTap: () {
+                      mprovider.moveReceiptItemControllerCursor(
+                          receiptIndex, index, 3);
+                    },
                     buildCounter: (context,
                         {required currentLength,
                         required isFocused,
@@ -1329,7 +1368,7 @@ class ReceiptTotalPrice extends ConsumerWidget {
           TextSpan(
             children: [
               const TextSpan(
-                text: "합계 ",
+                text: "합계  ",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -1345,7 +1384,7 @@ class ReceiptTotalPrice extends ConsumerWidget {
                 ),
               ),
               const TextSpan(
-                text: " 원",
+                text: "원",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -1444,14 +1483,15 @@ class SettlementTotalPrice extends ConsumerWidget {
     final provider = ref.watch(mainProvider);
     return Container(
       height: 40,
-      padding: const EdgeInsets.only(right: 10),
+      padding: const EdgeInsets.only(right: 10,),
+      margin: const EdgeInsets.only(bottom: 30),
       child: Align(
         alignment: Alignment.centerRight,
         child: Text.rich(
           TextSpan(
             children: [
               const TextSpan(
-                text: "합계 ",
+                text: "합계  ",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -1461,13 +1501,13 @@ class SettlementTotalPrice extends ConsumerWidget {
                 text: priceToString
                     .format(provider.selectedSettlement.totalPrice.toInt()),
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: basic[8],
                 ),
               ),
               const TextSpan(
-                text: " 원",
+                text: "원",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
