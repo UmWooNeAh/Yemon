@@ -32,6 +32,11 @@ class EditManagement extends ChangeNotifier {
 
   void toggleSelect(int index) {
     isSelected[index] = !isSelected[index];
+    if(isSelected.contains(false)) {
+      isAllSelect = false;
+    } else {
+      isAllSelect = true;
+    }
     notifyListeners();
   }
 
@@ -304,6 +309,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
             provider.addNewSettlement();
             provider.selectSettlement(0);
             eprovider.addSettlement();
+            //provider.settingMainViewModel();
           },
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
@@ -366,6 +372,7 @@ class SingleSettlement extends ConsumerWidget {
                       editManagement.toggleSelect(index);
                     } else {
                       provider.selectSettlement(index);
+                      //provider.settingMainViewModel();
                       context.push('/SettlementManagementPage');
                     }
                   },

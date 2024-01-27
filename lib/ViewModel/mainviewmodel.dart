@@ -26,6 +26,17 @@ class MainViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void settingSelectedSettlement(){
+    selectedReceiptItemIndexList = List.generate(
+        selectedSettlement.receipts.length,
+            (index) => List.generate(
+            selectedSettlement.receipts[index].receiptItems.length,
+                (index) => false));
+
+    selectedMemberIndexList = List.generate(
+        selectedSettlement.settlementPapers.length, (index) => false);
+
+  }
   List<dynamic> getReceiptInformationBySettlementPaper(int paperHashcode) {
     for (var receipt in selectedSettlement.receipts) {
       for (var receiptItem in receipt.receiptItems) {
@@ -57,6 +68,9 @@ class MainViewModel extends ChangeNotifier {
 
   void selectSettlement(int index) {
     selectedSettlement = settlementList[index];
+
+    settingSelectedSettlement();
+
     notifyListeners();
   }
 
@@ -94,7 +108,6 @@ class MainViewModel extends ChangeNotifier {
     selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex].paperOwner
         .removeWhere((key, value) => key == paperId);
-
     updateMemberTotalPrice();
     notifyListeners();
   }
@@ -105,6 +118,7 @@ class MainViewModel extends ChangeNotifier {
         i++) {
       if (selectedReceiptItemIndexList[presentReceiptIndex][i]) {
         for (int j = 0; j < selectedMemberIndexList.length; j++) {
+          print(selectedMemberIndexList.length);
           if (selectedMemberIndexList[j]) {
             matching(j, i, presentReceiptIndex);
           }
