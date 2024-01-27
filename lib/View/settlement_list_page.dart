@@ -32,7 +32,7 @@ class EditManagement extends ChangeNotifier {
 
   void toggleSelect(int index) {
     isSelected[index] = !isSelected[index];
-    if(isSelected.contains(false)) {
+    if (isSelected.contains(false)) {
       isAllSelect = false;
     } else {
       isAllSelect = true;
@@ -314,7 +314,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
           backgroundColor: basic[8],
-          child: const Icon(Icons.add),
+          child: Icon(Icons.add, color: basic[0],),
         ),
       ),
     );
@@ -490,9 +490,19 @@ class EditSettlementName extends ConsumerStatefulWidget {
 }
 
 class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
+  TextEditingController controller = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    controller.text = ref
+        .read(mainProvider)
+        .settlementList[
+            ref.read(editManagementProvider).isSelected.indexOf(true)]
+        .settlementName;
+  }
+
   @override
   Widget build(BuildContext context) {
-    String newName = "";
     final eprovider = ref.watch(editManagementProvider);
     final provider = ref.watch(mainProvider);
     return AlertDialog(
@@ -512,6 +522,7 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
+            controller: controller,
             decoration: InputDecoration(
               border: UnderlineInputBorder(
                 borderSide: BorderSide(color: basic[5]),
@@ -523,11 +534,6 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
                 borderSide: BorderSide(color: basic[5]),
               ),
             ),
-            onChanged: (value) {
-              setState(() {
-                newName = value;
-              });
-            },
           ),
         ],
       ),
@@ -564,8 +570,11 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
                   borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
+              if (controller.text == "") {
+                return;
+              }
               provider.editSettlementName(
-                  newName, eprovider.isSelected.indexOf(true));
+                  controller.text, eprovider.isSelected.indexOf(true));
               context.pop();
             },
             child:
@@ -591,13 +600,25 @@ class _DeleteSettlementState extends ConsumerState<DeleteSettlement> {
     final provider = ref.watch(mainProvider);
     return AlertDialog(
       elevation: 0,
-      title: Text(
-        "정산의 삭제하면 다시 되돌릴 수 없습니다\n선택한 정산을 삭제하시겠습니까?",
-        style: TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-          color: basic[4],
-        ),
+      title: Column(
+        children: [
+          Text(
+            "정산을 삭제하면 다시 되돌릴 수 없습니다",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: basic[4],
+            ),
+          ),
+          Text(
+            "선택한 정산을 삭제하시겠습니까?",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: basic[4],
+            ),
+          ),
+        ],
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
