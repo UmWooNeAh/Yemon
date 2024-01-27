@@ -13,15 +13,24 @@ final settlementMatchingProvider =
 
 class SettlementMatchingViewmodel extends ChangeNotifier {
   int presentReceiptIndex = -1;
-  int showMatchingDetail = -1;
+  int showMatchingDetailReceiptIndex = -1;
+  int showMatchingDetailItemIndex = -1;
   bool showMemberDetail = false;
 
-  void toggleMatchingDetail(int index) {
-    if (showMatchingDetail == index) {
-      showMatchingDetail = -1;
+
+  void showMatchingDetail(int receiptIndex,int index) {
+    showMatchingDetailReceiptIndex = receiptIndex;
+    showMatchingDetailItemIndex = index;
+    notifyListeners();
+  }
+
+  void toggleMatchingDetail(int receiptIndex,int index) {
+    if (showMatchingDetailItemIndex == index && showMatchingDetailReceiptIndex == receiptIndex){
+      showMatchingDetailItemIndex = -1;
     } else {
-      showMatchingDetail = index;
+      showMatchingDetailItemIndex = index;
     }
+    showMatchingDetailReceiptIndex = receiptIndex;
     notifyListeners();
   }
 
@@ -32,6 +41,7 @@ class SettlementMatchingViewmodel extends ChangeNotifier {
 
   void selectReceipt(int index) {
     presentReceiptIndex = index;
+    showMatchingDetailItemIndex = -1;
     notifyListeners();
   }
 }
@@ -98,84 +108,85 @@ class GroupMembers extends ConsumerWidget {
                 ),
               ],
             ),
-            child: SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: () => sProvider.toggleMemberDetail(),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: basic[1],
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        ),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () => sProvider.toggleMemberDetail(),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: basic[1],
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(left: 20),
-                            child: const Text(
-                              "정산에 참여하는 사람",
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                              ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(left: 20),
+                          child: const Text(
+                            "정산에 참여하는 사람",
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          Container(
-                            margin: const EdgeInsets.only(top: 10, right: 15),
-                            height: 37,
-                            width: 100,
-                            child: OutlinedButton(
-                              onPressed: () {
-                                provider.changeAllMember(!provider
-                                    .selectedMemberIndexList
-                                    .contains(true));
-                              },
-                              style: OutlinedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  backgroundColor: Colors.white,
-                                  side: BorderSide(
-                                      color: provider.selectedMemberIndexList
-                                              .contains(true)
-                                          ? basic[2]
-                                          : basic[8],
-                                      width: 1.5)),
-                              child: Center(
-                                child: Text(
-                                  provider.selectedMemberIndexList
-                                          .contains(true)
-                                      ? "선택 취소"
-                                      : "전체 선택",
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    color: basic[5],
-                                  ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 10, right: 15),
+                          height: 37,
+                          width: 100,
+                          child: OutlinedButton(
+                            onPressed: () {
+                              provider.changeAllMember(!provider
+                                  .selectedMemberIndexList
+                                  .contains(true));
+                            },
+                            style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                backgroundColor: Colors.white,
+                                side: BorderSide(
+                                    color: provider.selectedMemberIndexList
+                                            .contains(true)
+                                        ? basic[2]
+                                        : basic[8],
+                                    width: 1.5)),
+                            child: Center(
+                              child: Text(
+                                provider.selectedMemberIndexList
+                                        .contains(true)
+                                    ? "선택 취소"
+                                    : "전체 선택",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: basic[5],
                                 ),
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  Container(
+                ),
+                Expanded(
+                  child: Container(
                     width: size.width * 0.95,
                     child: sProvider.showMemberDetail
-                        ? Wrap(
-                            runSpacing: 10,
-                            crossAxisAlignment: WrapCrossAlignment.start,
-                            children: List.generate(
-                                provider
-                                    .selectedSettlement.settlementPapers.length,
-                                (index) => SingleMember(index: index)),
-                          )
+                        ? SingleChildScrollView(
+                          child: Wrap(
+                              runSpacing: 10,
+                              crossAxisAlignment: WrapCrossAlignment.start,
+                              children: List.generate(
+                                  provider
+                                      .selectedSettlement.settlementPapers.length,
+                                  (index) => SingleMember(index: index)),
+                            ),
+                        )
                         : SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
@@ -186,8 +197,8 @@ class GroupMembers extends ConsumerWidget {
                             ),
                           ),
                   ),
-                ],
-              ),
+                ),
+              ],
             )),
         Positioned(
           top: 0,
