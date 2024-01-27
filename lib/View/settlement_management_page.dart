@@ -98,7 +98,7 @@ class SettlementName extends ConsumerWidget {
                   provider.selectedSettlement.settlementName,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 30,
+                    fontSize: 25,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -114,9 +114,10 @@ class SettlementName extends ConsumerWidget {
                   });
             },
             child: Container(
-              width: 40,
-              height: 40,
+              width: 35,
+              height: 35,
               padding: const EdgeInsets.all(10),
+              margin: const EdgeInsets.only(top: 5),
               child: FittedBox(
                   fit: BoxFit.fill, child: Image.asset('assets/Edit.png')),
             ),
@@ -135,7 +136,13 @@ class EditSettlementName extends ConsumerStatefulWidget {
 }
 
 class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
-  String newName = "";
+  TextEditingController controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.text = ref.read(mainProvider).selectedSettlement.settlementName;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +158,10 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
+            
+            controller: controller,
             decoration: InputDecoration(
+              hintText: "새로운 정산이름을 입력해주세요",
               border: UnderlineInputBorder(
                 borderSide: BorderSide(color: basic[5]),
               ),
@@ -162,11 +172,6 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
                 borderSide: BorderSide(color: basic[5]),
               ),
             ),
-            onChanged: (value) {
-              setState(() {
-                newName = value;
-              });
-            },
           ),
         ],
       ),
@@ -203,8 +208,11 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
                   borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
+              if (controller.text == "") {
+                return;
+              }
               final provider = ref.watch(mainProvider);
-              provider.editSelectedSettlementName(newName);
+              provider.editSelectedSettlementName(controller.text);
               context.pop();
             },
             child:

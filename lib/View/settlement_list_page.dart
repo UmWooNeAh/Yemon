@@ -428,7 +428,7 @@ class SingleSettlement extends ConsumerWidget {
                                           .settlementPapers[pindex]
                                           .memberName).join(", "),
                                   style: TextStyle(
-                                    fontSize: 15,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                     color: basic[3],
                                   ),

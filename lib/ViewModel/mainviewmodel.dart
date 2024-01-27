@@ -26,17 +26,26 @@ class MainViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void settingSelectedSettlement(){
+  void settingSelectedSettlement() {
     selectedReceiptItemIndexList = List.generate(
         selectedSettlement.receipts.length,
-            (index) => List.generate(
+        (index) => List.generate(
             selectedSettlement.receipts[index].receiptItems.length,
-                (index) => false));
+            (index) => false));
 
     selectedMemberIndexList = List.generate(
         selectedSettlement.settlementPapers.length, (index) => false);
 
+    receiptItemControllerList = [];
+    for (int i = 0; i < selectedSettlement.receipts.length; i++) {
+      addReceiptItemControllerList();
+      for (ReceiptItem receiptItem
+          in selectedSettlement.receipts[i].receiptItems) {
+        addReceiptItemTextEditingController(i, receiptItem);
+      }
+    }
   }
+
   List<dynamic> getReceiptInformationBySettlementPaper(int paperHashcode) {
     for (var receipt in selectedSettlement.receipts) {
       for (var receiptItem in receipt.receiptItems) {
@@ -70,7 +79,6 @@ class MainViewModel extends ChangeNotifier {
     selectedSettlement = settlementList[index];
 
     settingSelectedSettlement();
-
     notifyListeners();
   }
 
@@ -510,18 +518,24 @@ class MainViewModel extends ChangeNotifier {
   }
 
   void loadMemberList(int index) async {
+    List<String> memberNameList = List.generate(
+        selectedSettlement.settlementPapers.length,
+        (index) => selectedSettlement.settlementPapers[index].memberName);
+        List<String> newMemberList = [];
     for (int i = 1; i < settlementList[index].settlementPapers.length; i++) {
-      SettlementPaper newSettlementPaper = SettlementPaper();
-      newSettlementPaper.memberName =
-          settlementList[index].settlementPapers[i].memberName;
-      selectedSettlement.settlementPapers.add(newSettlementPaper);
+      if (memberNameList
+          .contains(settlementList[index].settlementPapers[i].memberName)) {
+        continue;
+      }
+      newMemberList.add(settlementList[index].settlementPapers[i].memberName);
     }
-    await Query(db).createMembers(
-        selectedSettlement.settlementId,
-        selectedSettlement.settlementPapers.sublist(
-            selectedSettlement.settlementPapers.length -
-                (settlementList[index].settlementPapers.length - 1),
-            selectedSettlement.settlementPapers.length));
+    addMember(newMemberList);
+    // await Query(db).createMembers(
+    //     selectedSettlement.settlementId,
+    //     selectedSettlement.settlementPapers.sublist(
+    //         selectedSettlement.settlementPapers.length -
+    //             (settlementList[index].settlementPapers.length - 1),
+    //         selectedSettlement.settlementPapers.length));
     notifyListeners();
   }
 }

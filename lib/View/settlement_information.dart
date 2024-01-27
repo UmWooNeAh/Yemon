@@ -513,7 +513,11 @@ class IncludedMember extends ConsumerWidget {
           top: 5,
           child: GestureDetector(
             onTap: () {
-              mprovider.deleteMember(index);
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return RealDeleteMemberPopUp(index: index);
+                  });
             },
             child: Container(
               width: 25,
@@ -548,7 +552,18 @@ class EditMemberName extends ConsumerStatefulWidget {
 }
 
 class _EditMemberNameState extends ConsumerState<EditMemberName> {
-  String newName = '';
+  TextEditingController controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.text = ref
+        .read(mainProvider)
+        .selectedSettlement
+        .settlementPapers[widget.index]
+        .memberName;
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -564,7 +579,9 @@ class _EditMemberNameState extends ConsumerState<EditMemberName> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
+            controller: controller,
             decoration: InputDecoration(
+              hintText: "수정할 이름을 입력해주세요",
               border: UnderlineInputBorder(
                 borderSide: BorderSide(color: basic[5]),
               ),
@@ -575,64 +592,66 @@ class _EditMemberNameState extends ConsumerState<EditMemberName> {
                 borderSide: BorderSide(color: basic[5]),
               ),
             ),
-            onChanged: (value) {
-              setState(() {
-                newName = value;
-              });
-            },
           ),
         ],
       ),
       actionsAlignment: MainAxisAlignment.spaceBetween,
       actionsPadding: const EdgeInsets.all(10),
       actions: [
-        Wrap(
+        Column(
           children: [
-            Container(
-              height: 55,
-              width: size.width * 0.35 + 5,
-              margin: const EdgeInsets.only(bottom: 10, right: 5),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: basic[2],
-                ),
-                borderRadius: BorderRadius.circular(11),
-              ),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: basic[0],
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                ),
-                onPressed: () {
-                  context.pop();
-                },
-                child: Text("취소", style: TextStyle(color: basic[5])),
-              ),
-            ),
-            Container(
-              height: 55,
-              width: size.width * 0.35 + 5,
-              margin: const EdgeInsets.only(bottom: 10, left: 5),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: basic[8],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+            Row(
+              children: [
+                Container(
+                  height: 55,
+                  width: size.width * 0.3 + 5,
+                  margin: const EdgeInsets.only(bottom: 10, right: 5),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: basic[2],
+                    ),
+                    borderRadius: BorderRadius.circular(11),
+                  ),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      backgroundColor: basic[0],
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
+                    onPressed: () {
+                      context.pop();
+                    },
+                    child: Text("취소", style: TextStyle(color: basic[5])),
                   ),
                 ),
-                onPressed: () {
-                  context.pop();
-                  mprovider.editMemberName(newName, widget.index);
-                },
-                child: Text("이름 저장",
-                    style: TextStyle(color: basic[0], fontSize: 15)),
-              ),
+                Container(
+                  height: 55,
+                  width: size.width * 0.3 + 5,
+                  margin: const EdgeInsets.only(bottom: 10, left: 5),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: basic[8],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (controller.text == '') {
+                        return;
+                      }
+                      context.pop();
+                      mprovider.editMemberName(controller.text, widget.index);
+                    },
+                    child: Text("이름 저장",
+                        style: TextStyle(color: basic[0], fontSize: 15)),
+                  ),
+                ),
+              ],
             ),
             Container(
               height: 30,
-              width: size.width * 0.7 + 20,
+              width: size.width * 0.6 + 20,
               child: TextButton(
                 onPressed: () {
                   context.pop();
@@ -648,6 +667,92 @@ class _EditMemberNameState extends ConsumerState<EditMemberName> {
               ),
             ),
           ],
+        ),
+      ],
+    );
+  }
+}
+
+class RealDeleteMemberPopUp extends ConsumerStatefulWidget {
+  const RealDeleteMemberPopUp({super.key, required this.index});
+  final int index;
+
+  @override
+  ConsumerState<RealDeleteMemberPopUp> createState() =>
+      _RealDeleteMemberPopUpState();
+}
+
+class _RealDeleteMemberPopUpState extends ConsumerState<RealDeleteMemberPopUp> {
+  @override
+  Widget build(BuildContext context) {
+    final mprovider = ref.watch(mainProvider);
+    Size size = MediaQuery.of(context).size;
+    return AlertDialog(
+      elevation: 0,
+      title: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "삭제를 진행하면 다시 되돌릴 수 없습니다.",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: basic[4],
+            ),
+          ),
+          Text(
+            "선택한 멤버를 삭제하시겠습니까?",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: basic[4],
+            ),
+          ),
+        ],
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      backgroundColor: basic[0],
+      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actionsPadding: const EdgeInsets.all(10),
+      actions: [
+        Container(
+          height: 55,
+          width: size.width * 0.35,
+          decoration: BoxDecoration(
+            border: Border.all(color: basic[2], width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: basic[0],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              context.pop();
+            },
+            child: Text("취소", style: TextStyle(color: basic[5])),
+          ),
+        ),
+        Container(
+          height: 55,
+          width: size.width * 0.35,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: basic[7],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              mprovider.deleteMember(widget.index);
+              context.pop();
+            },
+            child:
+                Text("멤버 삭제", style: TextStyle(color: basic[0], fontSize: 15)),
+          ),
         ),
       ],
     );
@@ -680,6 +785,7 @@ class _AddMemberState extends ConsumerState<AddMember> {
         children: [
           TextField(
             decoration: InputDecoration(
+              hintText: "새로운 멤버의 이름을 입력해주세요",
               border: UnderlineInputBorder(
                 borderSide: BorderSide(color: basic[5]),
               ),
@@ -731,6 +837,9 @@ class _AddMemberState extends ConsumerState<AddMember> {
                   borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
+              if (newName == "") {
+                return;
+              }
               provider.addMember([newName]);
               context.pop();
             },
@@ -941,7 +1050,18 @@ class EditReceiptName extends ConsumerStatefulWidget {
 }
 
 class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
-  String newName = '';
+  TextEditingController controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.text = ref
+        .read(mainProvider)
+        .selectedSettlement
+        .receipts[widget.index]
+        .receiptName;
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -957,7 +1077,9 @@ class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
+            controller: controller,
             decoration: InputDecoration(
+              hintText: "새로운 영수증 이릅을 입력해주세요",
               border: UnderlineInputBorder(
                 borderSide: BorderSide(color: basic[5]),
               ),
@@ -968,11 +1090,6 @@ class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
                 borderSide: BorderSide(color: basic[5]),
               ),
             ),
-            onChanged: (value) {
-              setState(() {
-                newName = value;
-              });
-            },
           ),
         ],
       ),
@@ -1009,8 +1126,11 @@ class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
                   borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
+              if (controller.text == '') {
+                return;
+              }
               context.pop();
-              mprovider.editReceiptName(newName, widget.index);
+              mprovider.editReceiptName(controller.text, widget.index);
             },
             child:
                 Text("이름 변경", style: TextStyle(color: basic[0], fontSize: 15)),
@@ -1483,7 +1603,9 @@ class SettlementTotalPrice extends ConsumerWidget {
     final provider = ref.watch(mainProvider);
     return Container(
       height: 40,
-      padding: const EdgeInsets.only(right: 10,),
+      padding: const EdgeInsets.only(
+        right: 10,
+      ),
       margin: const EdgeInsets.only(bottom: 30),
       child: Align(
         alignment: Alignment.centerRight,
