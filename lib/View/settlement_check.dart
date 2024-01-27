@@ -181,7 +181,7 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                   : Expanded(
                       child: RepaintBoundary(
                         key: _globalKey2,
-                        child: const OverallStmPaper(),
+                        child: const SingleChildScrollView(child: OverallStmPaper()),
                       ),
                     )
               : Expanded(
