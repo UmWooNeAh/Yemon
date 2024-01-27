@@ -59,10 +59,9 @@ class SettlementListPage extends ConsumerStatefulWidget {
 class _SettlementListPageState extends ConsumerState<SettlementListPage> {
   @override
   Widget build(BuildContext context) {
-    String newName = "";
     final eprovider = ref.watch(editManagementProvider);
     final provider = ref.watch(mainProvider);
-    final sizes = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: basic[0],
@@ -108,6 +107,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                                     eprovider.toggleAllSelect(
                                         provider.settlementList.length);
                                   },
+                                  activeColor: basic[8],
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -184,9 +184,9 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
           ),
           AnimatedContainer(
               duration: const Duration(milliseconds: 150),
-              width: sizes.width,
+              width: size.width,
               height: eprovider.isEdit && eprovider.isSelected.contains(true)
-                  ? 80
+                  ? 60
                   : 0,
               decoration: BoxDecoration(
                 color: basic[1],
@@ -204,75 +204,11 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                       onTap: () {
                         showDialog(
                             context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                elevation: 0,
-                                title: Text(
-                                  "정산의 삭제하면 다시 되돌릴 수 없습니다\n선택한 정산을 삭제하시겠습니까?",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    color: basic[4],
-                                  ),
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                backgroundColor: basic[0],
-                                actionsAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                actionsPadding: const EdgeInsets.all(10),
-                                actions: [
-                                  Container(
-                                    height: 55,
-                                    width: sizes.width * 0.35,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: basic[2], width: 1.5),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        elevation: 0,
-                                        backgroundColor: basic[0],
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                      ),
-                                      onPressed: () {
-                                        context.pop();
-                                      },
-                                      child: Text("취소",
-                                          style: TextStyle(color: basic[5])),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 55,
-                                    width: sizes.width * 0.35,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: basic[7],
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                      ),
-                                      onPressed: () {
-                                        provider.deleteSettlement(eprovider.isSelected);
-                                        eprovider.deleteSettlement();
-                                        context.pop();
-                                      },
-                                      child: Text("정산 삭제",
-                                          style: TextStyle(
-                                              color: basic[0], fontSize: 15)),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            });
+                            builder: (context)=>const DeleteSettlement());
                       },
                       child: SingleChildScrollView(
                         child: Container(
-                          margin: const EdgeInsets.only(top: 20),
+                          margin: const EdgeInsets.symmetric(vertical: 10),
                           child: const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -290,111 +226,18 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                       ),
                     )
                   : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         InkWell(
                           onTap: () {
                             showDialog(
                                 context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    elevation: 0,
-                                    title: const Text(
-                                      "정산의 이름을 수정합니다",
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    backgroundColor: basic[0],
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        TextField(
-                                          decoration: InputDecoration(
-                                            border: UnderlineInputBorder(
-                                              borderSide:
-                                                  BorderSide(color: basic[5]),
-                                            ),
-                                            focusedBorder: UnderlineInputBorder(
-                                              borderSide:
-                                                  BorderSide(color: basic[5]),
-                                            ),
-                                            enabledBorder: UnderlineInputBorder(
-                                              borderSide:
-                                                  BorderSide(color: basic[5]),
-                                            ),
-                                          ),
-                                          onChanged: (value) {
-                                            setState(() {
-                                              newName = value;
-                                            });
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                    actionsAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    actionsPadding: const EdgeInsets.all(10),
-                                    actions: [
-                                      Container(
-                                        height: 55,
-                                        width: sizes.width * 0.35,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: basic[2], width: 1.5),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            elevation: 0,
-                                            backgroundColor: basic[0],
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                          ),
-                                          onPressed: () {
-                                            context.pop();
-                                          },
-                                          child: Text("취소",
-                                              style:
-                                                  TextStyle(color: basic[5])),
-                                        ),
-                                      ),
-                                      Container(
-                                        height: 55,
-                                        width: sizes.width * 0.35,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: basic[9],
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                          ),
-                                          onPressed: () {
-                                            provider.editSettlementName(newName, eprovider.isSelected.indexOf(true));
-                                            context.pop();
-                                          },
-                                          child: Text("이름 변경",
-                                              style: TextStyle(
-                                                  color: basic[0],
-                                                  fontSize: 15)),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                });
+                                builder: (context)=>const EditSettlementName());
                           },
-                          child: Container(
-                            margin: const EdgeInsets.only(
-                                left: 40, right: 40, top: 10, bottom: 10),
-                            child: const SingleChildScrollView(
-                              physics: NeverScrollableScrollPhysics(),
-                              child: Column(
+                          child: SingleChildScrollView(
+                            child: Container(
+                              width: (size.width-20) / 2,
+                              margin: const EdgeInsets.symmetric(vertical: 10),
+                              child: const Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.edit),
@@ -411,7 +254,6 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                           ),
                         ),
                         VerticalDivider(
-                          width: 20,
                           thickness: 2,
                           color: basic[2],
                           endIndent: 10,
@@ -421,84 +263,13 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                           onTap: () {
                             showDialog(
                                 context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    elevation: 0,
-                                    title: Text(
-                                      "정산의 삭제하면 다시 되돌릴 수 없습니다\n선택한 정산을 삭제하시겠습니까?",
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
-                                        color: basic[4],
-                                      ),
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(10.0),
-                                    ),
-                                    backgroundColor: basic[0],
-                                    actionsAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    actionsPadding: const EdgeInsets.all(10),
-                                    actions: [
-                                      Container(
-                                        height: 55,
-                                        width: sizes.width * 0.35,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: basic[2], width: 1.5),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            elevation: 0,
-                                            backgroundColor: basic[0],
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        10)),
-                                          ),
-                                          onPressed: () {
-                                            context.pop();
-                                          },
-                                          child: Text("취소",
-                                              style:
-                                                  TextStyle(color: basic[5])),
-                                        ),
-                                      ),
-                                      Container(
-                                        height: 55,
-                                        width: sizes.width * 0.35,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: basic[7],
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        10)),
-                                          ),
-                                          onPressed: () {
-                                            provider.deleteSettlement(eprovider.isSelected);
-                                            eprovider.deleteSettlement();
-                                            context.pop();
-                                          },
-                                          child: Text("정산 삭제",
-                                              style: TextStyle(
-                                                  color: basic[0],
-                                                  fontSize: 15)),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                });
+                                builder: (context)=> const DeleteSettlement());
                           },
-                          child: Container(
-                            margin: const EdgeInsets.only(
-                                left: 40, right: 40, top: 10, bottom: 10),
-                            child: const SingleChildScrollView(
-                              physics: NeverScrollableScrollPhysics(),
-                              child: Column(
+                          child: SingleChildScrollView(
+                            child: Container(
+                              width: (size.width-20) / 2,
+                              margin: const EdgeInsets.symmetric(vertical: 10),
+                              child: const Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.delete),
@@ -530,6 +301,9 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
             provider.selectSettlement(0);
             eprovider.addSettlement();
           },
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100)
+          ),
           backgroundColor: basic[8],
           child: const Icon(Icons.add),
         ),
@@ -601,7 +375,7 @@ class SingleSettlement extends ConsumerWidget {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 100),
                     width: size.width - (editManagement.isEdit ? 90 : 70),
-                    height: 100,
+                    height: 95,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -623,7 +397,6 @@ class SingleSettlement extends ConsumerWidget {
                         Container(
                           height: 25,
                           width: size.width - 90,
-                          margin: const EdgeInsets.only(bottom: 5),
                           child: RichText(
                             overflow: TextOverflow.ellipsis,
                             text: TextSpan(
@@ -660,7 +433,7 @@ class SingleSettlement extends ConsumerWidget {
                           child: Row(
                             children: [
                               Container(
-                                margin: const EdgeInsets.only(top:2 ),
+                                margin: const EdgeInsets.only(top:5 ),
                                 child: Text(
                                   provider.settlementList[index].date
                                       .toString()
@@ -674,9 +447,10 @@ class SingleSettlement extends ConsumerWidget {
                               Text(
                                 "  ${intToWeekDay(provider.settlementList[index].date.weekday)}",
                                 style: TextStyle(
-                                    color: basic[3],
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w400),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: basic[3],
+                                ),
                               )
                             ],
                           ),
@@ -698,3 +472,189 @@ class SingleSettlement extends ConsumerWidget {
     );
   }
 }
+
+class EditSettlementName extends ConsumerStatefulWidget {
+  const EditSettlementName({Key? key}) : super(key: key);
+
+  @override
+  ConsumerState<EditSettlementName> createState() => _EditSettlementNameState();
+}
+
+class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
+  @override
+  Widget build(BuildContext context) {
+    String newName = "";
+    final eprovider = ref.watch(editManagementProvider);
+    final provider = ref.watch(mainProvider);
+    return AlertDialog(
+      elevation: 0,
+      title: const Text(
+        "정산의 이름을 수정합니다",
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      backgroundColor: basic[0],
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(
+                borderSide:
+                BorderSide(color: basic[5]),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide:
+                BorderSide(color: basic[5]),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide:
+                BorderSide(color: basic[5]),
+              ),
+            ),
+            onChanged: (value) {
+              setState(() {
+                newName = value;
+              });
+            },
+          ),
+        ],
+      ),
+      actionsAlignment:
+      MainAxisAlignment.spaceBetween,
+      actionsPadding: const EdgeInsets.all(10),
+      actions: [
+        Container(
+          height: 55,
+          width: MediaQuery.of(context).size.width * 0.35,
+          decoration: BoxDecoration(
+            border: Border.all(
+                color: basic[2], width: 1.5),
+            borderRadius:
+            BorderRadius.circular(10),
+          ),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: basic[0],
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                  BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              context.pop();
+            },
+            child: Text("취소",
+                style:
+                TextStyle(color: basic[5])),
+          ),
+        ),
+        Container(
+          height: 55,
+          width: MediaQuery.of(context).size.width * 0.35,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: basic[9],
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                  BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              provider.editSettlementName(newName, eprovider.isSelected.indexOf(true));
+              context.pop();
+            },
+            child: Text("이름 변경",
+                style: TextStyle(
+                    color: basic[0],
+                    fontSize: 15)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class DeleteSettlement extends ConsumerStatefulWidget {
+  const DeleteSettlement({Key? key}) : super(key: key);
+
+  @override
+  ConsumerState<DeleteSettlement> createState() => _DeleteSettlementState();
+}
+
+class _DeleteSettlementState extends ConsumerState<DeleteSettlement> {
+  @override
+  Widget build(BuildContext context) {
+    final eprovider = ref.watch(editManagementProvider);
+    final provider = ref.watch(mainProvider);
+    return AlertDialog(
+      elevation: 0,
+      title: Text(
+        "정산의 삭제하면 다시 되돌릴 수 없습니다\n선택한 정산을 삭제하시겠습니까?",
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          color: basic[4],
+        ),
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      backgroundColor: basic[0],
+      actionsAlignment:
+      MainAxisAlignment.spaceBetween,
+      actionsPadding: const EdgeInsets.all(10),
+      actions: [
+        Container(
+          height: 55,
+          width: MediaQuery.of(context).size.width * 0.35,
+          decoration: BoxDecoration(
+            border: Border.all(
+                color: basic[2], width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: basic[0],
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                  BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              context.pop();
+            },
+            child: Text("취소",
+                style: TextStyle(color: basic[5])),
+          ),
+        ),
+        Container(
+          height: 55,
+          width: MediaQuery.of(context).size.width * 0.35,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: basic[7],
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                  BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              provider.deleteSettlement(eprovider.isSelected);
+              eprovider.deleteSettlement();
+              context.pop();
+            },
+            child: Text("정산 삭제",
+                style: TextStyle(
+                    color: basic[0], fontSize: 15)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
