@@ -1,32 +1,37 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:sqlite_test/View/menu_sheet.dart';
+import 'package:sqlite_test/View/receipt_circulator.dart';
+import '../Model/receipt_item.dart';
+import '../Model/settlementpaper.dart';
+import '../ViewModel/mainviewmodel.dart';
 import '../theme.dart';
+import 'bottom_sheet.dart';
 
-class SettlementMatchingViewmodel extends ChangeNotifier{
-  int presentReceiptIndex = 0;
-  List<bool> selectedReceiptItemIndexList = [];
-  List<bool> selectedMemberIndexList = [];
+final settlementMatchingProvider =
+    ChangeNotifierProvider((ref) => SettlementMatchingViewmodel());
 
-  void settingMemberIndexList(int length){
-    selectedMemberIndexList = List.generate(length, (index) => false);
+class SettlementMatchingViewmodel extends ChangeNotifier {
+  int presentReceiptIndex = -1;
+  int showMatchingDetail = -1;
+  bool showMemberDetail = false;
+
+  void toggleMatchingDetail(int index) {
+    if (showMatchingDetail == index) {
+      showMatchingDetail = -1;
+    } else {
+      showMatchingDetail = index;
+    }
     notifyListeners();
   }
 
-  void selectReceipt(int index,int receiptItemLength){
+  void toggleMemberDetail() {
+    showMemberDetail = !showMemberDetail;
+    notifyListeners();
+  }
+
+  void selectReceipt(int index) {
     presentReceiptIndex = index;
-    selectedMemberIndexList = List.generate(selectedMemberIndexList.length, (index) => false);
-    selectedReceiptItemIndexList = List.generate(receiptItemLength, (index) => false);
-    notifyListeners();
-  }
-
-  void selectReceiptItem(int index){
-    selectedReceiptItemIndexList[index] = !selectedReceiptItemIndexList[index];
-    notifyListeners();
-  }
-
-  void selectMember(int index){
-    //selectedMemberIndexList.add(index);
     notifyListeners();
   }
 }
@@ -44,27 +49,25 @@ class _SettlementMatchingState extends ConsumerState<SettlementMatching> {
     return Stack(
       children: [
         Container(
-          margin: const EdgeInsets.only(top: 15),
           decoration: BoxDecoration(
-            color: basic[6],
-            borderRadius: BorderRadius.circular(20),
+            color: basic[8],
           ),
         ),
-        ReceiptCirculator(),
-        MenuSheet(),
-        GroupMembers(),
+        const ReceiptCirculator(),
+        const CustomBottomSheet(
+          childWidget: MenuSheet(),
+        ),
+        Positioned(
+          bottom: 0,
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: 101,
+            color: basic[0],
+          ),
+        ),
+        const Positioned(bottom: 0, child: GroupMembers()),
       ],
     );
-  }
-}
-
-
-class MenuSheet extends ConsumerWidget {
-  const MenuSheet({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context,WidgetRef ref) {
-    return const Placeholder();
   }
 }
 
@@ -72,21 +75,184 @@ class GroupMembers extends ConsumerWidget {
   const GroupMembers({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
-    return const Placeholder();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final size = MediaQuery.of(context).size;
+    final provider = ref.watch(mainProvider);
+    final sProvider = ref.watch(settlementMatchingProvider);
+    return Stack(
+      children: [
+        AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            width: size.width,
+            height: sProvider.showMemberDetail ? 250 : 100,
+            decoration: BoxDecoration(
+              color: basic[1],
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: basic[6],
+                  blurRadius: 5,
+                ),
+              ],
+            ),
+            child: SingleChildScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () => sProvider.toggleMemberDetail(),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: basic[1],
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 20),
+                            child: const Text(
+                              "정산에 참여하는 사람",
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 10, right: 15),
+                            height: 37,
+                            width: 100,
+                            child: OutlinedButton(
+                              onPressed: () {
+                                provider.changeAllMember(!provider
+                                    .selectedMemberIndexList
+                                    .contains(true));
+                              },
+                              style: OutlinedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  backgroundColor: Colors.white,
+                                  side: BorderSide(
+                                      color: provider.selectedMemberIndexList
+                                              .contains(true)
+                                          ? basic[2]
+                                          : basic[8],
+                                      width: 1.5)),
+                              child: Center(
+                                child: Text(
+                                  provider.selectedMemberIndexList
+                                          .contains(true)
+                                      ? "선택 취소"
+                                      : "전체 선택",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: basic[5],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: size.width * 0.95,
+                    child: sProvider.showMemberDetail
+                        ? Wrap(
+                            runSpacing: 10,
+                            crossAxisAlignment: WrapCrossAlignment.start,
+                            children: List.generate(
+                                provider
+                                    .selectedSettlement.settlementPapers.length,
+                                (index) => SingleMember(index: index)),
+                          )
+                        : SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: List.generate(
+                                  provider.selectedSettlement.settlementPapers
+                                      .length,
+                                  (index) => SingleMember(index: index)),
+                            ),
+                          ),
+                  ),
+                ],
+              ),
+            )),
+        Positioned(
+          top: 0,
+          left: size.width * 0.5 - 15,
+          child: GestureDetector(
+            onTap: () => sProvider.toggleMemberDetail(),
+            child: SizedBox(
+              height: 30,
+              width: 30,
+              child: FittedBox(
+                fit: BoxFit.fill,
+                child: sProvider.showMemberDetail
+                    ? const Icon(Icons.keyboard_arrow_down)
+                    : const Icon(Icons.keyboard_arrow_up),
+              ),
+            ),
+          ),
+        )
+      ],
+    );
   }
 }
 
-class ReceiptCirculator extends ConsumerWidget {
-  const ReceiptCirculator({Key? key}) : super(key: key);
+class SingleMember extends ConsumerWidget {
+  final int index;
+  const SingleMember({Key? key, required this.index}) : super(key: key);
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
-    return const Placeholder();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final provider = ref.watch(mainProvider);
+    return InkWell(
+      onTap: () {
+        provider.selectMember(index);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
+        height: 35,
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+        margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        decoration: BoxDecoration(
+          color: provider.selectedMemberIndexList[index] ? basic[8] : basic[0],
+          border: Border.all(
+            color:
+                provider.selectedMemberIndexList[index] ? basic[8] : basic[2],
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 1,
+              offset: const Offset(1.5, 1.5),
+            ),
+          ],
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          provider.selectedSettlement.settlementPapers[index].memberName,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color:
+                provider.selectedMemberIndexList[index] ? basic[0] : basic[5],
+          ),
+        ),
+      ),
+    );
   }
 }
-
-
-
-
-

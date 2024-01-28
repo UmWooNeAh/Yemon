@@ -1,9 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sqlite_test/View/settlement_check.dart';
 import 'package:sqlite_test/View/settlement_information.dart';
 import 'package:sqlite_test/View/settlement_matching.dart';
+import '../ViewModel/mainviewmodel.dart';
+import '../theme.dart';
 
 class SettlementManagementPage extends ConsumerStatefulWidget {
   const SettlementManagementPage({Key? key}) : super(key: key);
@@ -19,7 +21,9 @@ class _SettlementManagementPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const SettlementName(),
+      ),
       body: IndexedStack(
         index: selectedIndex,
         children: const [
@@ -30,18 +34,163 @@ class _SettlementManagementPageState
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
-        onTap: (index){
+        onTap: (index) {
           setState(() {
             selectedIndex = index;
-
+            if (selectedIndex == 2){
+              ref.watch(mainProvider).updateMemberTotalPrice();
+            }
           });
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.add),label: "정산 정보 입력"),
-          BottomNavigationBarItem(icon: Icon(Icons.account_balance_sharp),label: "정산 매칭"),
-          BottomNavigationBarItem(icon: Icon(Icons.adb_outlined),label: "정산 결과"),
+          BottomNavigationBarItem(icon: Icon(Icons.add), label: "정산 정보 입력"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.account_balance_sharp), label: "정산 매칭"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.adb_outlined), label: "정산 결과"),
         ],
       ),
+    );
+  }
+}
+
+class SettlementName extends ConsumerWidget {
+  const SettlementName({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    Size size = MediaQuery.of(context).size;
+    final provider = ref.watch(mainProvider);
+    return Container(
+      width: size.width,
+      height: 60,
+      // color: basic[1],
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: [
+          Container(
+            height: 40,
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: size.width - 140),
+                child: Text(
+                  provider.selectedSettlement.settlementName,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return const EditSettlementName();
+                  });
+            },
+            child: Container(
+              width: 40,
+              height: 40,
+              padding: const EdgeInsets.all(10),
+              child: FittedBox(
+                  fit: BoxFit.fill, child: Image.asset('assets/Edit.png')),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class EditSettlementName extends ConsumerStatefulWidget {
+  const EditSettlementName({super.key});
+
+  @override
+  ConsumerState<EditSettlementName> createState() => _EditSettlementNameState();
+}
+
+class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
+  String newName = "";
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return AlertDialog(
+      elevation: 0,
+      title: const Text("정산 이름 수정"),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      backgroundColor: basic[0],
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: basic[5]),
+              ),
+            ),
+            onChanged: (value) {
+              setState(() {
+                newName = value;
+              });
+            },
+          ),
+        ],
+      ),
+      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actionsPadding: const EdgeInsets.all(10),
+      actions: [
+        Container(
+          height: 55,
+          width: size.width * 0.35,
+          decoration: BoxDecoration(
+            border: Border.all(color: basic[2], width: 1.5),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: basic[0],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              context.pop();
+            },
+            child: Text("취소", style: TextStyle(color: basic[5])),
+          ),
+        ),
+        Container(
+          height: 55,
+          width: size.width * 0.35,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: basic[9],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              final provider = ref.watch(mainProvider);
+              provider.editSelectedSettlementName(newName);
+              context.pop();
+            },
+            child:
+                Text("이름 저장", style: TextStyle(color: basic[0], fontSize: 15)),
+          ),
+        ),
+      ],
     );
   }
 }

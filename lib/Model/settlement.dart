@@ -1,7 +1,6 @@
 import 'package:uuid/uuid.dart';
-
-import 'Receipt.dart';
-import 'SettlementPaper.dart';
+import 'receipt.dart';
+import 'settlementpaper.dart';
 
 class Settlement{
   String settlementId = "";
