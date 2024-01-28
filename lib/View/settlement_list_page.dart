@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide BoxShadow, BoxDecoration;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sqlite_test/Kakao/kakao_common.dart';
 import 'package:sqlite_test/ViewModel/mainviewmodel.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:sqlite_test/theme.dart';
@@ -278,7 +279,8 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                 : 0),
         child: FloatingActionButton(
           onPressed: () {
-            context.push('/SettlementManagementPage');
+            shareMessage();
+            //context.push('/SettlementManagementPage');
           },
           backgroundColor: basic[6],
           child: const Icon(Icons.add),

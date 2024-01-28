@@ -41,6 +41,7 @@ dependencies:
   flutter_riverpod: ^2.4.9
   go_router: ^13.0.1
   flutter_inset_box_shadow: ^1.0.8
+  kakao_flutter_sdk_share: ^1.8.0
 
 dev_dependencies:
   flutter_test:

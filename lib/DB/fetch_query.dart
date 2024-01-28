@@ -57,7 +57,7 @@ class FetchQuery {
       List<Map> res = await db!.rawQuery('SELECT SP.settlementPaperId FROM (SettlementItem as SI INNER JOIN (SELECT settlementPaperId from SettlementPaper) as SP ON SI.settlementPaperId = SP.settlementPaperId) WHERE SI.receiptItemId = ?', [dbReceiptItem["receiptItemId"]]);
       res.forEach((row) async {
         String id = row["settlementPaperId"];
-        newItem.paperOwner[id] = 0;
+        //newItem.paperOwner[id] = 0;
       });
 
       receiptItems.add(newItem);
