@@ -85,7 +85,6 @@ class MainViewModel extends ChangeNotifier {
   void unmatching(int receiptIndex, int receiptItemIndex, String paperId) {
     String menuName = selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex].receiptItemName;
-
     //change splitPrice
     double splitPrice = selectedSettlement
             .receipts[receiptIndex].receiptItems[receiptItemIndex].price /
@@ -105,17 +104,18 @@ class MainViewModel extends ChangeNotifier {
 
     //remove settlementItem from settlementPaper
     selectedSettlement.settlementPapers
-        .firstWhere((element) => element.settlementPaperId == paperId)
+        .firstWhere((paper) => paper.settlementPaperId == paperId)
         .settlementItems
-        .removeWhere((element) =>
-            element.hashCode ==
-            selectedSettlement.receipts[receiptIndex]
-                .receiptItems[receiptItemIndex].paperOwner[paperId]);
+        .removeWhere((stmItem) =>
+    stmItem.hashCode ==
+        selectedSettlement.receipts[receiptIndex]
+            .receiptItems[receiptItemIndex].paperOwner[paperId]);
 
     //remove paperOwner from receiptItem
     selectedSettlement
-        .receipts[receiptIndex].receiptItems[receiptItemIndex].paperOwner
-        .removeWhere((key, value) => key == paperId);
+        .receipts[receiptIndex].receiptItems[receiptItemIndex].paperOwner.remove(paperId);
+
+
     updateMemberTotalPrice();
     notifyListeners();
   }

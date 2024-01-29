@@ -11,8 +11,10 @@ class MenuSheet extends ConsumerWidget {
   const MenuSheet({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final size = MediaQuery.of(context).size;
+  Widget build(BuildContext context,WidgetRef ref) {
+    final size = MediaQuery
+        .of(context)
+        .size;
     final mProvider = ref.watch(mainProvider);
     final sProvider = ref.watch(settlementMatchingProvider);
     return Column(
@@ -34,14 +36,14 @@ class MenuSheet extends ConsumerWidget {
                 sProvider.presentReceiptIndex == -1
                     ? "영수증 모아보기 "
                     : mProvider.selectedSettlement
-                        .receipts[sProvider.presentReceiptIndex].receiptName,
-                        overflow: TextOverflow.fade,
-                        softWrap: false,
+                    .receipts[sProvider.presentReceiptIndex].receiptName,
+                overflow: TextOverflow.fade,
+                softWrap: false,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color:
-                      sProvider.presentReceiptIndex == -1 ? basic[8] : basic[5],
+                  sProvider.presentReceiptIndex == -1 ? basic[8] : basic[5],
                 ),
               ),
             ),
@@ -52,33 +54,16 @@ class MenuSheet extends ConsumerWidget {
               child: ElevatedButton(
                 onPressed: () {
                   for (int i = 0;
-                      i <
-                          mProvider
-                              .selectedReceiptItemIndexList[
-                                  sProvider.presentReceiptIndex]
-                              .length;
-                      i++) {
+                  i <
+                      mProvider
+                          .selectedReceiptItemIndexList[
+                      sProvider.presentReceiptIndex]
+                          .length;
+                  i++) {
                     mProvider.selectReceiptItem(
                         sProvider.presentReceiptIndex, i);
                   }
                   mProvider.batchMatching(sProvider.presentReceiptIndex);
-                  // print("receipt item");
-                  // mProvider.selectedSettlement
-                  //     .receipts[sProvider.presentReceiptIndex].receiptItems
-                  //     .forEach((element) {
-                  //   print(element.receiptItemName);
-                  //   element.paperOwner.forEach((key, value) {
-                  //     print("${key} : ${value}");
-                  //   });
-                  // });
-                  // print("stmPaper");
-                  // mProvider.selectedSettlement.settlementPapers
-                  //     .forEach((paper) {
-                  //   print(paper.memberName);
-                  //   paper.settlementItems.forEach((element) {
-                  //     print("${element.name} ${element.splitPrice}");
-                  //   });
-                  // });
                 },
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
@@ -86,9 +71,9 @@ class MenuSheet extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   backgroundColor:
-                      mProvider.selectedMemberIndexList.contains(true)
-                          ? basic[8]
-                          : basic[2],
+                  mProvider.selectedMemberIndexList.contains(true)
+                      ? basic[8]
+                      : basic[2],
                 ),
                 child: Center(
                   child: Text(
@@ -110,66 +95,71 @@ class MenuSheet extends ConsumerWidget {
             height: mProvider.selectedSettlement.receipts.isEmpty ? 50 : 10),
         sProvider.presentReceiptIndex == -1
             ? Expanded(
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: mProvider.selectedSettlement.receipts.length,
-                    itemBuilder: (context, receiptIndex) {
-                      return Column(
-                        children: [
-                          Container(
-                            height: 50,
-                            width: size.width,
-                            padding: const EdgeInsets.only(left: 20, top: 5),
-                            child: Text(
-                              mProvider.selectedSettlement
-                                  .receipts[receiptIndex].receiptName,
-                              style: TextStyle(
-                                color: basic[3],
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          Column(
-                              children: List.generate(
-                            mProvider.selectedSettlement.receipts[receiptIndex]
-                                .receiptItems.length,
-                            (index) => SingleMenu(
-                              index: index,
-                              receiptIndex: receiptIndex,
-                            ),
-                          )),
-                        ],
-                      );
-                    }),
-              )
-            : (mProvider.selectedSettlement.receipts.isEmpty
-                ? const Text("메뉴가 없습니다.",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ))
-                : Expanded(
-                    child: SingleChildScrollView(
-                        child: Column(
-                            children: List.generate(
-                      mProvider
-                          .selectedSettlement
-                          .receipts[sProvider.presentReceiptIndex]
-                          .receiptItems
-                          .length,
-                      (index) => SingleMenu(
-                        index: index,
-                        receiptIndex: sProvider.presentReceiptIndex,
+          child: ListView.builder(
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: mProvider.selectedSettlement.receipts.length,
+              itemBuilder: (context, receiptIndex) {
+                return Column(
+                  children: [
+                    Container(
+                      height: 50,
+                      width: size.width,
+                      padding: const EdgeInsets.only(left: 20, top: 5),
+                      child: Text(
+                        mProvider.selectedSettlement
+                            .receipts[receiptIndex].receiptName,
+                        style: TextStyle(
+                          color: basic[3],
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ))),
-                  ))
+                    ),
+                    Column(
+                        children: List.generate(
+                          mProvider.selectedSettlement.receipts[receiptIndex]
+                              .receiptItems.length,
+                              (index) =>
+                              SingleMenu(
+                                index: index,
+                                receiptIndex: receiptIndex,
+                              ),
+                        )),
+                  ],
+                );
+              }),
+        )
+            : (mProvider.selectedSettlement.receipts.isEmpty
+            ? const Text("메뉴가 없습니다.",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ))
+            : Expanded(
+          child: SingleChildScrollView(
+              child: Column(
+                  children: List.generate(
+                    mProvider
+                        .selectedSettlement
+                        .receipts[sProvider.presentReceiptIndex]
+                        .receiptItems
+                        .length,
+                        (index) =>
+                        SingleMenu(
+                          index: index,
+                          receiptIndex: sProvider.presentReceiptIndex,
+                        ),
+                  ))),
+        ))
       ],
     );
   }
 }
+
+
+
 
 class SingleMenu extends ConsumerStatefulWidget {
   final int receiptIndex;
@@ -182,6 +172,7 @@ class SingleMenu extends ConsumerStatefulWidget {
 }
 
 class _SingleMenuState extends ConsumerState<SingleMenu> {
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -287,7 +278,8 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
                                       .toList()[idx],
                                   receiptItemIndex: widget.index,
                                   receiptIndex: widget.receiptIndex,
-                                )),
+                                )
+                        ),
                       ),
                     ),
                   ),
@@ -348,17 +340,11 @@ class SingleSettlementItemMember extends ConsumerStatefulWidget {
 
 class _SingleSettlementItemMemberState
     extends ConsumerState<SingleSettlementItemMember> {
-  String stmPaperId = "";
-  int receiptItemIndex = -1;
-  int receiptIndex = -1;
   double opacity = 0;
 
   @override
   void initState() {
     super.initState();
-    stmPaperId = widget.stmPaperId;
-    receiptItemIndex = widget.receiptItemIndex;
-    receiptIndex = widget.receiptIndex;
     Future.delayed(const Duration(milliseconds: 1), () {
       setState(() {
         opacity = 1;
@@ -398,7 +384,7 @@ class _SingleSettlementItemMemberState
             child: Text(
               mProvider.selectedSettlement.settlementPapers
                   .firstWhere(
-                      (element) => element.settlementPaperId == stmPaperId)
+                      (element) => element.settlementPaperId == widget.stmPaperId)
                   .memberName,
               style: const TextStyle(
                 fontSize: 17,
@@ -411,8 +397,10 @@ class _SingleSettlementItemMemberState
             right: 0,
             child: InkWell(
               onTap: () {
+                print(widget.stmPaperId);
+                print(mProvider.selectedSettlement.settlementPapers.firstWhere((element){return element.settlementPaperId == widget.stmPaperId;}).memberName);
                 mProvider.unmatching(sProvider.showMatchingDetailReceiptIndex,
-                    receiptItemIndex, stmPaperId);
+                    widget.receiptItemIndex, widget.stmPaperId);
               },
               child: Container(
                 width: 15,
