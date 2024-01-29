@@ -2,14 +2,32 @@ import 'package:flutter/material.dart' hide BoxShadow, BoxDecoration;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:sqflite/sqflite.dart';
+import '../DB/sqlflite_DB.dart';
 import '../shared_tool.dart';
 import '../theme.dart';
 import '../ViewModel/mainviewmodel.dart';
+
+String sql1 = "DELETE FROM Settlement";
+String sql2 = "DELETE FROM Receipt";
+String sql3 = "DELETE FROM SettlementPaper";
+String sql4 = "DELETE FROM SettlementItem";
+String sql5 = "DELETE FROM ReceiptItem";
 
 class EditManagement extends ChangeNotifier {
   bool isEdit = false;
   bool isAllSelect = false;
   List<bool> isSelected = [];
+
+  void setEditSettlement(int length){
+    isSelected = List.generate(length, (index) {if (index < isSelected.length){
+      return isSelected[index];
+    }
+    else{
+      return false;
+    }});
+    notifyListeners();
+  }
 
   void deleteSettlement() {
     isSelected = List.generate(
@@ -64,8 +82,22 @@ class SettlementListPage extends ConsumerStatefulWidget {
 }
 
 class _SettlementListPageState extends ConsumerState<SettlementListPage> {
+
   @override
   Widget build(BuildContext context) {
+
+    SqlFliteDB().database.then((Database db){
+      //앱 시작할 때 모든 테이블 데이터 날리고 시작 가능한 코드
+      //db.rawDelete(sql1); db.rawDelete(sql2); db.rawDelete(sql3); db.rawDelete(sql4); db.rawDelete(sql5);
+      ref.read(mainProvider).setDB(db);
+
+      ref.read(mainProvider).fetchAllSettlements().then(
+          (value){
+            ref.read(editManagementProvider).setEditSettlement(ref.read(mainProvider).settlementList.length);
+          }
+      );
+
+    });
     final eprovider = ref.watch(editManagementProvider);
     final provider = ref.watch(mainProvider);
     final size = MediaQuery.of(context).size;
@@ -307,7 +339,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
           onPressed: () {
             context.push('/SettlementManagementPage');
             provider.addNewSettlement();
-            provider.selectSettlement(0);
+            // provider.selectSettlement(0);
             eprovider.addSettlement();
             //provider.settingMainViewModel();
           },
@@ -371,9 +403,12 @@ class SingleSettlement extends ConsumerWidget {
                     if (editManagement.isEdit) {
                       editManagement.toggleSelect(index);
                     } else {
-                      provider.selectSettlement(index);
+                      provider.selectSettlement(index).then((value){
+                        print(provider.selectedSettlement.receipts.length);
+                        // print(provider.selectedSettlement.receipts[0].receiptItems.length);
+                        context.push('/SettlementManagementPage');
+                      });
                       //provider.settingMainViewModel();
-                      context.push('/SettlementManagementPage');
                     }
                   },
                   onLongPress: () {

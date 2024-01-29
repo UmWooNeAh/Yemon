@@ -21,10 +21,12 @@ class Query {
     _db = db;
   }
 
-  Future<Settlement> showRecentSettlement(String stmId) async {
+  Future<List<Settlement>> showAllSettlements() async {
+    return await FetchQuery().fetchAllSettlements(_db!);
+  }
 
-    Settlement settlement = await FetchQuery().fetchSettlement(_db!, stmId);
-    return settlement;
+  Future<Settlement> showRecentSettlement(String stmId) async {
+    return await FetchQuery().fetchSettlement(_db!, stmId);
   }
 
   Future<Map<String,List<String>>> showSettlementMembers(List<String> stmIds) async {

@@ -633,13 +633,14 @@ class OneStmPaper extends ConsumerWidget {
                                   margin:
                                       const EdgeInsets.symmetric(vertical: 15),
                                   child: Text(
-                                    priceToString.format(mProvider
-                                        .getReceiptInformationBySettlementPaper(
-                                            mProvider
-                                                .selectedSettlement
-                                                .settlementPapers[index]
-                                                .settlementItems[stmItemIndex]
-                                                .hashCode)[1]),
+                                    // priceToString.format(mProvider
+                                    //     .getReceiptInformationBySettlementPaper(
+                                    //         mProvider
+                                    //             .selectedSettlement
+                                    //             .settlementPapers[index]
+                                    //             .settlementItems[stmItemIndex]
+                                    //             .hashCode)[1]),
+                                    "",
                                     style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 18,
@@ -681,6 +682,7 @@ class OneStmPaper extends ConsumerWidget {
                     ],
                   ),
                 ),
+
               ],
             ),
           ),
@@ -696,6 +698,7 @@ class OneStmPaper extends ConsumerWidget {
                   color: basic[8],
                 )),
           ),
+
           Divider(
             thickness: 1,
             color: basic[2],
