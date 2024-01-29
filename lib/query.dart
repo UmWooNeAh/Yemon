@@ -31,9 +31,9 @@ class Query {
 
   Future<Map<String,List<String>>> showSettlementMembers(List<String> stmIds) async {
     Map<String,List<String>> members = {}; //key: settlementId, value: members
-    stmIds.forEach((stmId) async {
+    for(var stmId in stmIds) {
       members[stmId] = await FetchQuery().fetchMembers(_db!, stmId);
-    });
+    }
 
     return members;
   }
@@ -51,14 +51,14 @@ class Query {
     try {
       var res = await _db!.transaction((txn) async {
         await DBSettlement().deleteStmTxn(txn, stm.settlementId);
-        stm.receipts.forEach((receipt) async {
+        for(var receipt in stm.receipts) {
           await DBReceipt().deleteRcpTxn(txn, receipt.receiptId);
           await DBReceiptItem().deleteAllRcpItemsTxn(txn, receipt.receiptId);
-        });
-        stm.settlementPapers.forEach((stmPaper) async {
+        }
+        for(var stmPaper in stm.settlementPapers) {
           await DBSettlementPaper().deleteStmPaperTxn(txn, stmPaper.settlementPaperId);
           await DBSettlementItem().deleteAllStmItemsTxn(txn, stmPaper.settlementPaperId);
-        });
+        }
 
       });
     }
@@ -73,9 +73,9 @@ class Query {
   Future<int> createMembers(String stmId, List<SettlementPaper> stmPapers) async {
     try {
       var res = await _db!.transaction((txn) async {
-        stmPapers.forEach((stmPaper) async {
+        for(var stmPaper in stmPapers) {
           await DBSettlementPaper().createStmPaperTxn(txn, stmPaper.settlementPaperId, stmId, stmPaper.memberName);
-        });
+        }
       });
     }
     catch (e) {
@@ -88,10 +88,10 @@ class Query {
   Future<int> deleteMembers(String stmId, List<String> settlementPaperIds) async {
     try {
       var res = await _db!.transaction((txn) async {
-        settlementPaperIds.forEach((stmPaperId) async {
+        for(var stmPaperId in settlementPaperIds) {
           await DBSettlementPaper().deleteStmPaperTxn(txn, stmPaperId);
           await DBSettlementItem().deleteAllStmItemsTxn(txn, stmPaperId);
-        });
+        }
       });
     }
     catch (e) {
@@ -135,10 +135,9 @@ class Query {
    var res;
     try {
         res = await _db!.transaction((txn) async {
-          rcpItemIds.forEach((rcpItemId) async {
+          for(var rcpItemId in rcpItemIds) {
             await DBSettlementItem().createStmItemTxn(txn, stmPaperId, rcpItemId);
-          });
-
+          }
       });
     }
     catch (e) {
@@ -165,11 +164,11 @@ class Query {
     var res;
     try {
       res = await _db!.transaction((txn) async {
-        stmPaperIds.forEach((stmPaperId) async {
-          rcpItemIds.forEach((rcpItemId) async { 
+        for(var stmPaperId in stmPaperIds) {
+          for(var rcpItemId in rcpItemIds) {
               await DBSettlementItem().createStmItemTxn(txn, stmPaperId, rcpItemId);
-          });
-        });
+          }
+        }
       });
     }
     catch (e) {
@@ -184,9 +183,9 @@ class Query {
     var res;
     try {
       res = await _db!.transaction((txn) async {
-        stmPaperIds.forEach((stmPaperId) async {
+        for(var stmPaperId in stmPaperIds) {
           await DBSettlementItem().createStmItemTxn(txn, stmPaperId, rcpItemId);
-        });
+        }
       });
     }
     catch (e) {
@@ -201,9 +200,9 @@ class Query {
     var res;
     try {
       res = await _db!.transaction((txn) async {
-        rcpItemIds.forEach((rcpItemId) async {
+        for(var rcpItemId in rcpItemIds) {
           await DBSettlementItem().deleteStmItemTxn(txn, stmPaperId, rcpItemId);
-        });
+        }
       });
     }
     catch (e) {
