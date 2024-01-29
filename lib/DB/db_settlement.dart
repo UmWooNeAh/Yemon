@@ -24,4 +24,8 @@ class DBSettlement {
     return await db!.rawDelete('DELETE FROM Settlement WHERE settlementId = ?', [stmId]);
   }
 
+  Future<int> deleteStmTxn(Transaction txn, String stmId) async {
+    return await txn.rawDelete('DELETE FROM Settlement WHERE settlementId = ?', [stmId]);
+  }
+
 }

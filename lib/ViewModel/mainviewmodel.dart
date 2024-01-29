@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
@@ -60,7 +62,7 @@ class MainViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void unmatching(int receiptIndex, int receiptItemIndex, String paperId) {
+  void unmatching(int receiptIndex, int receiptItemIndex, String paperId) async {
     String menuName = selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex].receiptItemName;
 
@@ -89,7 +91,8 @@ class MainViewModel extends ChangeNotifier {
             element.hashCode ==
             selectedSettlement.receipts[receiptIndex]
                 .receiptItems[receiptItemIndex].paperOwner[paperId]);
-
+    await Query(db).unmatchingMemberFromReceiptItem(paperId, selectedSettlement
+        .receipts[receiptIndex].receiptItems[receiptItemIndex].receiptItemId);
     //remove paperOwner from receiptItem
     selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex].paperOwner
@@ -99,6 +102,7 @@ class MainViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  //여러 명 -> 한 아이템 매칭
   void batchMatching(int presentReceiptIndex) {
     for (int i = 0;
         i < selectedReceiptItemIndexList[presentReceiptIndex].length;
@@ -117,7 +121,8 @@ class MainViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void matching(int userIndex, int itemIndex, int receiptIndex) {
+  //한 명 -> 한 아이템 매칭
+  void matching(int userIndex, int itemIndex, int receiptIndex) async {
     //if already matched
     if (selectedSettlement
         .receipts[receiptIndex].receiptItems[itemIndex].paperOwner
@@ -131,6 +136,8 @@ class MainViewModel extends ChangeNotifier {
         .receipts[receiptIndex].receiptItems[itemIndex].receiptItemName);
     selectedSettlement.settlementPapers[userIndex].settlementItems
         .add(newSettlementItem);
+    await Query(db).matchingMemberToReceiptItem(selectedSettlement.settlementPapers[userIndex].settlementPaperId, selectedSettlement
+        .receipts[receiptIndex].receiptItems[itemIndex].receiptItemId);
 
     //add paperOwner to receiptItem
     selectedSettlement
@@ -162,8 +169,9 @@ void editSettlementName(String newName, int index) async {
   }
 
 //멤버 이름 수정
-  void editMemberName(String newName, int index) {
+  void editMemberName(String newName, int index) async {
     selectedSettlement.settlementPapers[index].memberName = newName;
+    await Query(db).updateMemberName(newName, selectedSettlement.settlementPapers[index].settlementPaperId);
     notifyListeners();
   }
 
@@ -316,9 +324,10 @@ void editSettlementName(String newName, int index) async {
   }
 
 //정산 삭제
-  void deleteSettlement(List<bool> indices) {
+  void deleteSettlement(List<bool> indices) async {
     for (int i = indices.length - 1; i >= 0; i--) {
       if (indices[i]) {
+        await Query(db).deleteSettlement(settlementList[i]);
         settlementList.removeAt(i);
       }
     }
@@ -340,13 +349,13 @@ void editSettlementName(String newName, int index) async {
     List<String> receiptIds = [];
     for (int i = isSelectedReceiptList.length - 1; i >= 0; i--) {
       if (isSelectedReceiptList[i]) {
+        await Query(db).deleteReceipt(selectedSettlement.receipts[i].receiptId);
         receiptIds.add(selectedSettlement.receipts[i].receiptId);
         selectedSettlement.receipts.removeAt(i);
         receiptItemControllerList.removeAt(i);
         selectedReceiptItemIndexList.removeAt(i);
       }
     }
-    await Query(db).deleteReceiptItems(receiptIds);
     notifyListeners();
   }
 
