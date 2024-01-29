@@ -14,15 +14,16 @@ void main() {
   runApp(const ProviderScope(child: MainApp()));
 }
 
-class MainApp extends ConsumerWidget {
+class MainApp extends ConsumerStatefulWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-      SqlFliteDB().database.then((Database db){
-      ref.watch(mainProvider).setDB(db);
-    });
+  ConsumerState<MainApp> createState() => _MainAppState();
+}
 
+class _MainAppState extends ConsumerState<MainApp> {
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

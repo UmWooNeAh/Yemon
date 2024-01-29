@@ -30,6 +30,10 @@ class DBSettlementItem {
     return await db!.rawDelete('DELETE FROM SettlementItem WHERE settlementPaperId = ?', [stmPaperId]);
   }
 
+  Future<int> deleteAllStmItemsByRcpItemId(Database db, String rcpItemId) async {
+    return await db!.rawDelete('DELETE FROM SettlementItem WHERE receiptItemId = ?', [rcpItemId]);
+  }
+
   Future<int> deleteAllStmItemsTxn(Transaction txn, String stmPaperId) async {
     return await txn.rawDelete('DELETE FROM SettlementItem WHERE settlementPaperId = ?', [stmPaperId]);
   }

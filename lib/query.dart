@@ -21,10 +21,12 @@ class Query {
     _db = db;
   }
 
-  Future<Settlement> showRecentSettlement(String stmId) async {
+  Future<List<Settlement>> showAllSettlements() async {
+    return await FetchQuery().fetchAllSettlements(_db!);
+  }
 
-    Settlement settlement = await FetchQuery().fetchSettlement(_db!, stmId);
-    return settlement;
+  Future<Settlement> showRecentSettlement(String stmId) async {
+    return await FetchQuery().fetchSettlement(_db!, stmId);
   }
 
   Future<Map<String,List<String>>> showSettlementMembers(List<String> stmIds) async {
@@ -44,8 +46,28 @@ class Query {
     return await DBSettlement().updateStm(_db!, stm.settlementName, stm.settlementId);
   }
 
-  Future<int> deleteSettlement(String stmId) async {
-    return await DBSettlement().deleteStm(_db!, stmId);
+  //하나의 정산 삭제: 관련된 모든 정보들 삭제(영수증,영수증항목,정산서,정산서항목)
+  Future<int> deleteSettlement(Settlement stm) async {
+    try {
+      var res = await _db!.transaction((txn) async {
+        await DBSettlement().deleteStmTxn(txn, stm.settlementId);
+        stm.receipts.forEach((receipt) async {
+          await DBReceipt().deleteRcpTxn(txn, receipt.receiptId);
+          await DBReceiptItem().deleteAllRcpItemsTxn(txn, receipt.receiptId);
+        });
+        stm.settlementPapers.forEach((stmPaper) async {
+          await DBSettlementPaper().deleteStmPaperTxn(txn, stmPaper.settlementPaperId);
+          await DBSettlementItem().deleteAllStmItemsTxn(txn, stmPaper.settlementPaperId);
+        });
+
+      });
+    }
+    catch (e) {
+      print(e);
+      return 0;
+    }
+    return 1;
+
   }
 
   Future<int> createMembers(String stmId, List<SettlementPaper> stmPapers) async {
@@ -76,7 +98,7 @@ class Query {
       print(e);
       return 0;
     }
-    return 1;
+    return 2;
   }
 
   Future<int> updateMemberName(String newmemberName, String stmPaperId) async {
@@ -91,23 +113,8 @@ class Query {
     return DBReceipt().updateRcp(_db!, rcpName, rcpId);
   }
 
-  Future<int> deleteReceipts(List<String> rcpIds) async {
-    var res;
-    try {
-        res = await _db!.transaction((txn) async {
-          rcpIds.forEach((rcpId) async {
-            await DBReceipt().deleteRcpTxn(txn, rcpId);
-          });
-
-      });
-    }
-    catch (e) {
-      print(e);
-      return 0;
-    }
-
-    return 1;
-
+  Future<int> deleteReceipt(String rcpId) async {
+    return DBReceipt().deleteRcp(_db!, rcpId);
   }
 
   Future<int> createReceiptItem(String rcpId, ReceiptItem rcpItem) async {
@@ -118,24 +125,8 @@ class Query {
     return DBReceiptItem().updateReceiptItem(_db!, rcpItem);
   }
 
-  Future<int> deleteReceiptItems(List<String> rcpItemIds) async {
-
-    var res;
-    try {
-        res = await _db!.transaction((txn) async {
-          rcpItemIds.forEach((rcpItemId) async {
-            await DBReceiptItem().deleteReceiptItemTxn(txn, rcpItemId);
-          });
-
-      });
-    }
-    catch (e) {
-      print(e);
-      return 0;
-    }
-
-    return 1;
-
+  Future<int> deleteReceiptItem(String rcpItemId) async {
+   return DBReceiptItem().deleteReceiptItem(_db!, rcpItemId);
   }
 
   //정산 매칭 시의 쿼리들

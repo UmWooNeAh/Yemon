@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:sqflite/sqflite.dart';
 import '../Model/receipt.dart';
 import '../Model/receipt_item.dart';
@@ -8,6 +10,22 @@ import '../Model/settlement.dart';
 class FetchQuery {
   FetchQuery();
 
+  Future<List<Settlement>> fetchAllSettlements(Database db) async {
+    List<Settlement> stms = [];
+    List<Map> dbSettlement = await db!.rawQuery('SELECT * FROM Settlement ORDER BY recordDate DESC');
+
+    for (var stm in dbSettlement) {
+      Settlement settlement = Settlement();
+      settlement.settlementId = stm["settlementId"];
+      settlement.settlementName = stm["settlementName"];
+      settlement.date = DateTime.parse(stm["recordDate"]);
+      settlement.settlementPapers = await fetchSettlementPapers(db, settlement.settlementId);
+      stms.add(settlement);
+    }
+
+    return stms;
+  }
+
   Future<Settlement> fetchSettlement(Database db, String stmId) async {
     Settlement settlement = Settlement();
     List<Map> dbSettlement = await db
@@ -15,10 +33,13 @@ class FetchQuery {
 
     settlement.settlementId = dbSettlement[0]["settlementId"];
     settlement.settlementName = dbSettlement[0]["settlementName"];
-    settlement.date = dbSettlement[0]["recordDate"];
+    settlement.date = DateTime.parse(dbSettlement[0]["recordDate"]);
     settlement.receipts = await fetchReceipts(db, stmId);
     settlement.settlementPapers = await fetchSettlementPapers(db, stmId);
     settlement.totalPrice = 0;
+    for(var receipt in settlement.receipts) {
+      settlement.totalPrice += receipt.totalPrice;
+    }
 
     return settlement;
   }
@@ -28,15 +49,18 @@ class FetchQuery {
     List<Map> dbReceipts = await db
         .rawQuery('SELECT * FROM Receipt WHERE settlementId = ?', [stmId]);
 
-    dbReceipts.forEach((dbReceipt) async {
+    for(var dbReceipt in dbReceipts) {
       Receipt newReceipt = Receipt();
       newReceipt.receiptId = dbReceipt["receiptId"];
       newReceipt.receiptName = dbReceipt["receiptName"];
-      newReceipt.totalPrice = 0;
       newReceipt.receiptItems =
           await fetchReceiptItems(db, dbReceipt["receiptId"]);
+      newReceipt.totalPrice = 0;
+      for(var receiptItem in newReceipt.receiptItems) {
+        newReceipt.totalPrice += receiptItem.price;
+      }
       receipts.add(newReceipt);
-    });
+    }
 
     return receipts;
   }
@@ -46,22 +70,22 @@ class FetchQuery {
     List<Map> dbReceiptItems = await db
         .rawQuery('SELECT * FROM ReceiptItem WHERE receiptId = ?', [rcpId]);
 
-    dbReceiptItems.forEach((dbReceiptItem) async {
-      ReceiptItem newItem = ReceiptItem();
-      newItem.receiptItemId = dbReceiptItem["receiptItemId"];
-      newItem.receiptItemName = dbReceiptItem["name"];
-      newItem.price = dbReceiptItem["price"];
-      newItem.count = dbReceiptItem["count"];
-      newItem.paperOwner = {}; // key: settlementPaperId, value: memberName
+      for(var dbReceiptItem in dbReceiptItems ) {
+        ReceiptItem newItem = ReceiptItem();
+        newItem.receiptItemId = dbReceiptItem["receiptItemId"];
+        newItem.receiptItemName = dbReceiptItem["name"];
+        newItem.price = dbReceiptItem["price"];
+        newItem.count = dbReceiptItem["count"];
+        newItem.individualPrice = newItem.price / newItem.count;
+        newItem.paperOwner = {}; // key: settlementPaperId, value: memberName
 
-      List<Map> res = await db!.rawQuery('SELECT SP.settlementPaperId FROM (SettlementItem as SI INNER JOIN (SELECT settlementPaperId from SettlementPaper) as SP ON SI.settlementPaperId = SP.settlementPaperId) WHERE SI.receiptItemId = ?', [dbReceiptItem["receiptItemId"]]);
-      res.forEach((row) async {
-        String id = row["settlementPaperId"];
-        newItem.paperOwner[id] = 0;
-      });
-
-      receiptItems.add(newItem);
-    });
+        List<Map> res = await db!.rawQuery('SELECT SP.settlementPaperId FROM (SettlementItem as SI INNER JOIN (SELECT settlementPaperId from SettlementPaper) as SP ON SI.settlementPaperId = SP.settlementPaperId) WHERE SI.receiptItemId = ?', [dbReceiptItem["receiptItemId"]]);
+        for(var row in res) {
+          String id = row["settlementPaperId"];
+          newItem.paperOwner[id] = 0;
+        }
+        receiptItems.add(newItem);
+    }
 
     return receiptItems;
   }
@@ -71,9 +95,9 @@ class FetchQuery {
     List<SettlementPaper> settlementPapers = [];
 
     List<Map> dbSettlementPapers = await db.rawQuery(
-        'SELECT * FROM SettlementPaper WHERE settlmentId = ?', [stmId]);
+        'SELECT * FROM SettlementPaper WHERE settlementId = ?', [stmId]);
 
-    dbSettlementPapers.forEach((dbSettlementPaper) async {
+    for(var dbSettlementPaper in dbSettlementPapers) {
       SettlementPaper newPaper = SettlementPaper();
       newPaper.settlementPaperId = dbSettlementPaper["settlementPaperId"];
       newPaper.memberName = dbSettlementPaper["memberName"];
@@ -82,7 +106,7 @@ class FetchQuery {
           db, dbSettlementPaper["settlementPaperId"]);
 
       settlementPapers.add(newPaper);
-    });
+    }
 
     return settlementPapers;
   }
@@ -94,12 +118,12 @@ class FetchQuery {
         'SELECT RI.name, RI.price, RI.count FROM (ReceiptItem as RI INNER JOIN (SELECT receiptId, settlementId from Receipt) as R ON R.receiptId = RI.receiptId INNER JOIN (SELECT settlementId from Settlement) as S ON S.settlementId = R.settlementId INNER JOIN (SELECT settlementId from SettlementPaper WHERE settlementPaperId = ?) as SP ON S.settlementId = SP.settlementId)',
         [stmPaperId]);
 
-    dbReceiptItems.forEach((dbReceiptItem) async {
+    for(var dbReceiptItem in dbReceiptItems) {
       SettlementItem newItem = SettlementItem(dbReceiptItem["name"]);
       newItem.splitPrice = dbReceiptItem["price"] / dbReceiptItem["count"];
 
       settlementItems.add(newItem);
-    });
+    }
     return settlementItems;
   }
 
@@ -108,9 +132,9 @@ class FetchQuery {
     List<Map> res = await db.rawQuery(
         'SELECT memberName from SettlementPaper WHERE settlementId = ?',
         [stmId]);
-    res.forEach((row) async {
+    for(var row in res) {
       membersInSettlement.add(row["memberName"]);
-    });
+    }
 
     return membersInSettlement;
   }

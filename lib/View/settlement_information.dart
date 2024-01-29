@@ -99,7 +99,18 @@ class _SettlementInformationState extends ConsumerState<SettlementInformation> {
             mprovider.selectedSettlement.receipts.length,
             (index) => mprovider
                 .selectedSettlement.receipts[index].receiptItems.length));
+    // print("controllerlist, receipet0item isselected0");
+    // print(rprovider.isReceiptSelected.length);
+    // print(mprovider.receiptItemControllerList.length);
+    // print(mprovider.selectedSettlement.receipts[0].receiptItems.length);
+    // print(rprovider.isReceiptItemSelected[0].length);
   }
+
+  // @override
+  // Widget build(BuildContext context){
+  //
+  //   return SizedBox.shrink();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -1207,7 +1218,6 @@ class AddReceiptItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = ref.watch(mainProvider);
     final rprovider = ref.watch(receiptProvider);
-    final sProvider = ref.watch(settlementMatchingProvider);
     Size size = MediaQuery.of(context).size;
     return Container(
       height: 40,
