@@ -197,9 +197,12 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
             if (mProvider.selectedMemberIndexList.contains(true)) {
               mProvider.selectReceiptItem(widget.receiptIndex, widget.index);
               mProvider.batchMatching(widget.receiptIndex);
-            } else {
-              sProvider.toggleMatchingDetail(widget.index);
+              sProvider.showMatchingDetail(widget.receiptIndex,widget.index);
+              print("d");
+              return;
             }
+              sProvider.toggleMatchingDetail(widget.receiptIndex,widget.index);
+
           },
           child: Container(
             height: 60,
@@ -250,7 +253,7 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
           duration: const Duration(milliseconds: 300),
           curve: Curves.decelerate,
           width: size.width,
-          height: sProvider.showMatchingDetail == widget.index ? 170 : 0,
+          height: sProvider.showMatchingDetailItemIndex == widget.index && sProvider.showMatchingDetailReceiptIndex == widget.receiptIndex ? 170 : 0,
           color: basic[1],
           padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
           child: SingleChildScrollView(
@@ -263,7 +266,7 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
                   curve: Curves.decelerate,
                   width: size.width,
                   height:
-                      sProvider.showMatchingDetail == widget.index ? 140 : 0,
+                      sProvider.showMatchingDetailItemIndex == widget.index ? 140 : 0,
                   child: SingleChildScrollView(
                     child: ClipRect(
                       child: Wrap(
@@ -291,7 +294,7 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    sProvider.toggleMatchingDetail(widget.index);
+                    sProvider.toggleMatchingDetail(widget.receiptIndex,widget.index);
                   },
                   child: Container(
                     width: size.width,
@@ -408,7 +411,7 @@ class _SingleSettlementItemMemberState
             right: 0,
             child: InkWell(
               onTap: () {
-                mProvider.unmatching(sProvider.presentReceiptIndex,
+                mProvider.unmatching(sProvider.showMatchingDetailReceiptIndex,
                     receiptItemIndex, stmPaperId);
               },
               child: Container(

@@ -28,6 +28,26 @@ class MainViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void settingSelectedSettlement() {
+    selectedReceiptItemIndexList = List.generate(
+        selectedSettlement.receipts.length,
+        (index) => List.generate(
+            selectedSettlement.receipts[index].receiptItems.length,
+            (index) => false));
+
+    selectedMemberIndexList = List.generate(
+        selectedSettlement.settlementPapers.length, (index) => false);
+
+    receiptItemControllerList = [];
+    for (int i = 0; i < selectedSettlement.receipts.length; i++) {
+      addReceiptItemControllerList();
+      for (ReceiptItem receiptItem
+          in selectedSettlement.receipts[i].receiptItems) {
+        addReceiptItemTextEditingController(i, receiptItem);
+      }
+    }
+  }
+
   List<dynamic> getReceiptInformationBySettlementPaper(int paperHashcode) {
     for (var receipt in selectedSettlement.receipts) {
       for (var receiptItem in receipt.receiptItems) {
@@ -59,6 +79,8 @@ class MainViewModel extends ChangeNotifier {
 
   void selectSettlement(int index) {
     selectedSettlement = settlementList[index];
+
+    settingSelectedSettlement();
     notifyListeners();
   }
 
@@ -97,7 +119,6 @@ class MainViewModel extends ChangeNotifier {
     selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex].paperOwner
         .removeWhere((key, value) => key == paperId);
-
     updateMemberTotalPrice();
     notifyListeners();
   }
@@ -109,6 +130,7 @@ class MainViewModel extends ChangeNotifier {
         i++) {
       if (selectedReceiptItemIndexList[presentReceiptIndex][i]) {
         for (int j = 0; j < selectedMemberIndexList.length; j++) {
+          print(selectedMemberIndexList.length);
           if (selectedMemberIndexList[j]) {
             matching(j, i, presentReceiptIndex);
           }
@@ -156,11 +178,12 @@ class MainViewModel extends ChangeNotifier {
   }
 
 //특정 인덱스의 정산 이름 수정
-void editSettlementName(String newName, int index) async {
+  void editSettlementName(String newName, int index) async {
     settlementList[index].settlementName = newName;
     await Query(db).updateSettlement(settlementList[index]);
     notifyListeners();
   }
+
 //정산 이름 수정
   void editSelectedSettlementName(String newName) async {
     selectedSettlement.settlementName = newName;
@@ -272,6 +295,18 @@ void editSettlementName(String newName, int index) async {
     updateSettlementItemSplitPrice(receiptIndex, receiptItemIndex);
     await Query(db).updateReceiptItem(selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex]);
+    notifyListeners();
+  }
+
+  // ReceipitItemController에 접근할 때 가장 오른쪽 으로 Cursor 이동
+  void moveReceiptItemControllerCursor(
+      int receiptIndex, int receiptItemIndex, int index) {
+    receiptItemControllerList[receiptIndex][receiptItemIndex][index].selection =
+        TextSelection.fromPosition(TextPosition(
+            offset: receiptItemControllerList[receiptIndex][receiptItemIndex]
+                    [index]
+                .text
+                .length));
     notifyListeners();
   }
 
@@ -492,18 +527,24 @@ void editSettlementName(String newName, int index) async {
   }
 
   void loadMemberList(int index) async {
+    List<String> memberNameList = List.generate(
+        selectedSettlement.settlementPapers.length,
+        (index) => selectedSettlement.settlementPapers[index].memberName);
+        List<String> newMemberList = [];
     for (int i = 1; i < settlementList[index].settlementPapers.length; i++) {
-      SettlementPaper newSettlementPaper = SettlementPaper();
-      newSettlementPaper.memberName =
-          settlementList[index].settlementPapers[i].memberName;
-      selectedSettlement.settlementPapers.add(newSettlementPaper);
+      if (memberNameList
+          .contains(settlementList[index].settlementPapers[i].memberName)) {
+        continue;
+      }
+      newMemberList.add(settlementList[index].settlementPapers[i].memberName);
     }
-    await Query(db).createMembers(
-        selectedSettlement.settlementId,
-        selectedSettlement.settlementPapers.sublist(
-            selectedSettlement.settlementPapers.length -
-                (settlementList[index].settlementPapers.length - 1),
-            selectedSettlement.settlementPapers.length));
+    addMember(newMemberList);
+    // await Query(db).createMembers(
+    //     selectedSettlement.settlementId,
+    //     selectedSettlement.settlementPapers.sublist(
+    //         selectedSettlement.settlementPapers.length -
+    //             (settlementList[index].settlementPapers.length - 1),
+    //         selectedSettlement.settlementPapers.length));
     notifyListeners();
   }
 }

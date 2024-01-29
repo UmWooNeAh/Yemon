@@ -171,6 +171,7 @@ class UnitSettlement extends ConsumerWidget {
                 Container(
                   width: size.width - 80,
                   height: 20,
+                  // color: Colors.red,
                   margin: const EdgeInsets.only(bottom: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -180,7 +181,7 @@ class UnitSettlement extends ConsumerWidget {
                           Text(
                             mprovider.settlementList[index].settlementName,
                             style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 19,
                                 fontWeight: FontWeight.bold,
                                 color: basic[4]),
                           ),

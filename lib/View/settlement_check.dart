@@ -407,6 +407,7 @@ class OverallStmPaper extends ConsumerWidget {
                                             fontWeight: FontWeight.w600,
                                             fontSize: 18,
                                           ),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       )),
                             )
@@ -470,6 +471,8 @@ class OverallStmPaper extends ConsumerWidget {
                                                 fontSize: 18,
                                               ),
                                               textAlign: TextAlign.end,
+                                              overflow: TextOverflow.fade,
+                                              softWrap: false,
                                             ),
                                           )
                                         ]),
