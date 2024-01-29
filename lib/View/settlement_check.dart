@@ -190,132 +190,132 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                     child: OneStmPaper(index: index),
                   ),
                 ),
-          showOverall
-              ? Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: basic[1],
-                    boxShadow: [
-                      BoxShadow(
-                        color: basic[3],
-                        inset: true,
-                        blurRadius: 5,
-                        spreadRadius: -8,
-                        offset: const Offset(0, 5),
-                      ),
-                      BoxShadow(
-                        color: basic[3],
-                        inset: true,
-                        blurRadius: 5,
-                        spreadRadius: -8,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: CheckboxListTile(
-                    activeColor: basic[8],
-                    checkColor: basic[0],
-                    checkboxShape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    side: BorderSide(color: basic[3], width: 1.5),
-                    title: const Text(
-                      "모든 사람들의 정산서도 모아서 보기",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    value: showAll,
-                    onChanged: (value) {
-                      setState(() {
-                        showAll = value!;
-                      });
-                    },
-                    controlAffinity: ListTileControlAffinity.leading,
-                  ))
-              : const SizedBox.shrink(),
-          Container(
-            height: 80,
-            decoration: BoxDecoration(
-              color: basic[1],
-              boxShadow: showOverall
-                  ? []
-                  : [
-                      BoxShadow(
-                        color: basic[3],
-                        inset: true,
-                        blurRadius: 5,
-                        spreadRadius: -8,
-                        offset: const Offset(0, 5),
-                      ),
-                      BoxShadow(
-                        color: basic[3],
-                        inset: true,
-                        blurRadius: 5,
-                        spreadRadius: -8,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                InkWell(
-                  onTap: () {},
-                  child: Container(
-                    width: size.width * 0.5 - 15,
-                    margin:
-                        const EdgeInsets.only(top: 10, bottom: 10, left: 10),
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    decoration: BoxDecoration(
-                      color: Color(0xFFF7E600),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "카카오톡으로 공유",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    captureWidget().then((value) {
-                      ImageGallerySaver.saveImage(value, quality: 100);
-                    });
-                  },
-                  child: Container(
-                    width: size.width * 0.5 - 15,
-                    margin:
-                        const EdgeInsets.only(top: 10, bottom: 10, right: 10),
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: basic[2],
-                        width: 1.5,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "사진으로 저장",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )
+          // showOverall
+          //     ? Container(
+          //         height: 40,
+          //         decoration: BoxDecoration(
+          //           color: basic[1],
+          //           boxShadow: [
+          //             BoxShadow(
+          //               color: basic[3],
+          //               inset: true,
+          //               blurRadius: 5,
+          //               spreadRadius: -8,
+          //               offset: const Offset(0, 5),
+          //             ),
+          //             BoxShadow(
+          //               color: basic[3],
+          //               inset: true,
+          //               blurRadius: 5,
+          //               spreadRadius: -8,
+          //               offset: const Offset(0, 5),
+          //             ),
+          //           ],
+          //         ),
+          //         child: CheckboxListTile(
+          //           activeColor: basic[8],
+          //           checkColor: basic[0],
+          //           checkboxShape: RoundedRectangleBorder(
+          //             borderRadius: BorderRadius.circular(10),
+          //           ),
+          //           side: BorderSide(color: basic[3], width: 1.5),
+          //           title: const Text(
+          //             "모든 사람들의 정산서도 모아서 보기",
+          //             style: TextStyle(
+          //               fontSize: 18,
+          //               fontWeight: FontWeight.w600,
+          //             ),
+          //           ),
+          //           value: showAll,
+          //           onChanged: (value) {
+          //             setState(() {
+          //               showAll = value!;
+          //             });
+          //           },
+          //           controlAffinity: ListTileControlAffinity.leading,
+          //         ))
+          //     : const SizedBox.shrink(),
+          // Container(
+          //   height: 80,
+          //   decoration: BoxDecoration(
+          //     color: basic[1],
+          //     boxShadow: showOverall
+          //         ? []
+          //         : [
+          //             BoxShadow(
+          //               color: basic[3],
+          //               inset: true,
+          //               blurRadius: 5,
+          //               spreadRadius: -8,
+          //               offset: const Offset(0, 5),
+          //             ),
+          //             BoxShadow(
+          //               color: basic[3],
+          //               inset: true,
+          //               blurRadius: 5,
+          //               spreadRadius: -8,
+          //               offset: const Offset(0, 5),
+          //             ),
+          //           ],
+          //   ),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [
+          //       InkWell(
+          //         onTap: () {},
+          //         child: Container(
+          //           width: size.width * 0.5 - 15,
+          //           margin:
+          //               const EdgeInsets.only(top: 10, bottom: 10, left: 10),
+          //           padding: const EdgeInsets.symmetric(horizontal: 30),
+          //           decoration: BoxDecoration(
+          //             color: Color(0xFFF7E600),
+          //             borderRadius: BorderRadius.circular(10),
+          //           ),
+          //           child: Center(
+          //             child: Text(
+          //               "카카오톡으로 공유",
+          //               style: TextStyle(
+          //                 fontSize: 18,
+          //                 fontWeight: FontWeight.w600,
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //       InkWell(
+          //         onTap: () {
+          //           captureWidget().then((value) {
+          //             ImageGallerySaver.saveImage(value, quality: 100);
+          //           });
+          //         },
+          //         child: Container(
+          //           width: size.width * 0.5 - 15,
+          //           margin:
+          //               const EdgeInsets.only(top: 10, bottom: 10, right: 10),
+          //           padding: const EdgeInsets.symmetric(horizontal: 30),
+          //           decoration: BoxDecoration(
+          //             color: Colors.white,
+          //             border: Border.all(
+          //               color: basic[2],
+          //               width: 1.5,
+          //             ),
+          //             borderRadius: BorderRadius.circular(10),
+          //           ),
+          //           child: Center(
+          //             child: Text(
+          //               "사진으로 저장",
+          //               style: TextStyle(
+          //                 fontSize: 18,
+          //                 fontWeight: FontWeight.w600,
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // )
         ],
       ),
     );

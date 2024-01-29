@@ -94,7 +94,7 @@ class GroupMembers extends ConsumerWidget {
         AnimatedContainer(
             duration: const Duration(milliseconds: 150),
             width: size.width,
-            height: sProvider.showMemberDetail ? 250 : 100,
+            height: sProvider.showMemberDetail ? 190 : 100,
             decoration: BoxDecoration(
               color: basic[1],
               borderRadius: const BorderRadius.only(
@@ -112,6 +112,9 @@ class GroupMembers extends ConsumerWidget {
               children: [
                 GestureDetector(
                   onTap: () => sProvider.toggleMemberDetail(),
+                  onVerticalDragUpdate: (detail){
+                    sProvider.toggleMemberDetail();
+                  },
                   child: Container(
                     decoration: BoxDecoration(
                       color: basic[1],
@@ -179,7 +182,6 @@ class GroupMembers extends ConsumerWidget {
                     child: sProvider.showMemberDetail
                         ? SingleChildScrollView(
                           child: Wrap(
-                              runSpacing: 10,
                               crossAxisAlignment: WrapCrossAlignment.start,
                               children: List.generate(
                                   provider
@@ -229,6 +231,7 @@ class SingleMember extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = ref.watch(mainProvider);
+
     return InkWell(
       onTap: () {
         provider.selectMember(index);

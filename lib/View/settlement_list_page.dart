@@ -137,7 +137,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                           Column(
                             children: [
                               Transform.scale(
-                                scale: 1.6,
+                                scale: 1.3,
                                 child: Checkbox(
                                   materialTapTargetSize:
                                       MaterialTapTargetSize.shrinkWrap,
