@@ -335,8 +335,6 @@ class MainViewModel extends ChangeNotifier {
 
 //정산 삭제
   Future<void> deleteSettlement(List<bool> indices) async {
-    // print(indices.length);
-    // print(settlementList.length);
     for (int i = indices.length - 1; i >= 0; i--) {
       if (indices[i]) {
         await Query(db!).deleteSettlement(settlementList[i]);

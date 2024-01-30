@@ -122,46 +122,54 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                margin: const EdgeInsets.only(left: 20),
+                margin: const EdgeInsets.only(left: 30),
                 height: 60,
                 child: eprovider.isEdit
                     ? Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Transform.scale(
-                                scale: 1.3,
-                                child: Checkbox(
-                                  materialTapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                  value: eprovider.isAllSelect,
-                                  onChanged: (value) {
-                                    eprovider.toggleAllSelect(
-                                        provider.settlementList.length);
-                                  },
-                                  activeColor: basic[8],
-                                  checkColor: basic[0],
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                              Container(
+                                height: 30,
+                                width: 30,
+                                child: Transform.scale(
+                                  scale: 1.3,
+                                  child: Checkbox(
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                    value: eprovider.isAllSelect,
+                                    onChanged: (value) {
+                                      eprovider.toggleAllSelect(
+                                          provider.settlementList.length);
+                                    },
+                                    activeColor: basic[8],
+                                    checkColor: basic[0],
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    side: BorderSide(color: basic[2], width: 1),
                                   ),
-                                  side: BorderSide(color: basic[2], width: 1),
                                 ),
                               ),
-                              Text(
+                              const Text(
                                 "전체",
                                 style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(width: 15),
+                          const SizedBox(
+                            width: 15,
+                          ),
                           Text(
                             "${eprovider.isSelected.where((element) => element == true).length}개 선택됨",
                             style: TextStyle(
                               fontSize: 24,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w500,
                               color: eprovider.isSelected
                                       .where((element) => element == true)
                                       .isEmpty
@@ -171,12 +179,12 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                           ),
                         ],
                       )
-                    : Center(
+                    : const Center(
                         child: Text(
                           "최근 정산 목록",
                           style: TextStyle(
                             fontSize: 25,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
@@ -210,26 +218,24 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
           ),
           provider.settlementList.length == 0
               ? const Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 50),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("정산이 없습니다",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                        )
-                    ),
-                    Text("정산을 생성하려면 우측 하단의 추가 버튼을 누르세요.",
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                        )
-                    ),
-                  ],
-                ),
-              ))
+                  child: Padding(
+                  padding: EdgeInsets.only(bottom: 50),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("정산이 없습니다",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          )),
+                      Text("정산을 생성하려면 우측 하단의 추가 버튼을 누르세요.",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          )),
+                    ],
+                  ),
+                ))
               : Expanded(
                   child: SingleChildScrollView(
                     child: Column(
@@ -385,6 +391,9 @@ class SingleSettlement extends ConsumerWidget {
     final editManagement = ref.watch(editManagementProvider);
     final provider = ref.watch(mainProvider);
     final size = MediaQuery.of(context).size;
+    if (index >= editManagement.isSelected.length) {
+      return const SizedBox.shrink();
+    }
     return Container(
       color: editManagement.isSelected[index] ? basic[1] : basic[0],
       width: size.width - 40,
@@ -443,61 +452,68 @@ class SingleSettlement extends ConsumerWidget {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 100),
                     width: size.width - (editManagement.isEdit ? 90 : 70),
-                    height: 95,
+                    height: 85,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          height: 35,
+                          // height: 25,
                           width: size.width - 70,
-                          margin: const EdgeInsets.only(top: 5),
+                          // color: Colors.red,
+                          margin: const EdgeInsets.only(top: 10),
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
                               provider.settlementList[index].settlementName,
                               style: const TextStyle(
                                 fontSize: 20,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
                         ),
                         Container(
-                          height: 25,
-                          width: size.width - 90,
-                          child: RichText(
-                            overflow: TextOverflow.ellipsis,
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text:
-                                      "${provider.settlementList[index].settlementPapers.length}명 : ",
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black),
-                                ),
-                                TextSpan(
-                                  text: List.generate(
-                                      provider.settlementList[index]
-                                          .settlementPapers.length,
-                                      (pindex) => provider
-                                          .settlementList[index]
-                                          .settlementPapers[pindex]
-                                          .memberName).join(", "),
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: basic[3],
+                          // color: Colors.amber,
+                          // height: 25,
+                          margin: const EdgeInsets.symmetric(vertical: 1),
+                          width: size.width - 70,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: RichText(
+                              overflow: TextOverflow.ellipsis,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        "${provider.settlementList[index].settlementPapers.length}명 : ",
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black),
                                   ),
-                                ),
-                              ],
+                                  TextSpan(
+                                    text: List.generate(
+                                        provider.settlementList[index]
+                                            .settlementPapers.length,
+                                        (pindex) => provider
+                                            .settlementList[index]
+                                            .settlementPapers[pindex]
+                                            .memberName).join(", "),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: basic[4],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                        SizedBox(
+                        Container(
+                          // color: Colors.green,
                           width: size.width - 70,
-                          height: 25,
+                          // height: 25,
                           child: Row(
                             children: [
                               Container(
@@ -506,17 +522,17 @@ class SingleSettlement extends ConsumerWidget {
                                       .toString()
                                       .substring(0, 10),
                                   style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.w400,
-                                      color: basic[3]),
+                                      color: basic[4]),
                                 ),
                               ),
                               Text(
                                 "  ${intToWeekDay(provider.settlementList[index].date.weekday)}",
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: basic[3],
+                                  color: basic[4],
                                 ),
                               )
                             ],
@@ -717,10 +733,10 @@ class _DeleteSettlementState extends ConsumerState<DeleteSettlement> {
             ),
             onPressed: () {
               provider.deleteSettlement(eprovider.isSelected).then((value) {
-                eprovider.deleteSettlement();
                 eprovider.toggleEdit(provider.settlementList.length);
+                eprovider.deleteSettlement();
+                context.pop();
               });
-              context.pop();
             },
             child:
                 Text("정산 삭제", style: TextStyle(color: basic[0], fontSize: 15)),
