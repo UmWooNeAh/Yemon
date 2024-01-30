@@ -65,6 +65,18 @@ class MainViewModel extends ChangeNotifier {
     // });
   }
 
+  void matchAllSettlementItem() {
+    selectedReceiptItemIndexList = List.generate(
+        selectedSettlement.receipts.length,
+        (index) => List.generate(
+            selectedSettlement.receipts[index].receiptItems.length,
+            (index) => true));
+
+    for(int i=0;i<selectedSettlement.receipts.length;i++){
+      batchMatching(i);
+    }
+  }
+
   void changeAllMember(bool changeBool) {
     selectedMemberIndexList =
         List.generate(selectedMemberIndexList.length, (index) => changeBool);
