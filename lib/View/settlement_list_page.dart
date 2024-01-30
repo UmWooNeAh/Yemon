@@ -264,11 +264,11 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                       child: SingleChildScrollView(
                         child: Container(
                           margin: const EdgeInsets.symmetric(vertical: 10),
-                          child: const Column(
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.delete),
-                              Text(
+                              Image.asset("assets/Bin.png",width:20,height:20),
+                              const Text(
                                 "삭제",
                                 style: TextStyle(
                                   fontSize: 12,
@@ -293,11 +293,11 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                             child: Container(
                               width: (size.width - 20) / 2,
                               margin: const EdgeInsets.symmetric(vertical: 10),
-                              child: const Column(
+                              child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.edit),
-                                  Text(
+                                  Image.asset("assets/pencil.png",width:20,height:20),
+                                  const Text(
                                     "이름 변경",
                                     style: TextStyle(
                                       fontSize: 12,
@@ -325,11 +325,11 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                             child: Container(
                               width: (size.width - 20) / 2,
                               margin: const EdgeInsets.symmetric(vertical: 10),
-                              child: const Column(
+                              child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.delete),
-                                  Text(
+                                  Image.asset("assets/Bin.png",width:20,height:20),
+                                  const Text(
                                     "삭제",
                                     style: TextStyle(
                                       fontSize: 12,
