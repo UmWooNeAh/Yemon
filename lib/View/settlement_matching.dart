@@ -112,9 +112,6 @@ class GroupMembers extends ConsumerWidget {
               children: [
                 GestureDetector(
                   onTap: () => sProvider.toggleMemberDetail(),
-                  onVerticalDragUpdate: (detail){
-                    sProvider.toggleMemberDetail();
-                  },
                   child: Container(
                     decoration: BoxDecoration(
                       color: basic[1],

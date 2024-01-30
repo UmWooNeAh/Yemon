@@ -208,13 +208,35 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
               ),
             ],
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                  children: List.generate(provider.settlementList.length,
-                      (index) => SingleSettlement(index: index))),
-            ),
-          ),
+          provider.settlementList.length == 0
+              ? const Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 50),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("정산이 없습니다",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        )
+                    ),
+                    Text("정산을 생성하려면 우측 하단의 추가 버튼을 누르세요.",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                        )
+                    ),
+                  ],
+                ),
+              ))
+              : Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                        children: List.generate(provider.settlementList.length,
+                            (index) => SingleSettlement(index: index))),
+                  ),
+                ),
           AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               width: size.width,
@@ -323,35 +345,39 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                     ))
         ]),
       ),
-      floatingActionButton: eprovider.isEdit ? const SizedBox.shrink(): Container(
-        margin: EdgeInsets.only(
-            bottom: eprovider.isEdit && eprovider.isSelected.contains(true)
-                ? 80
-                : 0),
-        child: FloatingActionButton(
-          onPressed: () {
-            eprovider.addSettlement();
-            provider.addNewSettlement().then((value) {
-              context.go('/SettlementManagementPage');
-            });
-            // provider.selectSettlement(0);
-            //provider.settingMainViewModel();
-          },
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-          backgroundColor: basic[8],
-          child: Icon(
-            Icons.add,
-            color: basic[0],
-          ),
-        ),
-      ),
+      floatingActionButton: eprovider.isEdit
+          ? const SizedBox.shrink()
+          : Container(
+              margin: EdgeInsets.only(
+                  bottom:
+                      eprovider.isEdit && eprovider.isSelected.contains(true)
+                          ? 80
+                          : 0),
+              child: FloatingActionButton(
+                onPressed: () {
+                  eprovider.addSettlement();
+                  provider.addNewSettlement().then((value) {
+                    context.go('/SettlementManagementPage');
+                  });
+                  // provider.selectSettlement(0);
+                  //provider.settingMainViewModel();
+                },
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100)),
+                backgroundColor: basic[8],
+                child: Icon(
+                  Icons.add,
+                  color: basic[0],
+                ),
+              ),
+            ),
     );
   }
 }
 
 class SingleSettlement extends ConsumerWidget {
   const SingleSettlement({super.key, required this.index});
+
   final int index;
 
   @override
@@ -523,6 +549,7 @@ class EditSettlementName extends ConsumerStatefulWidget {
 
 class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
   TextEditingController controller = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -689,9 +716,10 @@ class _DeleteSettlementState extends ConsumerState<DeleteSettlement> {
                   borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
-              provider.deleteSettlement(eprovider.isSelected).then((value) =>
-                eprovider.deleteSettlement()
-              );
+              provider.deleteSettlement(eprovider.isSelected).then((value) {
+                eprovider.deleteSettlement();
+                eprovider.toggleEdit(provider.settlementList.length);
+              });
               context.pop();
             },
             child:
