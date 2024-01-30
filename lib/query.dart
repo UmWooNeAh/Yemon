@@ -103,7 +103,7 @@ class Query {
 
   Future<int> createReceiptItem(String rcpId, ReceiptItem rcpItem) async {
     return DBReceiptItem().createReceiptItem(_db!, rcpItem.receiptItemId, rcpId,
-        rcpItem.receiptItemName, rcpItem.price, rcpItem.count);
+        rcpItem.receiptItemName, rcpItem.individualPrice, rcpItem.count);
   }
 
   Future<int> updateReceiptItem(ReceiptItem rcpItem) async {

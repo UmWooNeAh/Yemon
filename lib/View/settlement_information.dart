@@ -99,18 +99,8 @@ class _SettlementInformationState extends ConsumerState<SettlementInformation> {
             mprovider.selectedSettlement.receipts.length,
             (index) => mprovider
                 .selectedSettlement.receipts[index].receiptItems.length));
-    // print("controllerlist, receipet0item isselected0");
-    // print(rprovider.isReceiptSelected.length);
-    // print(mprovider.receiptItemControllerList.length);
-    // print(mprovider.selectedSettlement.receipts[0].receiptItems.length);
-    // print(rprovider.isReceiptItemSelected[0].length);
   }
 
-  // @override
-  // Widget build(BuildContext context){
-  //
-  //   return SizedBox.shrink();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -280,17 +270,23 @@ class _RealDeletePopUpState extends ConsumerState<RealDeletePopUp> {
                   borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
-              mprovider.deleteReceiptItemList(rprovider.isReceiptItemSelected);
-              mprovider.deleteReceiptList(rprovider.isReceiptSelected);
-              rprovider.deleteSelected();
-              rprovider.setDeleteMode(
-                  mprovider.selectedSettlement.receipts.length,
-                  List.generate(
+              mprovider
+                  .deleteReceiptItemList(rprovider.isReceiptItemSelected)
+                  .then((value) {
+                mprovider
+                    .deleteReceiptList(rprovider.isReceiptSelected)
+                    .then((value) {
+                  rprovider.deleteSelected();
+                  rprovider.setDeleteMode(
                       mprovider.selectedSettlement.receipts.length,
-                      (index) => mprovider.selectedSettlement.receipts[index]
-                          .receiptItems.length));
-              ref.watch(settlementMatchingProvider).selectReceipt(-1);
-              context.pop();
+                      List.generate(
+                          mprovider.selectedSettlement.receipts.length,
+                          (index) => mprovider.selectedSettlement
+                              .receipts[index].receiptItems.length));
+                  ref.watch(settlementMatchingProvider).selectReceipt(-1);
+                  context.pop();
+                });
+              });
             },
             child:
                 Text("항목 삭제", style: TextStyle(color: basic[0], fontSize: 15)),

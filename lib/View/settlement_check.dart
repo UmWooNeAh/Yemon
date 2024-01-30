@@ -181,7 +181,8 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                   : Expanded(
                       child: RepaintBoundary(
                         key: _globalKey2,
-                        child: const SingleChildScrollView(child: OverallStmPaper()),
+                        child: const SingleChildScrollView(
+                            child: OverallStmPaper()),
                       ),
                     )
               : Expanded(
@@ -497,14 +498,17 @@ class OverallStmPaper extends ConsumerWidget {
                               mProvider
                                   .selectedSettlement.settlementPapers.length,
                               (index) => Container(
+                                width: (size.width - 60) * 0.3 ,
                                 margin:
                                     const EdgeInsets.symmetric(vertical: 15),
                                 child: Text(
-                                    "${mProvider.selectedSettlement.settlementPapers[index].totalPrice} 원",
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 18,
-                                    )),
+                                  "${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].totalPrice)} 원",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 18,
+                                  ),
+                                  textAlign: TextAlign.right,
+                                ),
                               ),
                             ))
                           ],
@@ -526,7 +530,10 @@ class OverallStmPaper extends ConsumerWidget {
                     textAlign: TextAlign.end,
                   ),
                 ),
-                Divider(thickness: 1, color: basic[2],),
+                Divider(
+                  thickness: 1,
+                  color: basic[2],
+                ),
               ],
             ),
           );
@@ -599,7 +606,7 @@ class OneStmPaper extends ConsumerWidget {
                                       ),
                                       TextSpan(
                                         text:
-                                            "  (${mProvider.getReceiptInformationBySettlementPaper(mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].hashCode)[0]})",
+                                            "  (${mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].receiptName})",
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
                                           fontSize: 13,
@@ -633,14 +640,7 @@ class OneStmPaper extends ConsumerWidget {
                                   margin:
                                       const EdgeInsets.symmetric(vertical: 15),
                                   child: Text(
-                                    // priceToString.format(mProvider
-                                    //     .getReceiptInformationBySettlementPaper(
-                                    //         mProvider
-                                    //             .selectedSettlement
-                                    //             .settlementPapers[index]
-                                    //             .settlementItems[stmItemIndex]
-                                    //             .hashCode)[1]),
-                                    "",
+                                    "${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].receiptItemPrice)}원",
                                     style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 18,
@@ -671,7 +671,7 @@ class OneStmPaper extends ConsumerWidget {
                                   margin:
                                       const EdgeInsets.symmetric(vertical: 15),
                                   child: Text(
-                                    "${mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].splitPrice} 원",
+                                    "${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].splitPrice)} 원",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 18,
@@ -682,7 +682,6 @@ class OneStmPaper extends ConsumerWidget {
                     ],
                   ),
                 ),
-
               ],
             ),
           ),
@@ -690,7 +689,7 @@ class OneStmPaper extends ConsumerWidget {
             width: size.width - 45,
             margin: const EdgeInsets.only(top: 10, bottom: 10),
             child: Text(
-                "정산 금액 ${mProvider.selectedSettlement.settlementPapers[index].totalPrice} 원",
+                "정산 금액 ${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].totalPrice)} 원",
                 textAlign: TextAlign.end,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
@@ -698,7 +697,6 @@ class OneStmPaper extends ConsumerWidget {
                   color: basic[8],
                 )),
           ),
-
           Divider(
             thickness: 1,
             color: basic[2],

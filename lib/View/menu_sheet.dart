@@ -181,7 +181,6 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
               mProvider.selectReceiptItem(widget.receiptIndex, widget.index);
               mProvider.batchMatching(widget.receiptIndex);
               sProvider.showMatchingDetail(widget.receiptIndex,widget.index);
-              print("d");
               return;
             }
               sProvider.toggleMatchingDetail(widget.receiptIndex,widget.index);
@@ -389,8 +388,6 @@ class _SingleSettlementItemMemberState
             right: 0,
             child: InkWell(
               onTap: () {
-                print(widget.stmPaperId);
-                print(mProvider.selectedSettlement.settlementPapers.firstWhere((element){return element.settlementPaperId == widget.stmPaperId;}).memberName);
                 mProvider.unmatching(sProvider.showMatchingDetailReceiptIndex,
                     widget.receiptItemIndex, widget.stmPaperId);
               },

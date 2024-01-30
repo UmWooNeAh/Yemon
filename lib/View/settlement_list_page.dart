@@ -685,6 +685,7 @@ class _DeleteSettlementState extends ConsumerState<DeleteSettlement> {
             onPressed: () {
               provider.deleteSettlement(eprovider.isSelected);
               eprovider.deleteSettlement();
+              eprovider.toggleEdit(provider.settlementList.length);
               context.pop();
             },
             child:

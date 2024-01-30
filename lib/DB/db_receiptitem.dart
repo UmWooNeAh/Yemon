@@ -18,9 +18,8 @@ class DBReceiptItem {
   }
 
   Future<int> updateReceiptItem(Database db, ReceiptItem rcpItem) async {
-    log("RcpItem: ${rcpItem.receiptItemName}, ${rcpItem.price}, ${rcpItem.count}");
     return await db!.rawUpdate('UPDATE ReceiptItem SET name = ?, price = ?, count = ? WHERE receiptItemId = ?'
-      , [rcpItem.receiptItemName, rcpItem.price, rcpItem.count, rcpItem.receiptItemId]);
+      , [rcpItem.receiptItemName, rcpItem.individualPrice, rcpItem.count, rcpItem.receiptItemId]);
   }
 
   Future<int> deleteReceiptItem(Database db, String rcpItemId) async {
