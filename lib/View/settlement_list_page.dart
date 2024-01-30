@@ -86,7 +86,13 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
   Widget build(BuildContext context) {
     final eprovider = ref.watch(editManagementProvider);
     final provider = ref.watch(mainProvider);
-    eprovider.setEditSettlement(ref.read(mainProvider).settlementList.length);
+
+    if (provider.db != null) {
+      provider.fetchAllSettlements().then((value) {
+        eprovider
+            .setEditSettlement(ref.read(mainProvider).settlementList.length);
+      });
+    }
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -317,7 +323,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                     ))
         ]),
       ),
-      floatingActionButton: Container(
+      floatingActionButton: eprovider.isEdit ? const SizedBox.shrink(): Container(
         margin: EdgeInsets.only(
             bottom: eprovider.isEdit && eprovider.isSelected.contains(true)
                 ? 80
@@ -326,7 +332,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
           onPressed: () {
             eprovider.addSettlement();
             provider.addNewSettlement().then((value) {
-              context.push('/SettlementManagementPage');
+              context.go('/SettlementManagementPage');
             });
             // provider.selectSettlement(0);
             //provider.settingMainViewModel();
@@ -397,7 +403,7 @@ class SingleSettlement extends ConsumerWidget {
                       provider.selectSettlement(index).then((value) {
                         print(provider.selectedSettlement.receipts.length);
                         // print(provider.selectedSettlement.receipts[0].receiptItems.length);
-                        context.push('/SettlementManagementPage');
+                        context.go('/SettlementManagementPage');
                       });
                       //provider.settingMainViewModel();
                     }
@@ -683,9 +689,9 @@ class _DeleteSettlementState extends ConsumerState<DeleteSettlement> {
                   borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
-              provider.deleteSettlement(eprovider.isSelected);
-              eprovider.deleteSettlement();
-              eprovider.toggleEdit(provider.settlementList.length);
+              provider.deleteSettlement(eprovider.isSelected).then((value) =>
+                eprovider.deleteSettlement()
+              );
               context.pop();
             },
             child:

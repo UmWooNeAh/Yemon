@@ -17,7 +17,7 @@ import '../query.dart';
 final mainProvider = ChangeNotifierProvider((ref) => MainViewModel());
 
 class MainViewModel extends ChangeNotifier {
-  late Database db;
+  Database? db;
   List<Settlement> settlementList = [];
   Settlement selectedSettlement = Settlement();
 
@@ -25,13 +25,14 @@ class MainViewModel extends ChangeNotifier {
   List<List<bool>> selectedReceiptItemIndexList = [];
   List<bool> selectedMemberIndexList = [];
 
-  void setDB(Database db) {
+  Future<void> setDB(Database db) async {
     this.db = db;
     notifyListeners();
+    return;
   }
 
   Future<void> fetchAllSettlements() async {
-    settlementList = await Query(db).showAllSettlements();
+    settlementList = await Query(db!).showAllSettlements();
     notifyListeners();
     return;
   }
@@ -94,7 +95,7 @@ class MainViewModel extends ChangeNotifier {
   }
 
   Future<void> selectSettlement(int index) async {
-    selectedSettlement = await Query(db)
+    selectedSettlement = await Query(db!)
         .showRecentSettlement(settlementList[index].settlementId);
     settingSelectedSettlement();
     notifyListeners();
@@ -103,12 +104,12 @@ class MainViewModel extends ChangeNotifier {
 
   void unmatching(
       int receiptIndex, int receiptItemIndex, String paperId) async {
-    await Query(db).unmatchingMemberFromReceiptItem(
+    await Query(db!).unmatchingMemberFromReceiptItem(
         paperId,
         selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex]
             .receiptItemId);
     selectedSettlement =
-        await Query(db).showRecentSettlement(selectedSettlement.settlementId);
+        await Query(db!).showRecentSettlement(selectedSettlement.settlementId);
 
     notifyListeners();
   }
@@ -127,7 +128,7 @@ class MainViewModel extends ChangeNotifier {
                     selectedSettlement.settlementPapers[j].settlementPaperId)) {
               continue;
             }
-            Query(db).matchingMemberToReceiptItem(
+            Query(db!).matchingMemberToReceiptItem(
                 selectedSettlement.settlementPapers[j].settlementPaperId,
                 selectedSettlement.receipts[presentReceiptIndex].receiptItems[i]
                     .receiptItemId);
@@ -137,7 +138,7 @@ class MainViewModel extends ChangeNotifier {
       }
     }
     selectedSettlement =
-        await Query(db).showRecentSettlement(selectedSettlement.settlementId);
+        await Query(db!).showRecentSettlement(selectedSettlement.settlementId);
     settingSelectedSettlement();
     notifyListeners();
   }
@@ -145,7 +146,7 @@ class MainViewModel extends ChangeNotifier {
 //영수증 이름 수정
   void editReceiptName(String newName, int receiptIndex) async {
     selectedSettlement.receipts[receiptIndex].receiptName = newName;
-    await Query(db).updateReceiptName(
+    await Query(db!).updateReceiptName(
         newName, selectedSettlement.receipts[receiptIndex].receiptId);
     notifyListeners();
   }
@@ -153,21 +154,21 @@ class MainViewModel extends ChangeNotifier {
 //특정 인덱스의 정산 이름 수정
   void editSettlementName(String newName, int index) async {
     settlementList[index].settlementName = newName;
-    await Query(db).updateSettlement(settlementList[index]);
+    await Query(db!).updateSettlement(settlementList[index]);
     notifyListeners();
   }
 
 //정산 이름 수정
   void editSelectedSettlementName(String newName) async {
     selectedSettlement.settlementName = newName;
-    await Query(db).updateSettlement(selectedSettlement);
+    await Query(db!).updateSettlement(selectedSettlement);
     notifyListeners();
   }
 
 //멤버 이름 수정
   void editMemberName(String newName, int index) async {
     selectedSettlement.settlementPapers[index].memberName = newName;
-    await Query(db).updateMemberName(
+    await Query(db!).updateMemberName(
         newName, selectedSettlement.settlementPapers[index].settlementPaperId);
     notifyListeners();
   }
@@ -178,10 +179,10 @@ class MainViewModel extends ChangeNotifier {
     selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex]
         .receiptItemName = newName;
     editAllSettlementItemName(receiptIndex, receiptItemIndex, newName);
-    await Query(db).updateReceiptItem(selectedSettlement
+    await Query(db!).updateReceiptItem(selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex]);
     selectedSettlement =
-        await Query(db).showRecentSettlement(selectedSettlement.settlementId);
+        await Query(db!).showRecentSettlement(selectedSettlement.settlementId);
     notifyListeners();
   }
 
@@ -217,10 +218,10 @@ class MainViewModel extends ChangeNotifier {
         priceToString.format(newIndividualPrice.truncate());
     receiptItemControllerList[receiptIndex][receiptItemIndex][3].text =
         priceToString.format(newIndividualPrice * count.truncate());
-    await Query(db).updateReceiptItem(selectedSettlement
+    await Query(db!).updateReceiptItem(selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex]);
     selectedSettlement =
-        await Query(db).showRecentSettlement(selectedSettlement.settlementId);
+        await Query(db!).showRecentSettlement(selectedSettlement.settlementId);
     notifyListeners();
   }
 
@@ -239,10 +240,10 @@ class MainViewModel extends ChangeNotifier {
     receiptItemControllerList[receiptIndex][receiptItemIndex][3].text =
         priceToString.format(newCount * individualPrice.truncate());
 
-    await Query(db).updateReceiptItem(selectedSettlement
+    await Query(db!).updateReceiptItem(selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex]);
     selectedSettlement =
-        await Query(db).showRecentSettlement(selectedSettlement.settlementId);
+        await Query(db!).showRecentSettlement(selectedSettlement.settlementId);
     notifyListeners();
   }
 
@@ -265,10 +266,10 @@ class MainViewModel extends ChangeNotifier {
 
     // updateMemberTotalPrice();
     // updateSettlementItemSplitPrice(receiptIndex, receiptItemIndex);
-    await Query(db).updateReceiptItem(selectedSettlement
+    await Query(db!).updateReceiptItem(selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex]);
     selectedSettlement =
-        await Query(db).showRecentSettlement(selectedSettlement.settlementId);
+        await Query(db!).showRecentSettlement(selectedSettlement.settlementId);
     notifyListeners();
   }
 
@@ -333,14 +334,19 @@ class MainViewModel extends ChangeNotifier {
   }
 
 //정산 삭제
-  void deleteSettlement(List<bool> indices) async {
+  Future<void> deleteSettlement(List<bool> indices) async {
+    print(indices.length);
+    print(settlementList.length);
     for (int i = indices.length - 1; i >= 0; i--) {
       if (indices[i]) {
-        await Query(db).deleteSettlement(settlementList[i]);
+        await Query(db!).deleteSettlement(settlementList[i]);
+        print(settlementList);
+        print(i);
         settlementList.removeAt(i);
       }
     }
     notifyListeners();
+    return;
   }
 
 //정산멤버 삭제
@@ -350,9 +356,9 @@ class MainViewModel extends ChangeNotifier {
     selectedSettlement.settlementPapers.removeAt(index);
     selectedMemberIndexList.removeAt(index);
     //매칭된거 지우기
-    await Query(db).deleteMembers(selectedSettlement.settlementId, [id]);
+    await Query(db!).deleteMembers(selectedSettlement.settlementId, [id]);
     selectedSettlement =
-        await Query(db).showRecentSettlement(selectedSettlement.settlementId);
+        await Query(db!).showRecentSettlement(selectedSettlement.settlementId);
     notifyListeners();
   }
 
@@ -360,9 +366,9 @@ class MainViewModel extends ChangeNotifier {
   Future<void> deleteReceiptList(List<bool> isSelectedReceiptList) async {
     for (int i = isSelectedReceiptList.length - 1; i >= 0; i--) {
       if (isSelectedReceiptList[i]) {
-        await Query(db).deleteReceipt(selectedSettlement.receipts[i].receiptId);
+        await Query(db!).deleteReceipt(selectedSettlement.receipts[i].receiptId);
         await DBReceiptItem()
-            .deleteAllRcpItems(db, selectedSettlement.receipts[i].receiptId);
+            .deleteAllRcpItems(db!, selectedSettlement.receipts[i].receiptId);
         selectedSettlement.receipts.removeAt(i);
         receiptItemControllerList.removeAt(i);
         selectedReceiptItemIndexList.removeAt(i);
@@ -389,9 +395,9 @@ class MainViewModel extends ChangeNotifier {
       for (int j = receiptItems[i].length - 1; j >= 0; j--) {
         if (receiptItems[i][j]) {
           await DBReceiptItem().deleteReceiptItem(
-              db, selectedSettlement.receipts[i].receiptItems[j].receiptItemId);
+              db!, selectedSettlement.receipts[i].receiptItems[j].receiptItemId);
           await DBSettlementItem().deleteAllStmItemsByRcpItemId(
-              db, selectedSettlement.receipts[i].receiptItems[j].receiptItemId);
+              db!, selectedSettlement.receipts[i].receiptItems[j].receiptItemId);
           deleteSettlementItem(selectedSettlement.receipts[i].receiptItems[j]);
           selectedSettlement.receipts[i].receiptItems.removeAt(j);
           receiptItemControllerList[i].removeAt(j);
@@ -425,7 +431,7 @@ class MainViewModel extends ChangeNotifier {
   Future<void> addNewSettlement() async {
     settlementList.insert(0, Settlement());
     selectedSettlement = settlementList[0];
-    await Query(db).createSettlement(selectedSettlement);
+    await Query(db!).createSettlement(selectedSettlement);
     await addMember(["나"]);
     notifyListeners();
     return;
@@ -441,7 +447,7 @@ class MainViewModel extends ChangeNotifier {
       newSettlementPapers.add(newSettlementPaper);
       addSelectedMemberIndexList();
     }
-    await Query(db)
+    await Query(db!)
         .createMembers(selectedSettlement.settlementId, newSettlementPapers);
     notifyListeners();
     return;
@@ -460,7 +466,7 @@ class MainViewModel extends ChangeNotifier {
 
     addReceiptItemControllerList();
     addSelectedReceiptItemIndexList();
-    await Query(db).createReceipt(newReceipt, selectedSettlement.settlementId);
+    await Query(db!).createReceipt(newReceipt, selectedSettlement.settlementId);
     notifyListeners();
   }
 
@@ -481,7 +487,7 @@ class MainViewModel extends ChangeNotifier {
 
     addReceiptItemTextEditingController(index, newReceiptItem);
     addSelectedReceiptItemIndexListItem(index);
-    await Query(db).createReceiptItem(
+    await Query(db!).createReceiptItem(
         selectedSettlement.receipts[index].receiptId, newReceiptItem);
     notifyListeners();
   }

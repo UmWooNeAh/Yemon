@@ -77,19 +77,18 @@ class _SplashViewState extends ConsumerState<SplashView> {
     SqlFliteDB().database.then((Database db) {
       //앱 시작할 때 모든 테이블 데이터 날리고 시작 가능한 코드
       //db.rawDelete(sql1); db.rawDelete(sql2); db.rawDelete(sql3); db.rawDelete(sql4); db.rawDelete(sql5);
-      ref.read(mainProvider).setDB(db);
-      ref.read(mainProvider).fetchAllSettlements().then((value) {
-        Future.delayed(const Duration(milliseconds: 500)).then((value) {
-          context.go('/');
-        });
+      ref.read(mainProvider).setDB(db).then((value){
+        context.go('/');
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: FlutterLogo(),
+    return const Scaffold(
+      body: Center(
+        child: FlutterLogo(),
+      ),
     );
   }
 }

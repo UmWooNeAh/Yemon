@@ -11,10 +11,8 @@ class MenuSheet extends ConsumerWidget {
   const MenuSheet({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
-    final size = MediaQuery
-        .of(context)
-        .size;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final size = MediaQuery.of(context).size;
     final mProvider = ref.watch(mainProvider);
     final sProvider = ref.watch(settlementMatchingProvider);
     return Column(
@@ -36,14 +34,14 @@ class MenuSheet extends ConsumerWidget {
                 sProvider.presentReceiptIndex == -1
                     ? "영수증 모아보기 "
                     : mProvider.selectedSettlement
-                    .receipts[sProvider.presentReceiptIndex].receiptName,
+                        .receipts[sProvider.presentReceiptIndex].receiptName,
                 overflow: TextOverflow.fade,
                 softWrap: false,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color:
-                  sProvider.presentReceiptIndex == -1 ? basic[8] : basic[5],
+                      sProvider.presentReceiptIndex == -1 ? basic[8] : basic[5],
                 ),
               ),
             ),
@@ -53,12 +51,16 @@ class MenuSheet extends ConsumerWidget {
               margin: const EdgeInsets.symmetric(horizontal: 15),
               child: ElevatedButton(
                 onPressed: () {
-                  if(sProvider.presentReceiptIndex == -1){
+                  if (sProvider.presentReceiptIndex == -1) {
                     mProvider.matchAllSettlementItem();
                   } else {
-                    for (int i = 0; i <
-                        mProvider.selectedReceiptItemIndexList[sProvider
-                            .presentReceiptIndex].length; i++) {
+                    for (int i = 0;
+                        i <
+                            mProvider
+                                .selectedReceiptItemIndexList[
+                                    sProvider.presentReceiptIndex]
+                                .length;
+                        i++) {
                       mProvider.selectReceiptItem(
                           sProvider.presentReceiptIndex, i);
                     }
@@ -71,9 +73,9 @@ class MenuSheet extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   backgroundColor:
-                  mProvider.selectedMemberIndexList.contains(true)
-                      ? basic[8]
-                      : basic[2],
+                      mProvider.selectedMemberIndexList.contains(true)
+                          ? basic[8]
+                          : basic[2],
                 ),
                 child: Center(
                   child: Text(
@@ -95,71 +97,76 @@ class MenuSheet extends ConsumerWidget {
             height: mProvider.selectedSettlement.receipts.isEmpty ? 50 : 10),
         sProvider.presentReceiptIndex == -1
             ? Expanded(
-          child: ListView.builder(
-              shrinkWrap: true,
-              scrollDirection: Axis.vertical,
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: mProvider.selectedSettlement.receipts.length,
-              itemBuilder: (context, receiptIndex) {
-                return Column(
-                  children: [
-                    Container(
-                      height: 50,
-                      width: size.width,
-                      padding: const EdgeInsets.only(left: 20, top: 5),
-                      child: Text(
-                        mProvider.selectedSettlement
-                            .receipts[receiptIndex].receiptName,
-                        style: TextStyle(
-                          color: basic[3],
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    Column(
-                        children: List.generate(
-                          mProvider.selectedSettlement.receipts[receiptIndex]
-                              .receiptItems.length,
-                              (index) =>
-                              SingleMenu(
-                                index: index,
-                                receiptIndex: receiptIndex,
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: mProvider.selectedSettlement.receipts.length,
+                    itemBuilder: (context, receiptIndex) {
+                      return Column(
+                        children: [
+                          Container(
+                            height: 50,
+                            width: size.width,
+                            padding: const EdgeInsets.only(left: 20, top: 5),
+                            child: Text(
+                              mProvider.selectedSettlement
+                                  .receipts[receiptIndex].receiptName,
+                              style: TextStyle(
+                                color: basic[3],
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
                               ),
-                        )),
-                  ],
-                );
-              }),
-        )
+                            ),
+                          ),
+                          Column(
+                              children: List.generate(
+                            mProvider.selectedSettlement.receipts[receiptIndex]
+                                .receiptItems.length,
+                            (index) => SingleMenu(
+                              index: index,
+                              receiptIndex: receiptIndex,
+                            ),
+                          )),
+                        ],
+                      );
+                    }),
+              )
             : (mProvider.selectedSettlement.receipts.isEmpty
-            ? const Text("메뉴가 없습니다.",
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ))
-            : Expanded(
-          child: SingleChildScrollView(
-              child: Column(
-                  children: List.generate(
-                    mProvider
-                        .selectedSettlement
-                        .receipts[sProvider.presentReceiptIndex]
-                        .receiptItems
-                        .length,
-                        (index) =>
-                        SingleMenu(
+                ? const Text("메뉴가 없습니다.",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ))
+                : Expanded(
+                    child: SingleChildScrollView(
+                        child: Column(
+                            children: List.generate(
+                      mProvider
+                              .selectedSettlement
+                              .receipts[sProvider.presentReceiptIndex]
+                              .receiptItems
+                              .length +
+                          1,
+                      (index) {
+                        if (index == mProvider
+                              .selectedSettlement
+                              .receipts[sProvider.presentReceiptIndex]
+                              .receiptItems
+                              .length){
+                                return const SizedBox(height: 50,);
+                              }
+                        return SingleMenu(
                           index: index,
                           receiptIndex: sProvider.presentReceiptIndex,
-                        ),
-                  ))),
-        ))
+                        );
+                      },
+                    ))),
+                  ))
       ],
     );
   }
 }
-
-
-
 
 class SingleMenu extends ConsumerStatefulWidget {
   final int receiptIndex;
@@ -172,7 +179,6 @@ class SingleMenu extends ConsumerStatefulWidget {
 }
 
 class _SingleMenuState extends ConsumerState<SingleMenu> {
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -188,11 +194,10 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
             if (mProvider.selectedMemberIndexList.contains(true)) {
               mProvider.selectReceiptItem(widget.receiptIndex, widget.index);
               mProvider.batchMatching(widget.receiptIndex);
-              sProvider.showMatchingDetail(widget.receiptIndex,widget.index);
+              sProvider.showMatchingDetail(widget.receiptIndex, widget.index);
               return;
             }
-              sProvider.toggleMatchingDetail(widget.receiptIndex,widget.index);
-
+            sProvider.toggleMatchingDetail(widget.receiptIndex, widget.index);
           },
           child: Container(
             height: 60,
@@ -243,7 +248,11 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
           duration: const Duration(milliseconds: 300),
           curve: Curves.decelerate,
           width: size.width,
-          height: sProvider.showMatchingDetailItemIndex == widget.index && sProvider.showMatchingDetailReceiptIndex == widget.receiptIndex ? 170 : 0,
+          height: sProvider.showMatchingDetailItemIndex == widget.index &&
+                  sProvider.showMatchingDetailReceiptIndex ==
+                      widget.receiptIndex
+              ? 170
+              : 0,
           color: basic[1],
           padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
           child: SingleChildScrollView(
@@ -255,8 +264,9 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.decelerate,
                   width: size.width,
-                  height:
-                      sProvider.showMatchingDetailItemIndex == widget.index ? 140 : 0,
+                  height: sProvider.showMatchingDetailItemIndex == widget.index
+                      ? 140
+                      : 0,
                   child: SingleChildScrollView(
                     child: ClipRect(
                       child: Wrap(
@@ -277,15 +287,15 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
                                       .toList()[idx],
                                   receiptItemIndex: widget.index,
                                   receiptIndex: widget.receiptIndex,
-                                )
-                        ),
+                                )),
                       ),
                     ),
                   ),
                 ),
                 GestureDetector(
                   onTap: () {
-                    sProvider.toggleMatchingDetail(widget.receiptIndex,widget.index);
+                    sProvider.toggleMatchingDetail(
+                        widget.receiptIndex, widget.index);
                   },
                   child: Container(
                     width: size.width,
@@ -382,8 +392,8 @@ class _SingleSettlementItemMemberState
             ),
             child: Text(
               mProvider.selectedSettlement.settlementPapers
-                  .firstWhere(
-                      (element) => element.settlementPaperId == widget.stmPaperId)
+                  .firstWhere((element) =>
+                      element.settlementPaperId == widget.stmPaperId)
                   .memberName,
               style: const TextStyle(
                 fontSize: 17,

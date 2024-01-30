@@ -181,8 +181,19 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                   : Expanded(
                       child: RepaintBoundary(
                         key: _globalKey2,
-                        child: const SingleChildScrollView(
-                            child: OverallStmPaper()),
+                        child: ListView(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          children: [
+                            const OverallStmPaper(),
+                            Column(
+                              children: List.generate(
+                                  mProvider.selectedSettlement.settlementPapers
+                                      .length,
+                                  (index) => OneStmPaper(index: index)),
+                            ),
+                          ],
+                        ),
                       ),
                     )
               : Expanded(
@@ -352,7 +363,11 @@ class OverallStmPaper extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mProvider = ref.watch(mainProvider);
     final Size size = MediaQuery.of(context).size;
-    return mProvider.selectedSettlement.totalPrice == 0
+    int sum = 0;
+    for (var settlementPaper in mProvider.selectedSettlement.settlementPapers) {
+      sum += settlementPaper.settlementItems.isEmpty ? 0 : 1;
+    }
+    return sum == 0
         ? const Center(
             child: Text(
             "정산할 항목이 없습니다.",
@@ -396,21 +411,27 @@ class OverallStmPaper extends ConsumerWidget {
                               children: List.generate(
                                   mProvider.selectedSettlement.settlementPapers
                                       .length,
-                                  (index) => Container(
-                                        margin: const EdgeInsets.symmetric(
-                                            vertical: 15),
-                                        child: Text(
-                                          mProvider
-                                              .selectedSettlement
-                                              .settlementPapers[index]
-                                              .memberName,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 18,
+                                  (index) => mProvider
+                                          .selectedSettlement
+                                          .settlementPapers[index]
+                                          .settlementItems
+                                          .isEmpty
+                                      ? const SizedBox.shrink()
+                                      : Container(
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 15),
+                                          child: Text(
+                                            mProvider
+                                                .selectedSettlement
+                                                .settlementPapers[index]
+                                                .memberName,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 18,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      )),
+                                        )),
                             )
                           ],
                         ),
@@ -430,54 +451,60 @@ class OverallStmPaper extends ConsumerWidget {
                               children: List.generate(
                                   mProvider.selectedSettlement.settlementPapers
                                       .length,
-                                  (index) => Container(
-                                        margin: const EdgeInsets.symmetric(
-                                            vertical: 15),
-                                        child: Row(children: [
-                                          SizedBox(
-                                            width: (size.width - 60) * 0.18,
-                                            child: Text(
-                                              mProvider
-                                                      .selectedSettlement
-                                                      .settlementPapers[index]
-                                                      .settlementItems
-                                                      .isEmpty
-                                                  ? "메뉴 없음"
-                                                  : mProvider
-                                                      .selectedSettlement
-                                                      .settlementPapers[index]
-                                                      .settlementItems
-                                                      .first
-                                                      .name,
-                                              overflow: TextOverflow.ellipsis,
-                                              softWrap: false,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 18,
+                                  (index) => mProvider
+                                          .selectedSettlement
+                                          .settlementPapers[index]
+                                          .settlementItems
+                                          .isEmpty
+                                      ? const SizedBox.shrink()
+                                      : Container(
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 15),
+                                          child: Row(children: [
+                                            SizedBox(
+                                              width: (size.width - 60) * 0.18,
+                                              child: Text(
+                                                mProvider
+                                                        .selectedSettlement
+                                                        .settlementPapers[index]
+                                                        .settlementItems
+                                                        .isEmpty
+                                                    ? "메뉴 없음"
+                                                    : mProvider
+                                                        .selectedSettlement
+                                                        .settlementPapers[index]
+                                                        .settlementItems
+                                                        .first
+                                                        .name,
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 18,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          SizedBox(
-                                            width: (size.width - 60) * 0.12,
-                                            child: Text(
-                                              mProvider
-                                                      .selectedSettlement
-                                                      .settlementPapers[index]
-                                                      .settlementItems
-                                                      .isEmpty
-                                                  ? ""
-                                                  : "등 ${mProvider.selectedSettlement.settlementPapers[index].settlementItems.length}개",
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 18,
+                                            SizedBox(
+                                              width: (size.width - 60) * 0.12,
+                                              child: Text(
+                                                mProvider
+                                                        .selectedSettlement
+                                                        .settlementPapers[index]
+                                                        .settlementItems
+                                                        .isEmpty
+                                                    ? ""
+                                                    : "등 ${mProvider.selectedSettlement.settlementPapers[index].settlementItems.length}개",
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 18,
+                                                ),
+                                                textAlign: TextAlign.end,
+                                                overflow: TextOverflow.fade,
+                                                softWrap: false,
                                               ),
-                                              textAlign: TextAlign.end,
-                                              overflow: TextOverflow.fade,
-                                              softWrap: false,
-                                            ),
-                                          )
-                                        ]),
-                                      )),
+                                            )
+                                          ]),
+                                        )),
                             )
                           ],
                         ),
@@ -497,19 +524,25 @@ class OverallStmPaper extends ConsumerWidget {
                                 children: List.generate(
                               mProvider
                                   .selectedSettlement.settlementPapers.length,
-                              (index) => Container(
-                                width: (size.width - 60) * 0.3 ,
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 15),
-                                child: Text(
-                                  "${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].totalPrice)} 원",
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 18,
-                                  ),
-                                  textAlign: TextAlign.right,
-                                ),
-                              ),
+                              (index) => mProvider
+                                      .selectedSettlement
+                                      .settlementPapers[index]
+                                      .settlementItems
+                                      .isEmpty
+                                  ? const SizedBox.shrink()
+                                  : Container(
+                                      width: (size.width - 60) * 0.3,
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 15),
+                                      child: Text(
+                                        "${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].totalPrice)} 원",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 18,
+                                        ),
+                                        textAlign: TextAlign.right,
+                                      ),
+                                    ),
                             ))
                           ],
                         ),
@@ -552,151 +585,179 @@ class OneStmPaper extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 15),
       color: basic[0],
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            margin:
-                const EdgeInsets.only(left: 20, top: 20, bottom: 20, right: 20),
-            child: Text(
-                mProvider.selectedSettlement.settlementPapers[index].memberName,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 25,
-                )),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              margin: const EdgeInsets.only(
+                  left: 20, top: 20, bottom: 20, right: 20),
+              child: Text(
+                  mProvider
+                      .selectedSettlement.settlementPapers[index].memberName,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 25,
+                  )),
+            ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SizedBox(
-                  width: (size.width - 60) * 0.4,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          mProvider.selectedSettlement.settlementPapers[index].settlementItems
+                  .isNotEmpty
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Text("메뉴 이름",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20,
-                            color: basic[3],
-                          )),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: List.generate(
-                            mProvider.selectedSettlement.settlementPapers[index]
-                                .settlementItems.length,
-                            (stmItemIndex) => Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 15),
-                                  child: RichText(
-                                    overflow: TextOverflow.fade,
-                                    softWrap: false,
-                                    maxLines: 1,
-                                    text: TextSpan(children: [
-                                      TextSpan(
-                                        text: mProvider
-                                            .selectedSettlement
-                                            .settlementPapers[index]
-                                            .settlementItems[stmItemIndex]
-                                            .name,
-                                        style: TextStyle(
+                      SizedBox(
+                        width: (size.width - 60) * 0.4,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("메뉴 이름",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 20,
+                                  color: basic[3],
+                                )),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: List.generate(
+                                  mProvider
+                                      .selectedSettlement
+                                      .settlementPapers[index]
+                                      .settlementItems
+                                      .length,
+                                  (stmItemIndex) => Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            vertical: 15),
+                                        child: RichText(
+                                          overflow: TextOverflow.fade,
+                                          softWrap: false,
+                                          maxLines: 1,
+                                          text: TextSpan(children: [
+                                            TextSpan(
+                                              text: mProvider
+                                                  .selectedSettlement
+                                                  .settlementPapers[index]
+                                                  .settlementItems[stmItemIndex]
+                                                  .name,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 18,
+                                                  color: Colors.black),
+                                            ),
+                                            TextSpan(
+                                              text:
+                                                  "  (${mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].receiptName})",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 13,
+                                                color: basic[3],
+                                              ),
+                                            ),
+                                          ]),
+                                        ),
+                                      )),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: (size.width - 60) * 0.3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text("메뉴 금액",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 20,
+                                  color: basic[3],
+                                )),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: List.generate(
+                                  mProvider
+                                      .selectedSettlement
+                                      .settlementPapers[index]
+                                      .settlementItems
+                                      .length,
+                                  (stmItemIndex) => Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            vertical: 15),
+                                        child: Text(
+                                          "${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].receiptItemPrice)}원",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 18,
+                                              color: basic[3]),
+                                        ),
+                                      )),
+                            )
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: (size.width - 60) * 0.3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text("계산할 금액",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 20,
+                                  color: basic[3],
+                                )),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: List.generate(
+                                  mProvider
+                                      .selectedSettlement
+                                      .settlementPapers[index]
+                                      .settlementItems
+                                      .length,
+                                  (stmItemIndex) => Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            vertical: 15),
+                                        child: Text(
+                                          "${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].splitPrice)} 원",
+                                          style: TextStyle(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 18,
-                                            color: Colors.black),
-                                      ),
-                                      TextSpan(
-                                        text:
-                                            "  (${mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].receiptName})",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 13,
-                                          color: basic[3],
+                                          ),
                                         ),
-                                      ),
-                                    ]),
-                                  ),
-                                )),
+                                      )),
+                            )
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-                SizedBox(
-                  width: (size.width - 60) * 0.3,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text("메뉴 금액",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20,
-                            color: basic[3],
-                          )),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: List.generate(
-                            mProvider.selectedSettlement.settlementPapers[index]
-                                .settlementItems.length,
-                            (stmItemIndex) => Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 15),
-                                  child: Text(
-                                    "${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].receiptItemPrice)}원",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 18,
-                                        color: basic[3]),
-                                  ),
-                                )),
-                      )
-                    ],
+                )
+              : Container(
+                  margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  child: const Text(
+                    "해당 멤버에게 매칭된 메뉴가 없습니다.",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
-                SizedBox(
-                  width: (size.width - 60) * 0.3,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text("계산할 금액",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20,
-                            color: basic[3],
-                          )),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: List.generate(
-                            mProvider.selectedSettlement.settlementPapers[index]
-                                .settlementItems.length,
-                            (stmItemIndex) => Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 15),
-                                  child: Text(
-                                    "${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].splitPrice)} 원",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                )),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            width: size.width - 45,
-            margin: const EdgeInsets.only(top: 10, bottom: 10),
-            child: Text(
-                "정산 금액 ${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].totalPrice)} 원",
-                textAlign: TextAlign.end,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 25,
-                  color: basic[8],
-                )),
-          ),
+          mProvider.selectedSettlement.settlementPapers[index].settlementItems
+                  .isNotEmpty
+              ? Container(
+                  width: size.width - 45,
+                  margin: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: Text(
+                      "정산 금액 ${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].totalPrice)} 원",
+                      textAlign: TextAlign.end,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 25,
+                        color: basic[8],
+                      )),
+                )
+              : const SizedBox.shrink(),
           Divider(
             thickness: 1,
             color: basic[2],
