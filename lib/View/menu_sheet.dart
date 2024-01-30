@@ -219,12 +219,17 @@ class _SingleMenuState extends ConsumerState<SingleMenu> {
                   margin: const EdgeInsets.only(left: 20),
                   child: Row(
                     children: [
-                      Text(
-                        rcpItem.receiptItemName,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w400,
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: (size.width - 80) * 0.6 - 50,
+                        ),
+                        child: Text(
+                          rcpItem.receiptItemName,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                       ),
                       Text(

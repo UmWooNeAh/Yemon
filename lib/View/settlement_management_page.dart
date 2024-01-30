@@ -23,6 +23,7 @@ class _SettlementManagementPageState
     return Scaffold(
       appBar: AppBar(
         title: const SettlementName(),
+        backgroundColor: selectedIndex == 2 ? basic[1] : basic[0],
       ),
       body: IndexedStack(
         index: selectedIndex,
@@ -87,13 +88,14 @@ class SettlementName extends ConsumerWidget {
     final provider = ref.watch(mainProvider);
     return Container(
       width: size.width,
-      height: 60,
-      // color: basic[1],
-      margin: const EdgeInsets.symmetric(vertical: 5),
+      // height: 60,
+      // color: basic[8],
+      // margin: const EdgeInsets.symmetric(vertical: 5),
+      // padding: const EdgeInsets.only(top: 5),
       child: Row(
         children: [
           Container(
-            height: 40,
+            // height: 40,
             child: Center(
               child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: size.width - 140),
@@ -102,7 +104,7 @@ class SettlementName extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 25,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -119,10 +121,10 @@ class SettlementName extends ConsumerWidget {
             child: Container(
               width: 35,
               height: 35,
-              padding: const EdgeInsets.all(10),
-              margin: const EdgeInsets.only(top: 5),
-              child: FittedBox(
-                  fit: BoxFit.fill, child: Image.asset('assets/Edit.png')),
+              // padding: const EdgeInsets.all(10),
+              // margin: const EdgeInsets.only(top: 5),
+              child: Center(
+                  child: Image.asset('assets/Edit.png', width: 17, height: 17,)),
             ),
           ),
         ],
