@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqlite_test/DB/sqlflite_DB.dart';
@@ -78,16 +79,18 @@ class _SplashViewState extends ConsumerState<SplashView> {
       //앱 시작할 때 모든 테이블 데이터 날리고 시작 가능한 코드
       //db.rawDelete(sql1); db.rawDelete(sql2); db.rawDelete(sql3); db.rawDelete(sql4); db.rawDelete(sql5);
       ref.read(mainProvider).setDB(db).then((value){
-        context.go('/');
+        Future.delayed(const Duration(milliseconds: 1000), (){
+          context.go('/');
+        });
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: FlutterLogo(),
+        child: SvgPicture.asset('assets/Yemon.svg'),
       ),
     );
   }
