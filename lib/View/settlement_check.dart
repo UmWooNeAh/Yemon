@@ -388,7 +388,7 @@ class OverallStmPaper extends ConsumerWidget {
                   child: const Text("전체 정산서",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        fontSize: 25,
+                        fontSize: 20,
                       )),
                 ),
                 Padding(
@@ -396,14 +396,14 @@ class OverallStmPaper extends ConsumerWidget {
                   child: Row(
                     children: [
                       SizedBox(
-                        width: (size.width - 60) * 0.4,
+                        width: (size.width - 60) * 0.35,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text("이름",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 20,
+                                  fontSize: 15,
                                   color: basic[3],
                                 )),
                             Column(
@@ -427,7 +427,7 @@ class OverallStmPaper extends ConsumerWidget {
                                                 .memberName,
                                             style: const TextStyle(
                                               fontWeight: FontWeight.w600,
-                                              fontSize: 18,
+                                              fontSize: 15,
                                             ),
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -437,14 +437,14 @@ class OverallStmPaper extends ConsumerWidget {
                         ),
                       ),
                       SizedBox(
-                        width: (size.width - 60) * 0.3,
+                        width: (size.width - 60) * 0.35,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text("메뉴",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 20,
+                                  fontSize: 15,
                                   color: basic[3],
                                 )),
                             Column(
@@ -477,10 +477,11 @@ class OverallStmPaper extends ConsumerWidget {
                                                         .first
                                                         .name,
                                                 overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.center,
                                                 softWrap: false,
                                                 style: const TextStyle(
                                                   fontWeight: FontWeight.w600,
-                                                  fontSize: 18,
+                                                  fontSize: 15,
                                                 ),
                                               ),
                                             ),
@@ -496,9 +497,9 @@ class OverallStmPaper extends ConsumerWidget {
                                                     : "등 ${mProvider.selectedSettlement.settlementPapers[index].settlementItems.length}개",
                                                 style: const TextStyle(
                                                   fontWeight: FontWeight.w600,
-                                                  fontSize: 18,
+                                                  fontSize: 15,
                                                 ),
-                                                textAlign: TextAlign.end,
+                                                textAlign: TextAlign.center,
                                                 overflow: TextOverflow.fade,
                                                 softWrap: false,
                                               ),
@@ -517,7 +518,7 @@ class OverallStmPaper extends ConsumerWidget {
                             Text("정산 금액",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 20,
+                                  fontSize: 15,
                                   color: basic[3],
                                 )),
                             Column(
@@ -538,7 +539,7 @@ class OverallStmPaper extends ConsumerWidget {
                                         "${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].totalPrice)} 원",
                                         style: const TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          fontSize: 18,
+                                          fontSize: 15,
                                         ),
                                         textAlign: TextAlign.right,
                                       ),
@@ -557,7 +558,7 @@ class OverallStmPaper extends ConsumerWidget {
                     "총 금액 ${priceToString.format(mProvider.selectedSettlement.totalPrice.toInt())}원",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      fontSize: 25,
+                      fontSize: 20,
                       color: basic[8],
                     ),
                     textAlign: TextAlign.end,
@@ -588,16 +589,16 @@ class OneStmPaper extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.topLeft,
             child: Container(
               margin: const EdgeInsets.only(
-                  left: 20, top: 20, bottom: 20, right: 20),
+                  left: 10, top: 10, bottom: 30, right: 20),
               child: Text(
                   mProvider
                       .selectedSettlement.settlementPapers[index].memberName,
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
-                    fontSize: 25,
+                    fontSize: 20,
                   )),
             ),
           ),
@@ -616,11 +617,11 @@ class OneStmPaper extends ConsumerWidget {
                             Text("메뉴 이름",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 20,
+                                  fontSize: 15,
                                   color: basic[3],
                                 )),
                             Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: List.generate(
                                   mProvider
                                       .selectedSettlement
@@ -643,7 +644,7 @@ class OneStmPaper extends ConsumerWidget {
                                                   .name,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w600,
-                                                  fontSize: 18,
+                                                  fontSize: 15,
                                                   color: Colors.black),
                                             ),
                                             TextSpan(
@@ -651,7 +652,7 @@ class OneStmPaper extends ConsumerWidget {
                                                   "  (${mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].receiptName})",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w600,
-                                                fontSize: 13,
+                                                fontSize: 12,
                                                 color: basic[3],
                                               ),
                                             ),
@@ -670,7 +671,7 @@ class OneStmPaper extends ConsumerWidget {
                             Text("메뉴 금액",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 20,
+                                  fontSize: 15,
                                   color: basic[3],
                                 )),
                             Column(
@@ -688,7 +689,7 @@ class OneStmPaper extends ConsumerWidget {
                                           "${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].receiptItemPrice)}원",
                                           style: TextStyle(
                                               fontWeight: FontWeight.w600,
-                                              fontSize: 18,
+                                              fontSize: 15,
                                               color: basic[3]),
                                         ),
                                       )),
@@ -704,7 +705,7 @@ class OneStmPaper extends ConsumerWidget {
                             Text("계산할 금액",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 20,
+                                  fontSize: 15,
                                   color: basic[3],
                                 )),
                             Column(
@@ -722,7 +723,7 @@ class OneStmPaper extends ConsumerWidget {
                                           "${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].splitPrice)} 원",
                                           style: TextStyle(
                                             fontWeight: FontWeight.w600,
-                                            fontSize: 18,
+                                            fontSize: 15,
                                           ),
                                         ),
                                       )),
@@ -753,7 +754,7 @@ class OneStmPaper extends ConsumerWidget {
                       textAlign: TextAlign.end,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        fontSize: 25,
+                        fontSize: 20,
                         color: basic[8],
                       )),
                 )
