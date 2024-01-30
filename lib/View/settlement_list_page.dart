@@ -274,7 +274,11 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Image.asset("assets/Bin.png",width:20,height:20),
+                              Image.asset("assets/Bin.png",
+                                  width: 17, height: 17),
+                              const SizedBox(
+                                height: 5,
+                              ),
                               const Text(
                                 "삭제",
                                 style: TextStyle(
@@ -303,7 +307,11 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Image.asset("assets/pencil.png",width:20,height:20),
+                                  Image.asset("assets/pencil.png",
+                                      width: 17, height: 17),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
                                   const Text(
                                     "이름 변경",
                                     style: TextStyle(
@@ -335,7 +343,11 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Image.asset("assets/Bin.png",width:20,height:20),
+                                  Image.asset("assets/Bin.png",
+                                      width: 17, height: 17),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
                                   const Text(
                                     "삭제",
                                     style: TextStyle(
@@ -566,6 +578,7 @@ class EditSettlementName extends ConsumerStatefulWidget {
 
 class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
   TextEditingController controller = TextEditingController();
+  bool isError = false;
 
   @override
   void initState() {
@@ -583,11 +596,12 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
     final provider = ref.watch(mainProvider);
     return AlertDialog(
       elevation: 0,
-      title: const Text(
+      title: Text(
         "정산의 이름을 수정합니다",
         style: TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w700,
+          fontSize: 18,
+          color: basic[4],
+          fontWeight: FontWeight.w500,
         ),
       ),
       shape: RoundedRectangleBorder(
@@ -597,31 +611,38 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              border: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
-              ),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: isError ? 60 : 30,
+            // color: Colors.red,
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                errorText: isError ? "공백은 이름이 될 수 없습니다." : null,
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
               ),
             ),
           ),
         ],
       ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
       actionsAlignment: MainAxisAlignment.spaceBetween,
-      actionsPadding: const EdgeInsets.all(10),
+      actionsPadding: const EdgeInsets.all(7),
       actions: [
         Container(
-          height: 55,
+          height: 50,
           width: MediaQuery.of(context).size.width * 0.35,
           decoration: BoxDecoration(
             border: Border.all(color: basic[2], width: 1.5),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(5),
           ),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -633,28 +654,38 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
             onPressed: () {
               context.pop();
             },
-            child: Text("취소", style: TextStyle(color: basic[5])),
+            child: Text("취소",
+                style: TextStyle(
+                    color: basic[5],
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500)),
           ),
         ),
         Container(
-          height: 55,
+          height: 50,
           width: MediaQuery.of(context).size.width * 0.35,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: basic[9],
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(5)),
             ),
             onPressed: () {
               if (controller.text == "") {
+                setState(() {
+                  isError = true;
+                });
                 return;
               }
               provider.editSettlementName(
                   controller.text, eprovider.isSelected.indexOf(true));
               context.pop();
             },
-            child:
-                Text("이름 변경", style: TextStyle(color: basic[0], fontSize: 15)),
+            child: Text("이름 변경",
+                style: TextStyle(
+                    color: basic[0],
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700)),
           ),
         ),
       ],
@@ -681,34 +712,34 @@ class _DeleteSettlementState extends ConsumerState<DeleteSettlement> {
           Text(
             "정산을 삭제하면 다시 되돌릴 수 없습니다",
             style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
+              fontSize: 17,
+              fontWeight: FontWeight.w500,
               color: basic[4],
             ),
           ),
           Text(
             "선택한 정산을 삭제하시겠습니까?",
             style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
+              fontSize: 17,
+              fontWeight: FontWeight.w500,
               color: basic[4],
             ),
           ),
         ],
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.circular(7.0),
       ),
       backgroundColor: basic[0],
       actionsAlignment: MainAxisAlignment.spaceBetween,
       actionsPadding: const EdgeInsets.all(10),
       actions: [
         Container(
-          height: 55,
+          height: 50,
           width: MediaQuery.of(context).size.width * 0.35,
           decoration: BoxDecoration(
             border: Border.all(color: basic[2], width: 1.5),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(5),
           ),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -720,17 +751,21 @@ class _DeleteSettlementState extends ConsumerState<DeleteSettlement> {
             onPressed: () {
               context.pop();
             },
-            child: Text("취소", style: TextStyle(color: basic[5])),
+            child: Text("취소",
+                style: TextStyle(
+                    color: basic[5],
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18)),
           ),
         ),
         Container(
-          height: 55,
+          height: 50,
           width: MediaQuery.of(context).size.width * 0.35,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: basic[7],
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(5)),
             ),
             onPressed: () {
               provider.deleteSettlement(eprovider.isSelected).then((value) {
@@ -739,8 +774,11 @@ class _DeleteSettlementState extends ConsumerState<DeleteSettlement> {
                 context.pop();
               });
             },
-            child:
-                Text("정산 삭제", style: TextStyle(color: basic[0], fontSize: 15)),
+            child: Text("정산 삭제",
+                style: TextStyle(
+                    color: basic[0],
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700)),
           ),
         ),
       ],
