@@ -12,14 +12,16 @@ class FetchQuery {
 
   Future<List<Settlement>> fetchAllSettlements(Database db) async {
     List<Settlement> stms = [];
-    List<Map> dbSettlement = await db!.rawQuery('SELECT * FROM Settlement ORDER BY recordDate DESC');
+    List<Map> dbSettlement =
+        await db!.rawQuery('SELECT * FROM Settlement ORDER BY recordDate DESC');
 
     for (var stm in dbSettlement) {
       Settlement settlement = Settlement();
       settlement.settlementId = stm["settlementId"];
       settlement.settlementName = stm["settlementName"];
       settlement.date = DateTime.parse(stm["recordDate"]);
-      settlement.settlementPapers = await fetchSettlementPapers(db, settlement.settlementId);
+      settlement.settlementPapers =
+          await fetchSettlementPapers(db, settlement.settlementId);
       stms.add(settlement);
     }
 
@@ -37,7 +39,7 @@ class FetchQuery {
     settlement.receipts = await fetchReceipts(db, stmId);
     settlement.settlementPapers = await fetchSettlementPapers(db, stmId);
     settlement.totalPrice = 0;
-    for(var receipt in settlement.receipts) {
+    for (var receipt in settlement.receipts) {
       settlement.totalPrice += receipt.totalPrice;
     }
 
@@ -49,14 +51,14 @@ class FetchQuery {
     List<Map> dbReceipts = await db
         .rawQuery('SELECT * FROM Receipt WHERE settlementId = ?', [stmId]);
 
-    for(var dbReceipt in dbReceipts) {
+    for (var dbReceipt in dbReceipts) {
       Receipt newReceipt = Receipt();
       newReceipt.receiptId = dbReceipt["receiptId"];
       newReceipt.receiptName = dbReceipt["receiptName"];
       newReceipt.receiptItems =
           await fetchReceiptItems(db, dbReceipt["receiptId"]);
       newReceipt.totalPrice = 0;
-      for(var receiptItem in newReceipt.receiptItems) {
+      for (var receiptItem in newReceipt.receiptItems) {
         newReceipt.totalPrice += receiptItem.price;
       }
       receipts.add(newReceipt);
@@ -70,21 +72,23 @@ class FetchQuery {
     List<Map> dbReceiptItems = await db
         .rawQuery('SELECT * FROM ReceiptItem WHERE receiptId = ?', [rcpId]);
 
-      for(var dbReceiptItem in dbReceiptItems ) {
-        ReceiptItem newItem = ReceiptItem();
-        newItem.receiptItemId = dbReceiptItem["receiptItemId"];
-        newItem.receiptItemName = dbReceiptItem["name"];
-        newItem.price = dbReceiptItem["price"];
-        newItem.count = dbReceiptItem["count"];
-        newItem.individualPrice = newItem.price / newItem.count;
-        newItem.paperOwner = {}; // key: settlementPaperId, value: memberName
+    for (var dbReceiptItem in dbReceiptItems) {
+      ReceiptItem newItem = ReceiptItem();
+      newItem.receiptItemId = dbReceiptItem["receiptItemId"];
+      newItem.receiptItemName = dbReceiptItem["name"];
+      newItem.individualPrice = dbReceiptItem["price"];
+      newItem.count = dbReceiptItem["count"];
+      newItem.price = newItem.individualPrice * newItem.count;
+      newItem.paperOwner = {}; // key: settlementPaperId, value: memberName
 
-        List<Map> res = await db!.rawQuery('SELECT SP.settlementPaperId FROM (SettlementItem as SI INNER JOIN (SELECT settlementPaperId from SettlementPaper) as SP ON SI.settlementPaperId = SP.settlementPaperId) WHERE SI.receiptItemId = ?', [dbReceiptItem["receiptItemId"]]);
-        for(var row in res) {
-          String id = row["settlementPaperId"];
-          newItem.paperOwner[id] = 0;
-        }
-        receiptItems.add(newItem);
+      List<Map> res = await db!.rawQuery(
+          'SELECT SP.settlementPaperId FROM (SettlementItem as SI INNER JOIN (SELECT settlementPaperId from SettlementPaper) as SP ON SI.settlementPaperId = SP.settlementPaperId) WHERE SI.receiptItemId = ?',
+          [dbReceiptItem["receiptItemId"]]);
+      for (var row in res) {
+        String id = row["settlementPaperId"];
+        newItem.paperOwner[id] = 0;
+      }
+      receiptItems.add(newItem);
     }
 
     return receiptItems;
@@ -97,7 +101,7 @@ class FetchQuery {
     List<Map> dbSettlementPapers = await db.rawQuery(
         'SELECT * FROM SettlementPaper WHERE settlementId = ?', [stmId]);
 
-    for(var dbSettlementPaper in dbSettlementPapers) {
+    for (var dbSettlementPaper in dbSettlementPapers) {
       SettlementPaper newPaper = SettlementPaper();
       newPaper.settlementPaperId = dbSettlementPaper["settlementPaperId"];
       newPaper.memberName = dbSettlementPaper["memberName"];
@@ -114,14 +118,23 @@ class FetchQuery {
   Future<List<SettlementItem>> fetchSettlementItems(
       Database db, String stmPaperId) async {
     List<SettlementItem> settlementItems = [];
-    List<Map> dbReceiptItems = await db.rawQuery(
-        'SELECT RI.name, RI.price, RI.count FROM (ReceiptItem as RI INNER JOIN (SELECT receiptId, settlementId from Receipt) as R ON R.receiptId = RI.receiptId INNER JOIN (SELECT settlementId from Settlement) as S ON S.settlementId = R.settlementId INNER JOIN (SELECT settlementId from SettlementPaper WHERE settlementPaperId = ?) as SP ON S.settlementId = SP.settlementId)',
+    List<Map> dbReceiptItemIds = await db.rawQuery(
+        "SELECT receiptItemId from SettlementItem WHERE settlementPaperId = ?",
         [stmPaperId]);
-
-    for(var dbReceiptItem in dbReceiptItems) {
-      SettlementItem newItem = SettlementItem(dbReceiptItem["name"]);
-      newItem.splitPrice = dbReceiptItem["price"] / dbReceiptItem["count"];
-
+    for (var dbReceiptItemId in dbReceiptItemIds) {
+      List<Map> settlementItem = await db.rawQuery(
+          "SELECT name, price, receiptId, count from ReceiptItem WHERE receiptItemId = ?",
+          [dbReceiptItemId["receiptItemId"]]);
+      SettlementItem newItem = SettlementItem(settlementItem[0]["name"]);
+      List<Map> counts = await db.rawQuery(
+          'SELECT count(*) as Incount from SettlementItem where receiptItemId = ?',
+          [dbReceiptItemId["receiptItemId"]]);
+      newItem.splitPrice = settlementItem[0]["price"] * settlementItem[0]['count'] / counts[0]["Incount"];
+      newItem.receiptItemPrice = settlementItem[0]["price"] * settlementItem[0]['count'];
+      List<Map> receiptName = await db.rawQuery(
+          'SELECT receiptName from Receipt where receiptId = ?',
+          [settlementItem[0]["receiptId"]]);
+      newItem.receiptName = receiptName[0]["receiptName"];
       settlementItems.add(newItem);
     }
     return settlementItems;
@@ -132,7 +145,7 @@ class FetchQuery {
     List<Map> res = await db.rawQuery(
         'SELECT memberName from SettlementPaper WHERE settlementId = ?',
         [stmId]);
-    for(var row in res) {
+    for (var row in res) {
       membersInSettlement.add(row["memberName"]);
     }
 

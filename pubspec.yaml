@@ -44,6 +44,7 @@ dependencies:
   dotted_border: ^2.1.0
   scroll_snap_list: ^0.9.1
   image_gallery_saver: ^2.0.3
+  flutter_svg: ^2.0.9
 
 dev_dependencies:
   flutter_test:

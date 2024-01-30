@@ -83,12 +83,12 @@ class CustomBottomSheet extends ConsumerWidget {
               : const Duration(milliseconds: 0),
           height: bprovider.height,
           width: size.width,
-          padding: const EdgeInsets.only(top: 17),
+          padding: const EdgeInsets.only(top: 12),
           decoration: BoxDecoration(
               color: basic[0],
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
               )),
           child: childWidget,
         ),
