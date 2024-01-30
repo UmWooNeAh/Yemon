@@ -500,7 +500,7 @@ class OverallStmPaper extends ConsumerWidget {
                                 margin:
                                     const EdgeInsets.symmetric(vertical: 15),
                                 child: Text(
-                                    "${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].totalPrice.toInt())} 원",
+                                    "${mProvider.selectedSettlement.settlementPapers[index].totalPrice} 원",
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 18,
@@ -671,7 +671,7 @@ class OneStmPaper extends ConsumerWidget {
                                   margin:
                                       const EdgeInsets.symmetric(vertical: 15),
                                   child: Text(
-                                    "${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].splitPrice.toInt())} 원",
+                                    "${mProvider.selectedSettlement.settlementPapers[index].settlementItems[stmItemIndex].splitPrice} 원",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 18,
@@ -690,7 +690,7 @@ class OneStmPaper extends ConsumerWidget {
             width: size.width - 45,
             margin: const EdgeInsets.only(top: 10, bottom: 10),
             child: Text(
-                "정산 금액 ${priceToString.format(mProvider.selectedSettlement.settlementPapers[index].totalPrice.toInt())} 원",
+                "정산 금액 ${mProvider.selectedSettlement.settlementPapers[index].totalPrice} 원",
                 textAlign: TextAlign.end,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,

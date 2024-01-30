@@ -8,8 +8,6 @@ import 'View/load_member_page.dart';
 import 'View/settlement_list_page.dart';
 import 'View/settlement_management_page.dart';
 
-
-
 void main() {
   runApp(const ProviderScope(child: MainApp()));
 }
@@ -40,7 +38,7 @@ class _MainAppState extends ConsumerState<MainApp> {
 }
 
 final GoRouter router = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/SplashView',
   routes: [
     GoRoute(
       path: '/',
@@ -56,7 +54,42 @@ final GoRouter router = GoRouter(
             ),
           ],
         ),
+        GoRoute(
+          path: 'SplashView',
+          builder: (context, state) => const SplashView(),
+        ),
       ],
     ),
   ],
 );
+
+class SplashView extends ConsumerStatefulWidget {
+  const SplashView({super.key});
+
+  @override
+  ConsumerState<SplashView> createState() => _SplashViewState();
+}
+
+class _SplashViewState extends ConsumerState<SplashView> {
+  @override
+  void initState() {
+    super.initState();
+    SqlFliteDB().database.then((Database db) {
+      //앱 시작할 때 모든 테이블 데이터 날리고 시작 가능한 코드
+      //db.rawDelete(sql1); db.rawDelete(sql2); db.rawDelete(sql3); db.rawDelete(sql4); db.rawDelete(sql5);
+      ref.read(mainProvider).setDB(db);
+      ref.read(mainProvider).fetchAllSettlements().then((value) {
+        Future.delayed(const Duration(milliseconds: 500)).then((value) {
+          context.go('/');
+        });
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: FlutterLogo(),
+    );
+  }
+}

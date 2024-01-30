@@ -117,10 +117,14 @@ class FetchQuery {
     List<Map> dbReceiptItems = await db.rawQuery(
         'SELECT RI.name, RI.price, RI.count FROM (ReceiptItem as RI INNER JOIN (SELECT receiptId, settlementId from Receipt) as R ON R.receiptId = RI.receiptId INNER JOIN (SELECT settlementId from Settlement) as S ON S.settlementId = R.settlementId INNER JOIN (SELECT settlementId from SettlementPaper WHERE settlementPaperId = ?) as SP ON S.settlementId = SP.settlementId)',
         [stmPaperId]);
-
+    if(dbReceiptItems.isEmpty) {
+      return settlementItems;
+    }
+    List<Map> counts = await db.rawQuery('SELECT count(*) as Incount from SettlementItem where receiptItemId = ?', [dbReceiptItems[0]["receiptItemId"]]);
+    print("${counts[0]["Incount"]}, ${dbReceiptItems[0]["price"]}");
     for(var dbReceiptItem in dbReceiptItems) {
       SettlementItem newItem = SettlementItem(dbReceiptItem["name"]);
-      newItem.splitPrice = dbReceiptItem["price"] / dbReceiptItem["count"];
+      newItem.splitPrice = dbReceiptItem["price"] / counts[0]["Incount"];
 
       settlementItems.add(newItem);
     }

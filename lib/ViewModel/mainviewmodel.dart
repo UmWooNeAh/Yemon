@@ -47,11 +47,9 @@ class MainViewModel extends ChangeNotifier {
         selectedSettlement.settlementPapers.length, (index) => false);
 
     receiptItemControllerList = [];
-    print(selectedSettlement.receipts.length);
 
     for (int i = 0; i < selectedSettlement.receipts.length; i++) {
       addReceiptItemControllerList();
-      print(selectedSettlement.receipts[i].receiptItems.length);
       for (ReceiptItem receiptItem
           in selectedSettlement.receipts[i].receiptItems) {
         addReceiptItemTextEditingController(i, receiptItem);
@@ -154,16 +152,21 @@ class MainViewModel extends ChangeNotifier {
         i++) {
       if (selectedReceiptItemIndexList[presentReceiptIndex][i]) {
         for (int j = 0; j < selectedMemberIndexList.length; j++) {
-          print(selectedMemberIndexList.length);
           if (selectedMemberIndexList[j]) {
-            matching(j, i, presentReceiptIndex);
+            // matching(j, i, presentReceiptIndex);
+            Query(db).matchingMemberToReceiptItem(selectedSettlement.settlementPapers[j].settlementPaperId, selectedSettlement
+                .receipts[presentReceiptIndex].receiptItems[i].receiptItemId);
           }
         }
         selectedReceiptItemIndexList[presentReceiptIndex][i] = false;
-        updateSettlementItemSplitPrice(presentReceiptIndex, i);
+        // updateSettlementItemSplitPrice(presentReceiptIndex, i);
       }
     }
-    updateMemberTotalPrice();
+    Query(db).showRecentSettlement(selectedSettlement.settlementId).then((settlement) {
+      selectedSettlement = settlement;
+      settingSelectedSettlement();
+    });
+    // updateMemberTotalPrice();
     notifyListeners();
   }
 
@@ -461,16 +464,19 @@ class MainViewModel extends ChangeNotifier {
   }
 
 //정산추가
-  void addNewSettlement() async {
+  Future<void> addNewSettlement() async {
     settlementList.insert(0, Settlement());
     selectedSettlement = settlementList[0];
+    print("DB 시작");
     await Query(db).createSettlement(selectedSettlement);
-    addMember(["나"]);
+    print("지금이다");
+    await addMember(["나"]);
     notifyListeners();
+    return;
   }
 
 //정산멤버 추가
-  void addMember(List<String> memberName) async {
+  Future<void> addMember(List<String> memberName) async {
     List<SettlementPaper> newSettlementPapers = [];
     for (String name in memberName) {
       SettlementPaper newSettlementPaper = SettlementPaper();
@@ -482,6 +488,7 @@ class MainViewModel extends ChangeNotifier {
     await Query(db)
         .createMembers(selectedSettlement.settlementId, newSettlementPapers);
     notifyListeners();
+    return;
   }
 
 //정산멤버 관리 리스트 (Matching시 isSelected로 사용)

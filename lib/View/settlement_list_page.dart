@@ -19,14 +19,14 @@ class EditManagement extends ChangeNotifier {
   bool isAllSelect = false;
   List<bool> isSelected = [];
 
-  void setEditSettlement(int length){
-    isSelected = List.generate(length, (index) {if (index < isSelected.length){
-      return isSelected[index];
-    }
-    else{
-      return false;
-    }});
-    notifyListeners();
+  void setEditSettlement(int length) {
+    isSelected = List.generate(length, (index) {
+      if (index < isSelected.length) {
+        return isSelected[index];
+      } else {
+        return false;
+      }
+    });
   }
 
   void deleteSettlement() {
@@ -82,24 +82,11 @@ class SettlementListPage extends ConsumerStatefulWidget {
 }
 
 class _SettlementListPageState extends ConsumerState<SettlementListPage> {
-
   @override
   Widget build(BuildContext context) {
-
-    SqlFliteDB().database.then((Database db){
-      //앱 시작할 때 모든 테이블 데이터 날리고 시작 가능한 코드
-      //db.rawDelete(sql1); db.rawDelete(sql2); db.rawDelete(sql3); db.rawDelete(sql4); db.rawDelete(sql5);
-      ref.read(mainProvider).setDB(db);
-
-      ref.read(mainProvider).fetchAllSettlements().then(
-          (value){
-            ref.read(editManagementProvider).setEditSettlement(ref.read(mainProvider).settlementList.length);
-          }
-      );
-
-    });
     final eprovider = ref.watch(editManagementProvider);
     final provider = ref.watch(mainProvider);
+    eprovider.setEditSettlement(ref.read(mainProvider).settlementList.length);
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -337,16 +324,20 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                 : 0),
         child: FloatingActionButton(
           onPressed: () {
-            context.push('/SettlementManagementPage');
-            provider.addNewSettlement();
-            // provider.selectSettlement(0);
             eprovider.addSettlement();
+            provider.addNewSettlement().then((value) {
+              context.push('/SettlementManagementPage');
+            });
+            // provider.selectSettlement(0);
             //provider.settingMainViewModel();
           },
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
           backgroundColor: basic[8],
-          child: Icon(Icons.add, color: basic[0],),
+          child: Icon(
+            Icons.add,
+            color: basic[0],
+          ),
         ),
       ),
     );
@@ -403,7 +394,7 @@ class SingleSettlement extends ConsumerWidget {
                     if (editManagement.isEdit) {
                       editManagement.toggleSelect(index);
                     } else {
-                      provider.selectSettlement(index).then((value){
+                      provider.selectSettlement(index).then((value) {
                         print(provider.selectedSettlement.receipts.length);
                         // print(provider.selectedSettlement.receipts[0].receiptItems.length);
                         context.push('/SettlementManagementPage');
