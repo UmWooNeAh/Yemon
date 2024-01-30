@@ -53,9 +53,17 @@ class MenuSheet extends ConsumerWidget {
               margin: const EdgeInsets.symmetric(horizontal: 15),
               child: ElevatedButton(
                 onPressed: () {
-                  for (int i = 0; i < mProvider.selectedReceiptItemIndexList[sProvider.presentReceiptIndex].length; i++) {
-                  mProvider.selectReceiptItem(sProvider.presentReceiptIndex, i);}
-                  mProvider.batchMatching(sProvider.presentReceiptIndex);
+                  if(sProvider.presentReceiptIndex == -1){
+                    mProvider.matchAllSettlementItem();
+                  } else {
+                    for (int i = 0; i <
+                        mProvider.selectedReceiptItemIndexList[sProvider
+                            .presentReceiptIndex].length; i++) {
+                      mProvider.selectReceiptItem(
+                          sProvider.presentReceiptIndex, i);
+                    }
+                    mProvider.batchMatching(sProvider.presentReceiptIndex);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
