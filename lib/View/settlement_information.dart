@@ -17,6 +17,10 @@ class ReceiptInformationViewModel extends ChangeNotifier {
   List<bool> isReceiptSelected = [];
   List<List<bool>> isReceiptItemSelected = [];
 
+  void setDeleteModeFirst(){
+    deleteMode = false;
+  }
+
   void setDeleteMode(int receiptNumber, List<int> itemNumber) {
     deleteMode = !deleteMode;
     if (deleteMode) {
@@ -93,6 +97,7 @@ class _SettlementInformationState extends ConsumerState<SettlementInformation> {
     super.initState();
     final rprovider = ref.read(receiptProvider);
     final mprovider = ref.read(mainProvider);
+    rprovider.setDeleteModeFirst();
     rprovider.set(
         mprovider.selectedSettlement.receipts.length,
         List.generate(
