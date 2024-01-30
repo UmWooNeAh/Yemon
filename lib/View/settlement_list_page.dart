@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide BoxShadow, BoxDecoration;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:sqflite/sqflite.dart';
@@ -108,9 +109,9 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                 fontSize: 28,
               ),
             ),
-            Container(
-              child: FlutterLogo(),
-              margin: const EdgeInsets.only(left: 5),
+            SizedBox(
+              width: 80, height: 80,
+              child: SvgPicture.asset('assets/Yemon.svg')
             ),
           ],
         ),
