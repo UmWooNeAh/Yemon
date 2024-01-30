@@ -61,7 +61,7 @@ class ListedReceiptShape extends ConsumerWidget {
           width: 100,
           height: 130,
           child: Align(
-            alignment: const Alignment(0, 0.7),
+            alignment: const Alignment(0, 0.6),
             child: SizedBox(
               height: 15,
               width: 80,

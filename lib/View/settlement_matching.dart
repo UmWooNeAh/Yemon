@@ -17,15 +17,15 @@ class SettlementMatchingViewmodel extends ChangeNotifier {
   int showMatchingDetailItemIndex = -1;
   bool showMemberDetail = false;
 
-
-  void showMatchingDetail(int receiptIndex,int index) {
+  void showMatchingDetail(int receiptIndex, int index) {
     showMatchingDetailReceiptIndex = receiptIndex;
     showMatchingDetailItemIndex = index;
     notifyListeners();
   }
 
-  void toggleMatchingDetail(int receiptIndex,int index) {
-    if (showMatchingDetailItemIndex == index && showMatchingDetailReceiptIndex == receiptIndex){
+  void toggleMatchingDetail(int receiptIndex, int index) {
+    if (showMatchingDetailItemIndex == index &&
+        showMatchingDetailReceiptIndex == receiptIndex) {
       showMatchingDetailItemIndex = -1;
     } else {
       showMatchingDetailItemIndex = index;
@@ -124,12 +124,12 @@ class GroupMembers extends ConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          margin: const EdgeInsets.only(left: 20),
+                          margin: const EdgeInsets.only(left: 20, top: 10),
                           child: const Text(
                             "정산에 참여하는 사람",
                             style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
@@ -156,13 +156,12 @@ class GroupMembers extends ConsumerWidget {
                                     width: 1.5)),
                             child: Center(
                               child: Text(
-                                provider.selectedMemberIndexList
-                                        .contains(true)
+                                provider.selectedMemberIndexList.contains(true)
                                     ? "선택 취소"
                                     : "전체 선택",
                                 style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                   color: basic[5],
                                 ),
                               ),
@@ -178,14 +177,14 @@ class GroupMembers extends ConsumerWidget {
                     width: size.width * 0.95,
                     child: sProvider.showMemberDetail
                         ? SingleChildScrollView(
-                          child: Wrap(
+                            child: Wrap(
                               crossAxisAlignment: WrapCrossAlignment.start,
                               children: List.generate(
-                                  provider
-                                      .selectedSettlement.settlementPapers.length,
+                                  provider.selectedSettlement.settlementPapers
+                                      .length,
                                   (index) => SingleMember(index: index)),
                             ),
-                        )
+                          )
                         : SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
@@ -236,7 +235,7 @@ class SingleMember extends ConsumerWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
         height: 35,
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6.5),
         margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         decoration: BoxDecoration(
           color: provider.selectedMemberIndexList[index] ? basic[8] : basic[0],
@@ -247,7 +246,7 @@ class SingleMember extends ConsumerWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: basic[6],
               blurRadius: 1,
               offset: const Offset(1.5, 1.5),
             ),
@@ -258,7 +257,7 @@ class SingleMember extends ConsumerWidget {
           provider.selectedSettlement.settlementPapers[index].memberName,
           style: TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.w600,
+            fontWeight: provider.selectedMemberIndexList[index] ? FontWeight.w600 : FontWeight.w500 ,
             color:
                 provider.selectedMemberIndexList[index] ? basic[0] : basic[5],
           ),

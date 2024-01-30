@@ -44,29 +44,32 @@ class _SettlementManagementPageState
         },
         backgroundColor: basic[0],
         selectedFontSize: 16,
-        selectedItemColor: basic[5],
+        selectedItemColor: basic[9],
         unselectedItemColor: basic[5],
         unselectedFontSize: 14,
         items: [
           BottomNavigationBarItem(
               icon: Image.asset(
                 'assets/Enter.png',
-                height: 22,
-                width: 22,
+                height: 20,
+                width: 20,
+                color: selectedIndex == 0 ? basic[9] : basic[5],
               ),
               label: "정산 정보 입력"),
           BottomNavigationBarItem(
               icon: Image.asset(
                 'assets/Matching.png',
-                height: 22,
-                width: 22,
+                height: 20,
+                width: 20,
+                color: selectedIndex == 1 ? basic[9] : basic[5],
               ),
               label: "정산 매칭"),
           BottomNavigationBarItem(
               icon: Image.asset(
                 'assets/Check.png',
-                height: 22,
-                width: 22,
+                height: 20,
+                width: 20,
+                color: selectedIndex == 2 ? basic[9] : basic[5],
               ),
               label: "정산 결과"),
         ],
@@ -137,6 +140,7 @@ class EditSettlementName extends ConsumerStatefulWidget {
 
 class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
   TextEditingController controller = TextEditingController();
+  bool isError = false;
 
   @override
   void initState() {
@@ -149,7 +153,14 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
     Size size = MediaQuery.of(context).size;
     return AlertDialog(
       elevation: 0,
-      title: const Text("정산 이름 수정"),
+      title: Text(
+        "정산의 이름을 수정합니다",
+        style: TextStyle(
+          fontSize: 18,
+          color: basic[4],
+          fontWeight: FontWeight.w500,
+        ),
+      ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
@@ -157,33 +168,38 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
-            
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: "새로운 정산이름을 입력해주세요",
-              border: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
-              ),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: isError ? 60 : 30,
+            // color: Colors.red,
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                errorText: isError ? "공백은 이름이 될 수 없습니다." : null,
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
               ),
             ),
           ),
         ],
       ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
       actionsAlignment: MainAxisAlignment.spaceBetween,
       actionsPadding: const EdgeInsets.all(10),
       actions: [
         Container(
-          height: 55,
+          height: 50,
           width: size.width * 0.35,
           decoration: BoxDecoration(
             border: Border.all(color: basic[2], width: 1.5),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(5),
           ),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -195,28 +211,38 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
             onPressed: () {
               context.pop();
             },
-            child: Text("취소", style: TextStyle(color: basic[5])),
+            child: Text("취소",
+                style: TextStyle(
+                    color: basic[5],
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500)),
           ),
         ),
         Container(
-          height: 55,
+          height: 50,
           width: size.width * 0.35,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: basic[9],
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(5)),
             ),
             onPressed: () {
               if (controller.text == "") {
+                setState(() {
+                  isError = true;
+                });
                 return;
               }
               final provider = ref.watch(mainProvider);
               provider.editSelectedSettlementName(controller.text);
               context.pop();
             },
-            child:
-                Text("이름 저장", style: TextStyle(color: basic[0], fontSize: 15)),
+            child: Text("이름 변경",
+                style: TextStyle(
+                    color: basic[0],
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700)),
           ),
         ),
       ],

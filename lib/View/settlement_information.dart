@@ -17,7 +17,7 @@ class ReceiptInformationViewModel extends ChangeNotifier {
   List<bool> isReceiptSelected = [];
   List<List<bool>> isReceiptItemSelected = [];
 
-  void setDeleteModeFirst(){
+  void setDeleteModeFirst() {
     deleteMode = false;
   }
 
@@ -106,7 +106,6 @@ class _SettlementInformationState extends ConsumerState<SettlementInformation> {
                 .selectedSettlement.receipts[index].receiptItems.length));
   }
 
-
   @override
   Widget build(BuildContext context) {
     final rprovider = ref.watch(receiptProvider);
@@ -181,9 +180,9 @@ class _SettlementInformationState extends ConsumerState<SettlementInformation> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
-                        height: 25,
-                        width: 25,
-                        margin: const EdgeInsets.only(top: 10, bottom: 5),
+                        height: 15,
+                        width: 15,
+                        margin: const EdgeInsets.only(top: 15, bottom: 0),
                         child: FittedBox(
                           fit: BoxFit.fill,
                           child: Image.asset('assets/Bin.png'),
@@ -223,34 +222,34 @@ class _RealDeletePopUpState extends ConsumerState<RealDeletePopUp> {
           Text(
             "삭제를 진행하면 다시 되돌릴 수 없습니다.",
             style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
+              fontSize: 17,
+              fontWeight: FontWeight.w500,
               color: basic[4],
             ),
           ),
           Text(
             "선택한 항목을 삭제하시겠습니까?",
             style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
+              fontSize: 17,
+              fontWeight: FontWeight.w500,
               color: basic[4],
             ),
           ),
         ],
       ),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.circular(7.0),
       ),
       backgroundColor: basic[0],
       actionsAlignment: MainAxisAlignment.spaceBetween,
       actionsPadding: const EdgeInsets.all(10),
       actions: [
         Container(
-          height: 55,
+          height: 50,
           width: size.width * 0.35,
           decoration: BoxDecoration(
             border: Border.all(color: basic[2], width: 1.5),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(5),
           ),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -262,17 +261,20 @@ class _RealDeletePopUpState extends ConsumerState<RealDeletePopUp> {
             onPressed: () {
               context.pop();
             },
-            child: Text("취소", style: TextStyle(color: basic[5])),
+            child: Text("취소", style: TextStyle(
+                    color: basic[5],
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18)),
           ),
         ),
         Container(
-          height: 55,
+          height: 50,
           width: size.width * 0.35,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: basic[7],
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(5)),
             ),
             onPressed: () {
               mprovider
@@ -294,7 +296,10 @@ class _RealDeletePopUpState extends ConsumerState<RealDeletePopUp> {
               });
             },
             child:
-                Text("항목 삭제", style: TextStyle(color: basic[0], fontSize: 15)),
+                Text("항목 삭제", style: TextStyle(
+                    color: basic[0],
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700)),
           ),
         ),
       ],
@@ -310,9 +315,9 @@ class SettlementMember extends ConsumerWidget {
     Size size = MediaQuery.of(context).size;
     return Container(
       width: size.width,
-      height: 150,
+      height: 100,
       margin: const EdgeInsets.only(bottom: 15),
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
         color: basic[1],
         boxShadow: [
@@ -334,6 +339,9 @@ class SettlementMember extends ConsumerWidget {
       ),
       child: Column(
         children: [
+          const SizedBox(
+            height: 10,
+          ),
           const MemberUpperRow(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -372,8 +380,8 @@ class SettlementMember extends ConsumerWidget {
                   );
                 },
                 child: Container(
-                  width: 40,
-                  height: 40,
+                  width: 35,
+                  height: 35,
                   margin: const EdgeInsets.only(right: 5),
                   decoration: BoxDecoration(
                       border: Border.all(color: basic[2], width: 1.5),
@@ -387,7 +395,7 @@ class SettlementMember extends ConsumerWidget {
                           offset: const Offset(5, 5),
                         ),
                       ]),
-                  child: Icon(Icons.add, color: basic[3]),
+                  child: Center(child: Icon(Icons.add, color: basic[3])),
                 ),
               ),
             ],
@@ -416,15 +424,15 @@ class MemberUpperRow extends ConsumerWidget {
                   text: "정산에 참여하는 사람",
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 TextSpan(
                   text:
-                      " ${provider.selectedSettlement.settlementPapers.length}",
+                      "  ${provider.selectedSettlement.settlementPapers.length}",
                   style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
                     color: basic[7],
                   ),
                 ),
@@ -432,11 +440,19 @@ class MemberUpperRow extends ConsumerWidget {
             ),
           ),
         ),
-        TextButton(
-          onPressed: () {
-            context.push('/SettlementManagementPage/LoadMemberPage');
-          },
-          child: const Text("최근 정산 불러오기 >"),
+        SizedBox(
+          height: 30,
+          child: TextButton(
+            onPressed: () {
+              context.push('/SettlementManagementPage/LoadMemberPage');
+            },
+            child: Text("최근 정산 불러오기 >",
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: basic[4],
+              )
+            ),
+          ),
         ),
       ],
     );
@@ -496,7 +512,7 @@ class IncludedMember extends ConsumerWidget {
                 });
           },
           child: Container(
-            height: 40,
+            height: 35,
             margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
             padding: const EdgeInsets.symmetric(horizontal: 15),
             decoration: BoxDecoration(
@@ -506,7 +522,7 @@ class IncludedMember extends ConsumerWidget {
                 boxShadow: [
                   BoxShadow(
                     color: basic[5],
-                    spreadRadius: -4,
+                    spreadRadius: -5,
                     blurRadius: 5,
                     offset: const Offset(2, 2),
                   ),
@@ -565,6 +581,7 @@ class EditMemberName extends ConsumerStatefulWidget {
 
 class _EditMemberNameState extends ConsumerState<EditMemberName> {
   TextEditingController controller = TextEditingController();
+  bool isError = false;
 
   @override
   void initState() {
@@ -582,7 +599,14 @@ class _EditMemberNameState extends ConsumerState<EditMemberName> {
     final mprovider = ref.watch(mainProvider);
     return AlertDialog(
       elevation: 0,
-      title: const Text("이름을 수정합니다"),
+      title: Text(
+        "멤버 이름을 수정합니다",
+        style: TextStyle(
+          fontSize: 18,
+          color: basic[4],
+          fontWeight: FontWeight.w500,
+        ),
+      ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
@@ -590,23 +614,29 @@ class _EditMemberNameState extends ConsumerState<EditMemberName> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: "수정할 이름을 입력해주세요",
-              border: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
-              ),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: isError ? 60 : 30,
+            // color: Colors.red,
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                errorText: isError ? "공백은 이름이 될 수 없습니다." : null,
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
               ),
             ),
           ),
         ],
       ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
       actionsAlignment: MainAxisAlignment.spaceBetween,
       actionsPadding: const EdgeInsets.all(10),
       actions: [
@@ -615,14 +645,11 @@ class _EditMemberNameState extends ConsumerState<EditMemberName> {
             Row(
               children: [
                 Container(
-                  height: 55,
-                  width: size.width * 0.3 + 5,
-                  margin: const EdgeInsets.only(bottom: 10, right: 5),
+                  height: 50,
+                  width: MediaQuery.of(context).size.width * 0.35,
                   decoration: BoxDecoration(
-                    border: Border.all(
-                      color: basic[2],
-                    ),
-                    borderRadius: BorderRadius.circular(11),
+                    border: Border.all(color: basic[2], width: 1.5),
+                    borderRadius: BorderRadius.circular(5),
                   ),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -634,29 +661,39 @@ class _EditMemberNameState extends ConsumerState<EditMemberName> {
                     onPressed: () {
                       context.pop();
                     },
-                    child: Text("취소", style: TextStyle(color: basic[5])),
+                    child: Text("취소",
+                        style: TextStyle(
+                            color: basic[5],
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500)),
                   ),
                 ),
                 Container(
-                  height: 55,
-                  width: size.width * 0.3 + 5,
-                  margin: const EdgeInsets.only(bottom: 10, left: 5),
+                  height: 50,
+                  width: size.width * 0.35,
+                  margin: const EdgeInsets.only(left: 5),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: basic[8],
+                      backgroundColor: basic[9],
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(5),
                       ),
                     ),
                     onPressed: () {
                       if (controller.text == '') {
+                        setState(() {
+                          isError = true;
+                        });
                         return;
                       }
                       context.pop();
                       mprovider.editMemberName(controller.text, widget.index);
                     },
                     child: Text("이름 저장",
-                        style: TextStyle(color: basic[0], fontSize: 15)),
+                        style: TextStyle(
+                            color: basic[0],
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700)),
                   ),
                 ),
               ],
@@ -673,9 +710,10 @@ class _EditMemberNameState extends ConsumerState<EditMemberName> {
                     style: TextStyle(
                         color: basic[3],
                         fontSize: 15,
+                        fontWeight: FontWeight.w500,
                         decoration: TextDecoration.underline,
-                        decorationColor: basic[5],
-                        decorationThickness: 3)),
+                        decorationColor: basic[3],
+                        decorationThickness: 2)),
               ),
             ),
           ],
@@ -779,6 +817,7 @@ class AddMember extends ConsumerStatefulWidget {
 }
 
 class _AddMemberState extends ConsumerState<AddMember> {
+  bool isError = false;
   String newName = "";
   @override
   Widget build(BuildContext context) {
@@ -787,7 +826,14 @@ class _AddMemberState extends ConsumerState<AddMember> {
     Size size = MediaQuery.of(context).size;
     return AlertDialog(
       elevation: 0,
-      title: const Text("새 멤버를 추가합니다"),
+      title: Text(
+        "새 멤버를 추가합니다",
+        style: TextStyle(
+          fontSize: 18,
+          color: basic[4],
+          fontWeight: FontWeight.w500,
+        ),
+      ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
@@ -795,36 +841,43 @@ class _AddMemberState extends ConsumerState<AddMember> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
-            decoration: InputDecoration(
-              hintText: "새로운 멤버의 이름을 입력해주세요",
-              border: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: isError ? 60 : 30,
+            // color: Colors.red,
+            child: TextField(
+              decoration: InputDecoration(
+                errorText: isError ? "공백은 이름이 될 수 없습니다." : null,
+                hintText: "새로운 멤버의 이름을 입력해주세요.",
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
               ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
-              ),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
-              ),
+              onChanged: (value) {
+                setState(() {
+                  newName = value;
+                });
+              },
             ),
-            onChanged: (value) {
-              setState(() {
-                newName = value;
-              });
-            },
           ),
         ],
       ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
       actionsAlignment: MainAxisAlignment.spaceBetween,
       actionsPadding: const EdgeInsets.all(10),
       actions: [
         Container(
-          height: 55,
-          width: size.width * 0.35,
+          height: 50,
+          width: MediaQuery.of(context).size.width * 0.35,
           decoration: BoxDecoration(
             border: Border.all(color: basic[2], width: 1.5),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(5),
           ),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -836,27 +889,37 @@ class _AddMemberState extends ConsumerState<AddMember> {
             onPressed: () {
               context.pop();
             },
-            child: Text("취소", style: TextStyle(color: basic[5])),
+            child: Text("취소",
+                style: TextStyle(
+                    color: basic[5],
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500)),
           ),
         ),
         Container(
-          height: 55,
-          width: size.width * 0.35,
+          height: 50,
+          width: MediaQuery.of(context).size.width * 0.35,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: basic[9],
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(5)),
             ),
             onPressed: () {
               if (newName == "") {
+                setState(() {
+                  isError = true;
+                });
                 return;
               }
               provider.addMember([newName]);
               context.pop();
             },
-            child:
-                Text("멤버 추가", style: TextStyle(color: basic[0], fontSize: 15)),
+            child: Text("멤버 추가",
+                style: TextStyle(
+                    color: basic[0],
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700)),
           ),
         ),
       ],
@@ -876,8 +939,8 @@ class ReceiptUpperRow extends ConsumerWidget {
       children: [
         const Text("정산할 제품",
             style: TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
             )),
         InkWell(
           onTap: () {
@@ -892,20 +955,20 @@ class ReceiptUpperRow extends ConsumerWidget {
                         .receiptItems.length));
           },
           child: Container(
-            width: 115,
-            height: 40,
+            width: 105,
+            height: 35,
             decoration: BoxDecoration(
               color: mprovider.selectedSettlement.receipts.isEmpty
                   ? basic[2]
                   : basic[0],
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(7),
               border: Border.all(
                   color: mprovider.selectedSettlement.receipts.isEmpty
                       ? basic[2]
                       : rprovider.deleteMode
                           ? basic[2]
-                          : basic[8],
-                  width: 1.5),
+                          : basic[9],
+                  width: 2),
               boxShadow: [
                 BoxShadow(
                   color: basic[3],
@@ -980,6 +1043,7 @@ class IncludedReceipt extends ConsumerWidget {
             height: 30,
             width: size.width,
             margin: const EdgeInsets.only(bottom: 10),
+            // color: Colors.pink,
             child: Row(
               children: [
                 AnimatedContainer(
@@ -1011,7 +1075,8 @@ class IncludedReceipt extends ConsumerWidget {
                   ),
                   child: Text(
                     mprovider.selectedSettlement.receipts[index].receiptName,
-                    style: const TextStyle(fontSize: 20),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w500),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -1024,9 +1089,9 @@ class IncludedReceipt extends ConsumerWidget {
                         });
                   },
                   child: Container(
-                    margin: const EdgeInsets.only(left: 5, top: 5),
-                    width: 15,
-                    height: 15,
+                    margin: const EdgeInsets.only(left: 5),
+                    width: 13,
+                    height: 13,
                     child: FittedBox(
                       fit: BoxFit.fill,
                       child: Image.asset('assets/Edit.png'),
@@ -1063,6 +1128,7 @@ class EditReceiptName extends ConsumerStatefulWidget {
 
 class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
   TextEditingController controller = TextEditingController();
+  bool isError = false;
 
   @override
   void initState() {
@@ -1080,7 +1146,14 @@ class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
     final mprovider = ref.watch(mainProvider);
     return AlertDialog(
       elevation: 0,
-      title: const Text("영수증의 이름을 수정합니다"),
+      title: Text(
+        "영수증의 이름을 수정합니다",
+        style: TextStyle(
+          fontSize: 18,
+          color: basic[4],
+          fontWeight: FontWeight.w500,
+        ),
+      ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
@@ -1088,32 +1161,38 @@ class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: "새로운 영수증 이릅을 입력해주세요",
-              border: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
-              ),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: basic[5]),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: isError ? 60 : 30,
+            // color: Colors.red,
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                errorText: isError ? "공백은 이름이 될 수 없습니다." : null,
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: basic[5]),
+                ),
               ),
             ),
           ),
         ],
       ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
       actionsAlignment: MainAxisAlignment.spaceBetween,
       actionsPadding: const EdgeInsets.all(10),
       actions: [
         Container(
-          height: 55,
-          width: size.width * 0.35,
+          height: 50,
+          width: MediaQuery.of(context).size.width * 0.35,
           decoration: BoxDecoration(
             border: Border.all(color: basic[2], width: 1.5),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(5),
           ),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -1125,27 +1204,37 @@ class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
             onPressed: () {
               context.pop();
             },
-            child: Text("취소", style: TextStyle(color: basic[5])),
+            child: Text("취소",
+                style: TextStyle(
+                    color: basic[5],
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500)),
           ),
         ),
         Container(
-          height: 55,
+          height: 50,
           width: size.width * 0.35,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: basic[9],
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(5)),
             ),
             onPressed: () {
               if (controller.text == '') {
+                setState(() {
+                  isError = true;
+                });
                 return;
               }
               context.pop();
               mprovider.editReceiptName(controller.text, widget.index);
             },
-            child:
-                Text("이름 변경", style: TextStyle(color: basic[0], fontSize: 15)),
+            child: Text("이름 변경",
+                style: TextStyle(
+                    color: basic[0],
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700)),
           ),
         ),
       ],
@@ -1163,46 +1252,46 @@ class ReceiptItemUpperRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         SizedBox(
-            height: 40,
+            height: 35,
             width: (size.width - 60) * 0.3,
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 "제품명",
-                style: TextStyle(color: basic[3], fontSize: 17),
+                style: TextStyle(color: basic[3], fontSize: 16),
                 overflow: TextOverflow.ellipsis,
               ),
             )),
         SizedBox(
-            height: 40,
+            height: 35,
             width: (size.width - 60) * 0.25,
             child: Align(
               alignment: Alignment.centerRight,
               child: Text(
                 "단가",
-                style: TextStyle(color: basic[3], fontSize: 17),
+                style: TextStyle(color: basic[3], fontSize: 16),
                 overflow: TextOverflow.ellipsis,
               ),
             )),
         SizedBox(
-            height: 40,
+            height: 35,
             width: (size.width - 60) * 0.2,
             child: Align(
               alignment: Alignment.centerRight,
               child: Text(
                 "수량",
-                style: TextStyle(color: basic[3], fontSize: 17),
+                style: TextStyle(color: basic[3], fontSize: 16),
                 overflow: TextOverflow.ellipsis,
               ),
             )),
         SizedBox(
-            height: 40,
+            height: 35,
             width: (size.width - 60) * 0.25,
             child: Align(
               alignment: Alignment.centerRight,
               child: Text(
                 "금액",
-                style: TextStyle(color: basic[3], fontSize: 17),
+                style: TextStyle(color: basic[3], fontSize: 16),
                 overflow: TextOverflow.ellipsis,
               ),
             )),
@@ -1221,7 +1310,7 @@ class AddReceiptItem extends ConsumerWidget {
     final rprovider = ref.watch(receiptProvider);
     Size size = MediaQuery.of(context).size;
     return Container(
-      height: 40,
+      height: 30,
       width: size.width - 60,
       child: DottedBorder(
         dashPattern: const [4, 4],
@@ -1233,7 +1322,7 @@ class AddReceiptItem extends ConsumerWidget {
             rprovider.addReceiptItem(index);
             provider.addReceiptItem(index);
           },
-          child: const Center(
+          child: Center(
               child: SizedBox(
             width: 100,
             child: Row(
@@ -1244,8 +1333,16 @@ class AddReceiptItem extends ConsumerWidget {
                     height: 20,
                     child: FittedBox(
                         fit: BoxFit.fill,
-                        child: Icon(Icons.add_circle_outline_outlined))),
-                Text(" 제품 추가"),
+                        child: Icon(
+                          Icons.add_circle_outline_outlined,
+                          color: basic[3],
+                          weight: 0.5,
+                        ))),
+                Text(" 제품 추가",
+                    style: TextStyle(
+                        color: basic[3],
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400)),
               ],
             ),
           )),
@@ -1269,7 +1366,7 @@ class IncludedReceiptItem extends ConsumerWidget {
         mprovider.selectedSettlement.receipts[receiptIndex].receiptItems.length,
         (index) {
           return SizedBox(
-            height: 45,
+            height: 40,
             width: size.width,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -1314,13 +1411,16 @@ class IncludedReceiptItem extends ConsumerWidget {
                       child: TextField(
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: basic[5]),
+                            borderSide:
+                                BorderSide(color: basic[4], width: 0.75),
                           ),
                           focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: basic[8]),
+                            borderSide:
+                                BorderSide(color: basic[9], width: 0.75),
                           ),
                           enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: basic[5]),
+                            borderSide:
+                                BorderSide(color: basic[4], width: 0.75),
                           ),
                         ),
                         onTap: () {
@@ -1352,13 +1452,13 @@ class IncludedReceiptItem extends ConsumerWidget {
                       },
                       decoration: InputDecoration(
                         border: UnderlineInputBorder(
-                          borderSide: BorderSide(color: basic[5]),
+                          borderSide: BorderSide(color: basic[4], width: 0.75),
                         ),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: basic[8]),
+                          borderSide: BorderSide(color: basic[9], width: 0.75),
                         ),
                         enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: basic[5]),
+                          borderSide: BorderSide(color: basic[4], width: 0.75),
                         ),
                       ),
                       controller: mprovider
@@ -1388,13 +1488,13 @@ class IncludedReceiptItem extends ConsumerWidget {
                     child: TextField(
                       decoration: InputDecoration(
                         border: UnderlineInputBorder(
-                          borderSide: BorderSide(color: basic[5]),
+                          borderSide: BorderSide(color: basic[4], width: 0.75),
                         ),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: basic[8]),
+                          borderSide: BorderSide(color: basic[9], width: 0.75),
                         ),
                         enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: basic[5]),
+                          borderSide: BorderSide(color: basic[4], width: 0.75),
                         ),
                       ),
                       buildCounter: (context,
@@ -1440,13 +1540,13 @@ class IncludedReceiptItem extends ConsumerWidget {
                     readOnly: true,
                     decoration: InputDecoration(
                       border: UnderlineInputBorder(
-                        borderSide: BorderSide(color: basic[0]),
+                        borderSide: BorderSide(color: basic[0], width: 0.75),
                       ),
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: basic[0]),
+                        borderSide: BorderSide(color: basic[0], width: 0.75),
                       ),
                       enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: basic[0]),
+                        borderSide: BorderSide(color: basic[0], width: 0.75),
                       ),
                     ),
                     controller: mprovider
@@ -1501,8 +1601,8 @@ class ReceiptTotalPrice extends ConsumerWidget {
               const TextSpan(
                 text: "합계  ",
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               TextSpan(
@@ -1510,15 +1610,15 @@ class ReceiptTotalPrice extends ConsumerWidget {
                     .selectedSettlement.receipts[index].totalPrice
                     .toInt()),
                 style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const TextSpan(
                 text: "원",
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -1539,7 +1639,7 @@ class AddReceipt extends ConsumerWidget {
     Size size = MediaQuery.of(context).size;
     return Container(
       width: size.width,
-      height: 50,
+      height: 40,
       margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: basic[1],
@@ -1554,7 +1654,7 @@ class AddReceipt extends ConsumerWidget {
             rprovider.addReceipt();
             mprovider.addReceipt();
           },
-          child: const Center(
+          child: Center(
               child: SizedBox(
             width: 100,
             child: Row(
@@ -1565,8 +1665,8 @@ class AddReceipt extends ConsumerWidget {
                     height: 20,
                     child: FittedBox(
                         fit: BoxFit.fill,
-                        child: Icon(Icons.add_circle_outline_outlined))),
-                Text(" 영수증 추가"),
+                        child: Icon(Icons.add_circle_outline_outlined, color: basic[3],))),
+                Text(" 영수증 추가", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: basic[3])),
               ],
             ),
           )),
@@ -1626,8 +1726,8 @@ class SettlementTotalPrice extends ConsumerWidget {
               const TextSpan(
                 text: "합계  ",
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               TextSpan(
@@ -1635,15 +1735,15 @@ class SettlementTotalPrice extends ConsumerWidget {
                     .format(provider.selectedSettlement.totalPrice.toInt()),
                 style: TextStyle(
                   fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: basic[8],
+                  fontWeight: FontWeight.w500,
+                  color: basic[9],
                 ),
               ),
               const TextSpan(
                 text: "원",
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],

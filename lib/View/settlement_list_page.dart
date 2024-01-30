@@ -99,22 +99,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
       appBar: AppBar(
         backgroundColor: basic[0],
         elevation: 0,
-        title: Row(
-          children: [
-            const Text(
-              "Yemon",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-                fontSize: 28,
-              ),
-            ),
-            SizedBox(
-              width: 80, height: 80,
-              child: SvgPicture.asset('assets/Yemon.svg')
-            ),
-          ],
-        ),
+        title: SvgPicture.asset('assets/Yemon.svg', height: 70, width: 70,),
       ),
       body: Container(
         color: Colors.white,

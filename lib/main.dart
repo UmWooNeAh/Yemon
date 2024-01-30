@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqlite_test/DB/sqlflite_DB.dart';
 import 'package:sqlite_test/ViewModel/mainviewmodel.dart';
+import 'package:sqlite_test/theme.dart';
 import 'View/load_member_page.dart';
 import 'View/settlement_list_page.dart';
 import 'View/settlement_management_page.dart';
@@ -89,8 +90,12 @@ class _SplashViewState extends ConsumerState<SplashView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: SvgPicture.asset('assets/Yemon.svg'),
+      body: Container(
+        width: double.infinity, height: double.infinity,
+        color: basic[0],
+        child: Center(
+          child: SvgPicture.asset('assets/Yemon.svg', width: 150, height: 150,),
+        ),
       ),
     );
   }
