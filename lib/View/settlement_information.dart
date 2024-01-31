@@ -261,7 +261,8 @@ class _RealDeletePopUpState extends ConsumerState<RealDeletePopUp> {
             onPressed: () {
               context.pop();
             },
-            child: Text("취소", style: TextStyle(
+            child: Text("취소",
+                style: TextStyle(
                     color: basic[5],
                     fontWeight: FontWeight.w500,
                     fontSize: 18)),
@@ -295,8 +296,8 @@ class _RealDeletePopUpState extends ConsumerState<RealDeletePopUp> {
                 });
               });
             },
-            child:
-                Text("항목 삭제", style: TextStyle(
+            child: Text("항목 삭제",
+                style: TextStyle(
                     color: basic[0],
                     fontSize: 18,
                     fontWeight: FontWeight.w700)),
@@ -447,11 +448,10 @@ class MemberUpperRow extends ConsumerWidget {
               context.push('/SettlementManagementPage/LoadMemberPage');
             },
             child: Text("최근 정산 불러오기 >",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: basic[4],
-              )
-            ),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: basic[4],
+                )),
           ),
         ),
       ],
@@ -1408,37 +1408,50 @@ class IncludedReceiptItem extends ConsumerWidget {
                         : (size.width - 60) * 0.3 - 5,
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: TextField(
-                        decoration: InputDecoration(
-                          border: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: basic[4], width: 0.75),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: (size.width - 60) * 0.5,
                           ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: basic[9], width: 0.75),
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: basic[4], width: 0.75),
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              border: UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: basic[4], width: 0.75),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: basic[9], width: 0.75),
+                              ),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: basic[4], width: 0.75),
+                              ),
+                            ),
+                            maxLength: 20,
+                            // maxLines: 1,
+                            // expands: true,
+                            // maxLines: 1,
+                            // minLines: null,
+                            onTap: () {
+                              mprovider.moveReceiptItemControllerCursor(
+                                  receiptIndex, index, 0);
+                            },
+                            buildCounter: (context,
+                                {required currentLength,
+                                required isFocused,
+                                maxLength}) {
+                              return const SizedBox.shrink();
+                            },
+                            controller: mprovider
+                                .receiptItemControllerList[receiptIndex][index][0],
+                            onChanged: (value) {
+                              mprovider.editReceiptItemName(
+                                  value, receiptIndex, index);
+                            },
                           ),
                         ),
-                        onTap: () {
-                          mprovider.moveReceiptItemControllerCursor(
-                              receiptIndex, index, 0);
-                        },
-                        buildCounter: (context,
-                            {required currentLength,
-                            required isFocused,
-                            maxLength}) {
-                          return const SizedBox.shrink();
-                        },
-                        controller: mprovider
-                            .receiptItemControllerList[receiptIndex][index][0],
-                        onChanged: (value) {
-                          mprovider.editReceiptItemName(
-                              value, receiptIndex, index);
-                        },
                       ),
                     )),
                 Container(
@@ -1446,6 +1459,7 @@ class IncludedReceiptItem extends ConsumerWidget {
                     width: (size.width - 60) * 0.25 - 20,
                     margin: const EdgeInsets.only(left: 20),
                     child: TextField(
+                      keyboardType: TextInputType.number,
                       onTap: () {
                         mprovider.moveReceiptItemControllerCursor(
                             receiptIndex, index, 1);
@@ -1486,6 +1500,7 @@ class IncludedReceiptItem extends ConsumerWidget {
                     width: (size.width - 60) * 0.2 - 30,
                     margin: const EdgeInsets.only(left: 30),
                     child: TextField(
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         border: UnderlineInputBorder(
                           borderSide: BorderSide(color: basic[4], width: 0.75),
@@ -1665,8 +1680,15 @@ class AddReceipt extends ConsumerWidget {
                     height: 20,
                     child: FittedBox(
                         fit: BoxFit.fill,
-                        child: Icon(Icons.add_circle_outline_outlined, color: basic[3],))),
-                Text(" 영수증 추가", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: basic[3])),
+                        child: Icon(
+                          Icons.add_circle_outline_outlined,
+                          color: basic[3],
+                        ))),
+                Text(" 영수증 추가",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: basic[3])),
               ],
             ),
           )),

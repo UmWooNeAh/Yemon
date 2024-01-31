@@ -148,6 +148,8 @@ class MainViewModel extends ChangeNotifier {
     selectedSettlement.receipts[receiptIndex].receiptName = newName;
     await Query(db!).updateReceiptName(
         newName, selectedSettlement.receipts[receiptIndex].receiptId);
+    selectedSettlement = await Query(db!)
+        .showRecentSettlement(selectedSettlement.settlementId);
     notifyListeners();
   }
 
@@ -426,8 +428,9 @@ class MainViewModel extends ChangeNotifier {
   Future<void> addNewSettlement() async {
     settlementList.insert(0, Settlement());
     selectedSettlement = settlementList[0];
-    await Query(db!).createSettlement(selectedSettlement);
+    await Query(db!).createSettlement(settlementList[0]);
     await addMember(["나"]);
+    settingSelectedSettlement();
     notifyListeners();
     return;
   }
