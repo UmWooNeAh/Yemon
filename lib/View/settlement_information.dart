@@ -985,7 +985,7 @@ class ReceiptUpperRow extends ConsumerWidget {
                   color: mprovider.selectedSettlement.receipts.isEmpty
                       ? basic[3]
                       : basic[5],
-                  fontSize: 18),
+                  fontSize: 17),
             )),
           ),
         ),
@@ -1737,7 +1737,7 @@ class SettlementTotalPrice extends ConsumerWidget {
     return Container(
       height: 40,
       padding: const EdgeInsets.only(
-        right: 10,
+        right: 25,
       ),
       margin: const EdgeInsets.only(bottom: 30),
       child: Align(

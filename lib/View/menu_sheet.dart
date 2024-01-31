@@ -114,7 +114,7 @@ class MenuSheet extends ConsumerWidget {
                           Container(
                             height: 30,
                             width: size.width,
-                            padding: const EdgeInsets.only(left: 25, top: 5),
+                            padding: const EdgeInsets.only(left: 30, top: 5),
                             child: Text(
                               mProvider.selectedSettlement
                                   .receipts[receiptIndex].receiptName,
@@ -125,26 +125,54 @@ class MenuSheet extends ConsumerWidget {
                               ),
                             ),
                           ),
-                          Column(
-                              children: List.generate(
-                            mProvider.selectedSettlement.receipts[receiptIndex]
-                                .receiptItems.length,
-                            (index) => SingleMenu(
-                              index: index,
-                              receiptIndex: receiptIndex,
-                            ),
-                          )),
+                          mProvider.selectedSettlement.receipts[receiptIndex]
+                                  .receiptItems.isEmpty
+                              ? SizedBox(
+                                  width: size.width,
+                                  height: 50,
+                                  child: Center(
+                                    child: Text("영수증에 메뉴가 없습니다.",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: basic[4],
+                                        )),
+                                  ),
+                                )
+                              : Column(
+                                  children: List.generate(
+                                  mProvider
+                                      .selectedSettlement
+                                      .receipts[receiptIndex]
+                                      .receiptItems
+                                      .length,
+                                  (index) => SingleMenu(
+                                    index: index,
+                                    receiptIndex: receiptIndex,
+                                  ),
+                                )),
                           const SizedBox(height: 40),
                         ],
                       );
                     }),
               )
-            : (mProvider.selectedSettlement.receipts.isEmpty
-                ? const Text("메뉴가 없습니다.",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ))
+            : mProvider
+                    .selectedSettlement
+                    .receipts[sProvider.presentReceiptIndex]
+                    .receiptItems
+                    .isEmpty
+                ? SizedBox(
+                    width: size.width,
+                    height: 50,
+                    child: Center(
+                      child: Text("영수증에 메뉴가 없습니다.",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: basic[4],
+                          )),
+                    ),
+                  )
                 : Expanded(
                     child: SingleChildScrollView(
                         child: Column(
@@ -172,7 +200,7 @@ class MenuSheet extends ConsumerWidget {
                         );
                       },
                     ))),
-                  ))
+                  )
       ],
     );
   }
