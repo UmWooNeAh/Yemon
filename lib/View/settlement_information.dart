@@ -1411,8 +1411,8 @@ class IncludedReceiptItem extends ConsumerWidget {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: (size.width - 60) * 0.5,
+                          constraints: const BoxConstraints(
+                            maxWidth: 150,
                           ),
                           child: TextFormField(
                             decoration: InputDecoration(
@@ -1429,7 +1429,7 @@ class IncludedReceiptItem extends ConsumerWidget {
                                     BorderSide(color: basic[4], width: 0.75),
                               ),
                             ),
-                            maxLength: 20,
+                            maxLength: 8,
                             // maxLines: 1,
                             // expands: true,
                             // maxLines: 1,
