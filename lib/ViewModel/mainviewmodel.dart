@@ -371,6 +371,7 @@ class MainViewModel extends ChangeNotifier {
         selectedReceiptItemIndexList.removeAt(i);
       }
     }
+    selectedSettlement = await Query(db!).showRecentSettlement(selectedSettlement.settlementId);
     notifyListeners();
     return;
   }
