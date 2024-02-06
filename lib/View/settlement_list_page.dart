@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqlite_test/View/settlement_matching.dart';
 import '../DB/sqlflite_DB.dart';
 import '../shared_tool.dart';
 import '../theme.dart';
@@ -361,6 +362,7 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                 onPressed: () {
                   eprovider.addSettlement();
                   provider.addNewSettlement().then((value) {
+                    ref.watch(settlementMatchingProvider).settingSettlementMatchingViewmodel();
                     context.go('/SettlementManagementPage');
                   });
                   // provider.selectSettlement(0);
@@ -435,6 +437,7 @@ class SingleSettlement extends ConsumerWidget {
                     } else {
                       provider.selectSettlement(index).then((value) {
                         print(provider.selectedSettlement.receipts.length);
+                        ref.watch(settlementMatchingProvider).settingSettlementMatchingViewmodel();
                         // print(provider.selectedSettlement.receipts[0].receiptItems.length);
                         context.go('/SettlementManagementPage');
                       });

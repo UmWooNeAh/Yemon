@@ -24,6 +24,7 @@ class _SettlementManagementPageState
       appBar: AppBar(
         title: const SettlementName(),
         backgroundColor: selectedIndex == 2 ? basic[1] : basic[0],
+        scrolledUnderElevation: 0,
       ),
       body: IndexedStack(
         index: selectedIndex,
