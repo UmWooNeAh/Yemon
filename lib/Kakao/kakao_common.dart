@@ -67,14 +67,14 @@ Future<FeedTemplate> makeTemplate(Uint8List uint8list) async {
     ImageUploadResult imageUploadResult =
         await ShareClient.instance.uploadImage(image: file);
     print('이미지 업로드 성공'
-        '\n${imageUploadResult.infos.original}');
+        '\n${imageUploadResult.infos.original.url}');
 
     final FeedTemplate template = FeedTemplate(
       content: Content(
         title: "정산서",
         imageUrl: Uri.parse(imageUploadResult.infos.original.url),
         link: Link(
-            mobileWebUrl: Uri.parse('https://developers.kakao.com')),
+            mobileWebUrl: Uri.parse(imageUploadResult.infos.original.url)),
       ),
     );
 
