@@ -111,7 +111,6 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
   Widget build(BuildContext context) {
     final eprovider = ref.watch(editManagementProvider);
     final provider = ref.watch(mainProvider);
-    print("build");
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(

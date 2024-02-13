@@ -108,7 +108,6 @@ class _SettlementInformationState extends ConsumerState<SettlementInformation> {
 
   @override
   Widget build(BuildContext context) {
-    print('build');
     final rprovider = ref.watch(receiptProvider);
     final mprovider = ref.watch(mainProvider);
     Size size = MediaQuery.of(context).size;
