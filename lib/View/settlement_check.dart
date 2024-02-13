@@ -32,353 +32,373 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
     final mProvider = ref.watch(mainProvider);
     final sProvider = ref.watch(settlementMatchingProvider);
     final size = MediaQuery.of(context).size;
-    return Container(
-      width: size.width,
-      height: size.height,
-      color: basic[0],
-      child: Column(
-        children: [
-          Container(
-              height: 55,
-              width: size.width,
-              padding: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: basic[1],
-                boxShadow: [
-                  BoxShadow(
-                    color: basic[3],
-                    inset: true,
-                    blurRadius: 8,
-                    spreadRadius: -10,
-                    offset: const Offset(0, -5),
+    return Stack(
+      children: [
+        Container(
+          width: size.width,
+          height: size.height,
+          color: basic[0],
+          child: Column(
+            children: [
+              Container(
+                  height: 55,
+                  width: size.width,
+                  padding: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: basic[1],
+                    boxShadow: [
+                      BoxShadow(
+                        color: basic[3],
+                        inset: true,
+                        blurRadius: 8,
+                        spreadRadius: -10,
+                        offset: const Offset(0, -5),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          showOverall = true;
-                          index = -1;
-                        });
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 100),
-                        height: 30,
-                        padding: const EdgeInsets.only(left: 20, right: 20),
-                        margin: const EdgeInsets.only(left: 10, right: 10),
-                        decoration: BoxDecoration(
-                          color: showOverall ? basic[9] : basic[0],
-                          border: Border.all(
-                            color: showOverall ? basic[9] : basic[2],
-                            width: 1.5,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 1,
-                              offset: const Offset(1.5, 1.5),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            "전체 정산서",
-                            style: TextStyle(
-                              color: showOverall ? Colors.white : Colors.black,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Row(
-                      children: List.generate(
-                          mProvider.selectedSettlement.settlementPapers.length,
-                          (index) => GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    showOverall = false;
-                                    this.index = index;
-                                  });
-                                },
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 100),
-                                  height: 30,
-                                  padding: const EdgeInsets.only(
-                                      left: 20, right: 20),
-                                  margin: const EdgeInsets.only(right: 10),
-                                  decoration: BoxDecoration(
-                                    color: this.index == index
-                                        ? basic[8]
-                                        : basic[0],
-                                    border: Border.all(
-                                      color: this.index == index
-                                          ? basic[8]
-                                          : basic[2],
-                                      width: 1.5,
-                                    ),
-                                    borderRadius: BorderRadius.circular(20),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.3),
-                                        blurRadius: 1,
-                                        offset: const Offset(1.5, 1.5),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      index == 0
-                                          ? "나"
-                                          : mProvider
-                                              .selectedSettlement
-                                              .settlementPapers[index]
-                                              .memberName,
-                                      style: TextStyle(
-                                        color: this.index == index
-                                            ? Colors.white
-                                            : Colors.black,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )),
-                    )
-                  ],
-                ),
-              )),
-          showOverall
-              ? showAll
-                  ? Expanded(
-                      child: SingleChildScrollView(
-                        child: RepaintBoundary(
-                          key: _globalKey1,
-                          child: Column(
-                            children: [
-                              const OverallStmPaper(),
-                              Column(
-                                children: List.generate(
-                                    mProvider.selectedSettlement
-                                        .settlementPapers.length,
-                                    (index) => OneStmPaper(index: index)),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              showOverall = true;
+                              index = -1;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 100),
+                            height: 30,
+                            padding: const EdgeInsets.only(left: 20, right: 20),
+                            margin: const EdgeInsets.only(left: 10, right: 10),
+                            decoration: BoxDecoration(
+                              color: showOverall ? basic[9] : basic[0],
+                              border: Border.all(
+                                color: showOverall ? basic[9] : basic[2],
+                                width: 1.5,
                               ),
-                            ],
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 1,
+                                  offset: const Offset(1.5, 1.5),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                "전체 정산서",
+                                style: TextStyle(
+                                  color: showOverall ? Colors.white : Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    )
+                        Row(
+                          children: List.generate(
+                              mProvider.selectedSettlement.settlementPapers.length,
+                              (index) => GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        showOverall = false;
+                                        this.index = index;
+                                      });
+                                    },
+                                    child: AnimatedContainer(
+                                      duration: const Duration(milliseconds: 100),
+                                      height: 30,
+                                      padding: const EdgeInsets.only(
+                                          left: 20, right: 20),
+                                      margin: const EdgeInsets.only(right: 10),
+                                      decoration: BoxDecoration(
+                                        color: this.index == index
+                                            ? basic[8]
+                                            : basic[0],
+                                        border: Border.all(
+                                          color: this.index == index
+                                              ? basic[8]
+                                              : basic[2],
+                                          width: 1.5,
+                                        ),
+                                        borderRadius: BorderRadius.circular(20),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.3),
+                                            blurRadius: 1,
+                                            offset: const Offset(1.5, 1.5),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          index == 0
+                                              ? "나"
+                                              : mProvider
+                                                  .selectedSettlement
+                                                  .settlementPapers[index]
+                                                  .memberName,
+                                          style: TextStyle(
+                                            color: this.index == index
+                                                ? Colors.white
+                                                : Colors.black,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )),
+                        )
+                      ],
+                    ),
+                  )),
+              showOverall
+                  ? showAll
+                      ? Expanded(
+                          child: SingleChildScrollView(
+                            child: RepaintBoundary(
+                              key: _globalKey1,
+                              child: Column(
+                                children: [
+                                  const OverallStmPaper(),
+                                  Column(
+                                    children: List.generate(
+                                        mProvider.selectedSettlement
+                                            .settlementPapers.length,
+                                        (index) => OneStmPaper(index: index)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      : Expanded(
+                          child: SingleChildScrollView(
+                            child: RepaintBoundary(
+                              key: _globalKey2,
+                              child: const OverallStmPaper(),
+                            ),
+                          ),
+                        )
                   : Expanded(
                       child: SingleChildScrollView(
                         child: RepaintBoundary(
-                          key: _globalKey2,
-                          child: const OverallStmPaper(),
+                          key: _globalKey3,
+                          child: OneStmPaper(index: index),
                         ),
                       ),
-                    )
-              : Expanded(
-                  child: SingleChildScrollView(
-                    child: RepaintBoundary(
-                      key: _globalKey3,
-                      child: OneStmPaper(index: index),
                     ),
-                  ),
-                ),
-          showOverall
-              ? Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: basic[1],
-                    boxShadow: [
-                      BoxShadow(
-                        color: basic[6],
-                        inset: true,
-                        blurRadius: 5,
-                        spreadRadius: -5,
-                        offset: const Offset(0, 5),
-                      ),
-                      BoxShadow(
-                        color: basic[6],
-                        inset: true,
-                        blurRadius: 5,
-                        spreadRadius: -5,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-
-                  // activeColor: basic[8],
-                  // checkColor: basic[0],
-                  // checkboxShape: RoundedRectangleBorder(
-                  //   borderRadius: BorderRadius.circular(10),
-                  // ),
-
-                  // side: BorderSide(color: basic[3], width: 1.5),
-                  // contentPadding: const EdgeInsets.all(0),
-                  // title: Container(
-                  //   color: Colors.red,
-                  //   child: const Text(
-                  //     "모든 사람들의 정산서도 모아서 보기",
-                  //     style: TextStyle(
-                  //       fontSize: 18,
-                  //       fontWeight: FontWeight.w600,
-                  //     ),
-                  //   ),
-                  // ),
-                  // value: showAll,
-                  // onChanged: (value) {
-                  //   setState(() {
-                  //     showAll = value!;
-                  //   });
-                  // },
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        margin:
-                            const EdgeInsets.only(left: 15, top: 10, bottom: 5),
-                        width: 30,
-                        height: 35,
-                        child: Checkbox(
-                          value: showAll,
-                          activeColor: basic[8],
-                          checkColor: basic[0],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(100),
+              showOverall
+                  ? Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: basic[1],
+                        boxShadow: [
+                          BoxShadow(
+                            color: basic[6],
+                            inset: true,
+                            blurRadius: 5,
+                            spreadRadius: -5,
+                            offset: const Offset(0, 5),
                           ),
-                          side: BorderSide(color: basic[3], width: 1.5),
-                          onChanged: (value) {
-                            setState(() {
-                              showAll = value!;
-                            });
-                          },
-                        ),
+                          BoxShadow(
+                            color: basic[6],
+                            inset: true,
+                            blurRadius: 5,
+                            spreadRadius: -5,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            showAll = !showAll;
-                          });
-                        },
-                        child: Container(
-                          height: 35,
-                          margin: const EdgeInsets.only(
-                              left: 5, top: 10, bottom: 5),
-                          child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "모든 사람들의 정산서도 모아서 보기",
-                              style: TextStyle(
-                                // backgroundColor: Colors.red,
-                                height: 1.4,
+        
+                      // activeColor: basic[8],
+                      // checkColor: basic[0],
+                      // checkboxShape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(10),
+                      // ),
+        
+                      // side: BorderSide(color: basic[3], width: 1.5),
+                      // contentPadding: const EdgeInsets.all(0),
+                      // title: Container(
+                      //   color: Colors.red,
+                      //   child: const Text(
+                      //     "모든 사람들의 정산서도 모아서 보기",
+                      //     style: TextStyle(
+                      //       fontSize: 18,
+                      //       fontWeight: FontWeight.w600,
+                      //     ),
+                      //   ),
+                      // ),
+                      // value: showAll,
+                      // onChanged: (value) {
+                      //   setState(() {
+                      //     showAll = value!;
+                      //   });
+                      // },
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin:
+                                const EdgeInsets.only(left: 15, top: 10, bottom: 5),
+                            width: 30,
+                            height: 35,
+                            child: Checkbox(
+                              value: showAll,
+                              activeColor: basic[8],
+                              checkColor: basic[0],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              side: BorderSide(color: basic[3], width: 1.5),
+                              onChanged: (value) {
+                                setState(() {
+                                  showAll = value!;
+                                });
+                              },
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                showAll = !showAll;
+                              });
+                            },
+                            child: Container(
+                              height: 35,
+                              margin: const EdgeInsets.only(
+                                  left: 5, top: 10, bottom: 5),
+                              child: const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  "모든 사람들의 정산서도 모아서 보기",
+                                  style: TextStyle(
+                                    // backgroundColor: Colors.red,
+                                    height: 1.4,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ))
+                  : Container(
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: basic[1],
+                        boxShadow: [
+                          BoxShadow(
+                            color: basic[6],
+                            inset: true,
+                            blurRadius: 5,
+                            spreadRadius: -5,
+                            offset: const Offset(0, 5),
+                          ),
+                          BoxShadow(
+                            color: basic[6],
+                            inset: true,
+                            blurRadius: 5,
+                            spreadRadius: -5,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                    ),
+              Container(
+                height: 70,
+                decoration: BoxDecoration(
+                  color: basic[1],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        captureWidget().then((value) {
+                          shareMessage(value);
+                        });
+                      },
+                      child: Container(
+                        width: size.width * 0.5 - 22.5,
+                        height: 55,
+                        margin: const EdgeInsets.only(top: 0, bottom: 10, left: 15),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF7E600),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "카카오톡으로 공유",
+                            style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w500,
-                              ),
+                                color: Color(0xFF3A1D1D)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        sProvider.loading();
+                        captureWidget().then((value) {
+                          ImageGallerySaver.saveImage(value, quality: 100);
+                          Future.delayed(const Duration(milliseconds: 1000), () {
+                            sProvider.loading();
+                          });
+                        });
+                      },
+                      child: Container(
+                        width: size.width * 0.5 - 22.5,
+                        height: 55,
+                        margin:
+                            const EdgeInsets.only(top: 0, bottom: 10, right: 15),
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(
+                            color: basic[2],
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "사진으로 저장",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ))
-              : Container(
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: basic[1],
-                    boxShadow: [
-                      BoxShadow(
-                        color: basic[6],
-                        inset: true,
-                        blurRadius: 5,
-                        spreadRadius: -5,
-                        offset: const Offset(0, 5),
-                      ),
-                      BoxShadow(
-                        color: basic[6],
-                        inset: true,
-                        blurRadius: 5,
-                        spreadRadius: -5,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-          Container(
-            height: 70,
-            decoration: BoxDecoration(
-              color: basic[1],
+              )
+            ],
+          ),
+        ),
+        sProvider.isLoading ? Container(
+          width: size.width,
+          height: size.height,
+          color: basic[1].withOpacity(0.1),
+          child: Center(
+            child: SizedBox(
+              height: 30,
+              width: 30,
+              child: CircularProgressIndicator(color: basic[2],),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                InkWell(
-                  onTap: () {
-                    captureWidget().then((value) {
-                      shareMessage(value);
-                    });
-                    },
-                  child: Container(
-                    width: size.width * 0.5 - 22.5,
-                    height: 55,
-                    margin: const EdgeInsets.only(top: 0, bottom: 10, left: 15),
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF7E600),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "카카오톡으로 공유",
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF3A1D1D)),
-                      ),
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    captureWidget().then((value) {
-                      ImageGallerySaver.saveImage(value, quality: 100);
-                    });
-                  },
-                  child: Container(
-                    width: size.width * 0.5 - 22.5,
-                    height: 55,
-                    margin:
-                        const EdgeInsets.only(top: 0, bottom: 10, right: 15),
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: basic[2],
-                        width: 1.5,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "사진으로 저장",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
+          ),
+        ) : const SizedBox.shrink(),
+      ],
     );
   }
 
