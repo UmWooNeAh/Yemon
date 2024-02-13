@@ -54,7 +54,7 @@ import 'package:path_provider/path_provider.dart';
 // );
 
 
-Future<FeedTemplate> makeTemplate(Uint8List uint8list) async {
+Future<FeedTemplate> makeTemplate(Uint8List uint8list, String stmPaperName) async {
 
   Directory tempDir = await getApplicationDocumentsDirectory();
   String tempPath = '${tempDir.path}/abc.txt';
@@ -71,11 +71,22 @@ Future<FeedTemplate> makeTemplate(Uint8List uint8list) async {
 
     final FeedTemplate template = FeedTemplate(
       content: Content(
-        title: "정산서",
-        imageUrl: Uri.parse(imageUploadResult.infos.original.url),
+        title: "${stmPaperName}의 정산서가 도착했어요!",
+        imageUrl: Uri.parse("https://i.ibb.co/jf1fr8k/Yemon-Icon-text.png"),
+        imageHeight: 600,
+        imageWidth: 1024,
         link: Link(
-            mobileWebUrl: Uri.parse('https://developers.kakao.com')),
+            webUrl: Uri.parse(imageUploadResult.infos.original.url),
+            mobileWebUrl: Uri.parse(imageUploadResult.infos.original.url)),
       ),
+      buttons: [
+        Button(
+          title: "정산서 이미지 자세히 보기",
+          link: Link(
+              webUrl: Uri.parse(imageUploadResult.infos.original.url),
+              mobileWebUrl: Uri.parse(imageUploadResult.infos.original.url)),
+        ),
+        ],
     );
 
     return template;
@@ -87,9 +98,9 @@ Future<FeedTemplate> makeTemplate(Uint8List uint8list) async {
   exit(0);
 }
 
-void shareMessage(Uint8List image) async {
+void shareMessage(Uint8List image, String stmPaperName) async {
 
-  final createdTemplate = await makeTemplate(image);
+  final createdTemplate = await makeTemplate(image, stmPaperName);
 
   // 카카오톡 실행 가능 여부 확인
   bool isKakaoTalkSharingAvailable = await ShareClient.instance

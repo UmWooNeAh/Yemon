@@ -320,7 +320,7 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                 InkWell(
                   onTap: () {
                     captureWidget().then((value) {
-                      shareMessage(value);
+                      shareMessage(value, );
                     });
                     },
                   child: Container(
