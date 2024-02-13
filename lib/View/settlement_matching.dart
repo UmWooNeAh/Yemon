@@ -15,7 +15,13 @@ class SettlementMatchingViewmodel extends ChangeNotifier {
   int presentReceiptIndex = -1;
   int showMatchingDetailReceiptIndex = -1;
   int showMatchingDetailItemIndex = -1;
+  bool isLoading = false;
   bool showMemberDetail = false;
+
+  void loading(){
+    isLoading = !isLoading;
+    notifyListeners();
+  }
 
   void settingSettlementMatchingViewmodel() {
     presentReceiptIndex = -1;
