@@ -105,10 +105,12 @@ class FetchQuery {
       SettlementPaper newPaper = SettlementPaper();
       newPaper.settlementPaperId = dbSettlementPaper["settlementPaperId"];
       newPaper.memberName = dbSettlementPaper["memberName"];
-      newPaper.totalPrice = 0;
+      
       newPaper.settlementItems = await fetchSettlementItems(
           db, dbSettlementPaper["settlementPaperId"]);
-
+      for (var settlementItem in newPaper.settlementItems) {
+        newPaper.totalPrice += settlementItem.splitPrice;
+      }
       settlementPapers.add(newPaper);
     }
 

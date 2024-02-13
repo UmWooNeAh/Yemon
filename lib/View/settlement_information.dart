@@ -108,6 +108,7 @@ class _SettlementInformationState extends ConsumerState<SettlementInformation> {
 
   @override
   Widget build(BuildContext context) {
+    print('build');
     final rprovider = ref.watch(receiptProvider);
     final mprovider = ref.watch(mainProvider);
     Size size = MediaQuery.of(context).size;
@@ -616,10 +617,11 @@ class _EditMemberNameState extends ConsumerState<EditMemberName> {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            height: isError ? 60 : 30,
+            height: isError ? 45 : 45,
             // color: Colors.red,
             child: TextField(
               controller: controller,
+              maxLength: 15,
               decoration: InputDecoration(
                 errorText: isError ? "공백은 이름이 될 수 없습니다." : null,
                 border: UnderlineInputBorder(
@@ -843,9 +845,10 @@ class _AddMemberState extends ConsumerState<AddMember> {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            height: isError ? 60 : 30,
+            height: isError ? 45 : 45,
             // color: Colors.red,
             child: TextField(
+              maxLength: 15,
               decoration: InputDecoration(
                 errorText: isError ? "공백은 이름이 될 수 없습니다." : null,
                 hintText: "새로운 멤버의 이름을 입력해주세요.",
@@ -1163,9 +1166,10 @@ class _EditReceiptNameState extends ConsumerState<EditReceiptName> {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            height: isError ? 60 : 30,
+            height: isError ? 45 : 45,
             // color: Colors.red,
             child: TextField(
+              maxLength: 15,
               controller: controller,
               decoration: InputDecoration(
                 errorText: isError ? "공백은 이름이 될 수 없습니다." : null,

@@ -20,6 +20,7 @@ class _SettlementManagementPageState
   int selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
+    final provider = ref.watch(mainProvider);
     return Scaffold(
       appBar: AppBar(
         title: const SettlementName(),
@@ -39,9 +40,7 @@ class _SettlementManagementPageState
         onTap: (index) {
           setState(() {
             selectedIndex = index;
-            if (selectedIndex == 2) {
-              ref.watch(mainProvider).updateMemberTotalPrice();
-            }
+            provider.fetchSettlement();
           });
         },
         backgroundColor: basic[0],
@@ -173,10 +172,11 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            height: isError ? 60 : 30,
+            height: isError ? 45 : 45,
             // color: Colors.red,
             child: TextField(
               controller: controller,
+              maxLength: 15,
               decoration: InputDecoration(
                 errorText: isError ? "공백은 이름이 될 수 없습니다." : null,
                 border: UnderlineInputBorder(

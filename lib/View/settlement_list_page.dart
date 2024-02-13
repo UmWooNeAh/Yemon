@@ -19,6 +19,7 @@ String sql5 = "DELETE FROM ReceiptItem";
 class EditManagement extends ChangeNotifier {
   bool isEdit = false;
   bool isAllSelect = false;
+  bool isLoading = false;
   List<bool> isSelected = [];
 
   void setEditSettlement(int length) {
@@ -29,6 +30,11 @@ class EditManagement extends ChangeNotifier {
         return false;
       }
     });
+  }
+
+  void loading() {
+    isLoading = !isLoading;
+    notifyListeners();
   }
 
   void deleteSettlement() {
@@ -85,238 +91,191 @@ class SettlementListPage extends ConsumerStatefulWidget {
 
 class _SettlementListPageState extends ConsumerState<SettlementListPage> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final eprovider = ref.read(editManagementProvider);
+    final provider = ref.read(mainProvider);
+    if (provider.db != null) {
+      provider.fetchAllSettlements().then((value) {
+        eprovider.setEditSettlement(provider.settlementList.length);
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final eprovider = ref.watch(editManagementProvider);
     final provider = ref.watch(mainProvider);
-
-    if (provider.db != null) {
-      provider.fetchAllSettlements().then((value) {
-        eprovider
-            .setEditSettlement(ref.read(mainProvider).settlementList.length);
-      });
-    }
+    print("build");
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: basic[0],
         elevation: 0,
-        title: SvgPicture.asset('assets/Yemon.svg', height: 70, width: 70,),
+        title: SvgPicture.asset(
+          'assets/Yemon.svg',
+          height: 70,
+          width: 70,
+        ),
       ),
-      body: Container(
-        color: Colors.white,
-        child: Column(children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(left: 30),
-                height: 60,
-                child: eprovider.isEdit
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+      body: Stack(
+        children: [
+          Container(
+            color: Colors.white,
+            child: Column(children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(left: 30),
+                    height: 60,
+                    child: eprovider.isEdit
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Container(
-                                height: 30,
-                                width: 30,
-                                child: Transform.scale(
-                                  scale: 1.3,
-                                  child: Checkbox(
-                                    materialTapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    value: eprovider.isAllSelect,
-                                    onChanged: (value) {
-                                      eprovider.toggleAllSelect(
-                                          provider.settlementList.length);
-                                    },
-                                    activeColor: basic[8],
-                                    checkColor: basic[0],
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    side: BorderSide(color: basic[2], width: 1),
-                                  ),
-                                ),
-                              ),
-                              const Text(
-                                "전체",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            width: 15,
-                          ),
-                          Text(
-                            "${eprovider.isSelected.where((element) => element == true).length}개 선택됨",
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w500,
-                              color: eprovider.isSelected
-                                      .where((element) => element == true)
-                                      .isEmpty
-                                  ? basic[3]
-                                  : basic[5],
-                            ),
-                          ),
-                        ],
-                      )
-                    : const Center(
-                        child: Text(
-                          "최근 정산 목록",
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-              ),
-              Container(
-                height: 50,
-                width: 130,
-                margin: const EdgeInsets.only(right: 20),
-                child: OutlinedButton(
-                  onPressed: () {
-                    eprovider.toggleEdit(provider.settlementList.length);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                        color: eprovider.isEdit ? basic[2] : basic[8],
-                        width: 2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    eprovider.isEdit ? "편집 취소" : "목록 편집",
-                    style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          provider.settlementList.length == 0
-              ? const Expanded(
-                  child: Padding(
-                  padding: EdgeInsets.only(bottom: 50),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("정산이 없습니다",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          )),
-                      Text("정산을 생성하려면 우측 하단의 추가 버튼을 누르세요.",
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400,
-                          )),
-                    ],
-                  ),
-                ))
-              : Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                        children: List.generate(provider.settlementList.length,
-                            (index) => SingleSettlement(index: index))),
-                  ),
-                ),
-          AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              width: size.width,
-              height: eprovider.isEdit && eprovider.isSelected.contains(true)
-                  ? 60
-                  : 0,
-              decoration: BoxDecoration(
-                color: basic[1],
-                boxShadow: [
-                  BoxShadow(
-                    color: basic[1],
-                    blurRadius: 8,
-                    spreadRadius: 8,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: eprovider.checkMultipleSelect()
-                  ? InkWell(
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) => const DeleteSettlement());
-                      },
-                      child: SingleChildScrollView(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 10),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset("assets/Bin.png",
-                                  width: 17, height: 17),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              const Text(
-                                "삭제",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  : Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) =>
-                                    const EditSettlementName());
-                          },
-                          child: SingleChildScrollView(
-                            child: Container(
-                              width: (size.width - 20) / 2,
-                              margin: const EdgeInsets.symmetric(vertical: 10),
-                              child: Column(
+                              Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Image.asset("assets/pencil.png",
-                                      width: 17, height: 17),
-                                  const SizedBox(
-                                    height: 5,
+                                  Container(
+                                    height: 30,
+                                    width: 30,
+                                    child: Transform.scale(
+                                      scale: 1.3,
+                                      child: Checkbox(
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        value: eprovider.isAllSelect,
+                                        onChanged: (value) {
+                                          eprovider.toggleAllSelect(
+                                              provider.settlementList.length);
+                                        },
+                                        activeColor: basic[8],
+                                        checkColor: basic[0],
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        side: BorderSide(
+                                            color: basic[2], width: 1),
+                                      ),
+                                    ),
                                   ),
                                   const Text(
-                                    "이름 변경",
+                                    "전체",
                                     style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ],
                               ),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              Text(
+                                "${eprovider.isSelected.where((element) => element == true).length}개 선택됨",
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w500,
+                                  color: eprovider.isSelected
+                                          .where((element) => element == true)
+                                          .isEmpty
+                                      ? basic[3]
+                                      : basic[5],
+                                ),
+                              ),
+                            ],
+                          )
+                        : const Center(
+                            child: Text(
+                              "최근 정산 목록",
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
+                  ),
+                  Container(
+                    height: 50,
+                    width: 130,
+                    margin: const EdgeInsets.only(right: 20),
+                    child: OutlinedButton(
+                      onPressed: () {
+                        eprovider.toggleEdit(provider.settlementList.length);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(
+                            color: eprovider.isEdit ? basic[2] : basic[8],
+                            width: 2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        VerticalDivider(
-                          thickness: 2,
-                          color: basic[2],
-                          endIndent: 10,
-                          indent: 10,
-                        ),
-                        InkWell(
+                      ),
+                      child: Text(
+                        eprovider.isEdit ? "편집 취소" : "목록 편집",
+                        style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              provider.settlementList.length == 0
+                  ? const Expanded(
+                      child: Padding(
+                      padding: EdgeInsets.only(bottom: 50),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("정산이 없습니다",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                              )),
+                          Text("정산을 생성하려면 우측 하단의 추가 버튼을 누르세요.",
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
+                              )),
+                        ],
+                      ),
+                    ))
+                  : Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                            children: List.generate(
+                                provider.settlementList.length,
+                                (index) => SingleSettlement(index: index))),
+                      ),
+                    ),
+              AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  width: size.width,
+                  height:
+                      eprovider.isEdit && eprovider.isSelected.contains(true)
+                          ? 60
+                          : 0,
+                  decoration: BoxDecoration(
+                    color: basic[1],
+                    boxShadow: [
+                      BoxShadow(
+                        color: basic[1],
+                        blurRadius: 8,
+                        spreadRadius: 8,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: eprovider.checkMultipleSelect()
+                      ? InkWell(
                           onTap: () {
                             showDialog(
                                 context: context,
@@ -324,7 +283,6 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                           },
                           child: SingleChildScrollView(
                             child: Container(
-                              width: (size.width - 20) / 2,
                               margin: const EdgeInsets.symmetric(vertical: 10),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -346,9 +304,98 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                             ),
                           ),
                         )
-                      ],
-                    ))
-        ]),
+                      : Row(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        const EditSettlementName());
+                              },
+                              child: SingleChildScrollView(
+                                child: Container(
+                                  width: (size.width - 20) / 2,
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset("assets/pencil.png",
+                                          width: 17, height: 17),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      const Text(
+                                        "이름 변경",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            VerticalDivider(
+                              thickness: 2,
+                              color: basic[2],
+                              endIndent: 10,
+                              indent: 10,
+                            ),
+                            InkWell(
+                              onTap: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        const DeleteSettlement());
+                              },
+                              child: SingleChildScrollView(
+                                child: Container(
+                                  width: (size.width - 20) / 2,
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset("assets/Bin.png",
+                                          width: 17, height: 17),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      const Text(
+                                        "삭제",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ))
+            ]),
+          ),
+          eprovider.isLoading
+              ? Container(
+                  width: size.width,
+                  height: size.height,
+                  color: basic[1].withOpacity(0.1),
+                  child: Center(
+                    child: SizedBox(
+                      width: 30,
+                      height: 30,
+                      child: CircularProgressIndicator(
+                        color: basic[2],
+                      ),
+                    ),
+                  ))
+              : const SizedBox.shrink(),
+        ],
       ),
       floatingActionButton: eprovider.isEdit
           ? const SizedBox.shrink()
@@ -362,7 +409,9 @@ class _SettlementListPageState extends ConsumerState<SettlementListPage> {
                 onPressed: () {
                   eprovider.addSettlement();
                   provider.addNewSettlement().then((value) {
-                    ref.watch(settlementMatchingProvider).settingSettlementMatchingViewmodel();
+                    ref
+                        .watch(settlementMatchingProvider)
+                        .settingSettlementMatchingViewmodel();
                     context.go('/SettlementManagementPage');
                   });
                   // provider.selectSettlement(0);
@@ -435,13 +484,14 @@ class SingleSettlement extends ConsumerWidget {
                     if (editManagement.isEdit) {
                       editManagement.toggleSelect(index);
                     } else {
+                      editManagement.loading();
                       provider.selectSettlement(index).then((value) {
-                        print(provider.selectedSettlement.receipts.length);
-                        ref.watch(settlementMatchingProvider).settingSettlementMatchingViewmodel();
-                        // print(provider.selectedSettlement.receipts[0].receiptItems.length);
+                        ref
+                            .watch(settlementMatchingProvider)
+                            .settingSettlementMatchingViewmodel();
+                        editManagement.loading();
                         context.go('/SettlementManagementPage');
                       });
-                      //provider.settingMainViewModel();
                     }
                   },
                   onLongPress: () {
@@ -601,10 +651,11 @@ class _EditSettlementNameState extends ConsumerState<EditSettlementName> {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            height: isError ? 60 : 30,
+            height: isError ? 45 : 45,
             // color: Colors.red,
             child: TextField(
               controller: controller,
+              maxLength: 15,
               decoration: InputDecoration(
                 errorText: isError ? "공백은 이름이 될 수 없습니다." : null,
                 border: UnderlineInputBorder(
@@ -756,10 +807,12 @@ class _DeleteSettlementState extends ConsumerState<DeleteSettlement> {
                   borderRadius: BorderRadius.circular(5)),
             ),
             onPressed: () {
+              eprovider.loading();
+              context.pop();
               provider.deleteSettlement(eprovider.isSelected).then((value) {
                 eprovider.toggleEdit(provider.settlementList.length);
                 eprovider.deleteSettlement();
-                context.pop();
+                eprovider.loading();
               });
             },
             child: Text("정산 삭제",

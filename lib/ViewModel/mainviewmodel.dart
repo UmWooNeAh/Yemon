@@ -94,6 +94,13 @@ class MainViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> fetchSettlement() async {
+    selectedSettlement =
+        await Query(db!).showRecentSettlement(selectedSettlement.settlementId);
+    notifyListeners();
+    return;
+  }
+
   Future<void> selectSettlement(int index) async {
     selectedSettlement = await Query(db!)
         .showRecentSettlement(settlementList[index].settlementId);
@@ -180,11 +187,9 @@ class MainViewModel extends ChangeNotifier {
       String newName, int receiptIndex, int receiptItemIndex) async {
     selectedSettlement.receipts[receiptIndex].receiptItems[receiptItemIndex]
         .receiptItemName = newName;
-    editAllSettlementItemName(receiptIndex, receiptItemIndex, newName);
+    // editAllSettlementItemName(receiptIndex, receiptItemIndex, newName);
     await Query(db!).updateReceiptItem(selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex]);
-    selectedSettlement =
-        await Query(db!).showRecentSettlement(selectedSettlement.settlementId);
     notifyListeners();
   }
 
@@ -205,6 +210,20 @@ class MainViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+// Receipt Total, Settlement Total price update
+  void updateTotalPrice(int receiptIndex) {
+    double total = 0;
+    for (ReceiptItem receiptItem in selectedSettlement.receipts[receiptIndex].receiptItems) {
+      total += receiptItem.price;
+    }
+    selectedSettlement.receipts[receiptIndex].totalPrice = total;
+    total = 0;
+    for (Receipt receipt in selectedSettlement.receipts) {
+      total += receipt.totalPrice;
+    }
+    selectedSettlement.totalPrice = total;
+  }
+
 //ReceiptItem 값 수정
   void editReceiptItemIndividualPrice(
       double newIndividualPrice, int receiptIndex, int receiptItemIndex) async {
@@ -222,8 +241,7 @@ class MainViewModel extends ChangeNotifier {
         priceToString.format(newIndividualPrice * count.truncate());
     await Query(db!).updateReceiptItem(selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex]);
-    selectedSettlement =
-        await Query(db!).showRecentSettlement(selectedSettlement.settlementId);
+    updateTotalPrice(receiptIndex);
     notifyListeners();
   }
 
@@ -244,8 +262,7 @@ class MainViewModel extends ChangeNotifier {
 
     await Query(db!).updateReceiptItem(selectedSettlement
         .receipts[receiptIndex].receiptItems[receiptItemIndex]);
-    selectedSettlement =
-        await Query(db!).showRecentSettlement(selectedSettlement.settlementId);
+    updateTotalPrice(receiptIndex);
     notifyListeners();
   }
 
@@ -342,6 +359,7 @@ class MainViewModel extends ChangeNotifier {
         await Query(db!).deleteSettlement(settlementList[i]);
       }
     }
+    settlementList = await Query(db!).showAllSettlements();
     notifyListeners();
     return;
   }
