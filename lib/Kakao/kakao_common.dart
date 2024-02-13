@@ -73,8 +73,8 @@ Future<FeedTemplate> makeTemplate(
       content: Content(
         title: stmPaperName == "전체 정산서"
             ? "Yemon에서 정산한 '$stmName'의 정산서가 도착했어요"
-            : "Yemon에서 정산한 '$stmPaperName'님의 $stmName 정산서가 도착했어요!",
-        imageUrl: Uri.parse("https://i.ibb.co/jf1fr8k/Yemon-Icon-text.png"),
+            : "Yemon에서 정산한 '$stmPaperName' 님의 '$stmName' 정산서가 도착했어요!",
+        imageUrl: Uri.parse("https://i.ibb.co/QMJfGnR/Yemon-Icon-text.png"),
         imageHeight: 600,
         imageWidth: 1024,
         link: Link(
