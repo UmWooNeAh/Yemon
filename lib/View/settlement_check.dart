@@ -91,7 +91,8 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                               child: Text(
                                 "전체 정산서",
                                 style: TextStyle(
-                                  color: showOverall ? Colors.white : Colors.black,
+                                  color:
+                                      showOverall ? Colors.white : Colors.black,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -101,7 +102,8 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                         ),
                         Row(
                           children: List.generate(
-                              mProvider.selectedSettlement.settlementPapers.length,
+                              mProvider
+                                  .selectedSettlement.settlementPapers.length,
                               (index) => GestureDetector(
                                     onTap: () {
                                       setState(() {
@@ -110,7 +112,8 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                                       });
                                     },
                                     child: AnimatedContainer(
-                                      duration: const Duration(milliseconds: 100),
+                                      duration:
+                                          const Duration(milliseconds: 100),
                                       height: 30,
                                       padding: const EdgeInsets.only(
                                           left: 20, right: 20),
@@ -128,7 +131,8 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                                         borderRadius: BorderRadius.circular(20),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black.withOpacity(0.3),
+                                            color:
+                                                Colors.black.withOpacity(0.3),
                                             blurRadius: 1,
                                             offset: const Offset(1.5, 1.5),
                                           ),
@@ -215,13 +219,13 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                           ),
                         ],
                       ),
-        
+
                       // activeColor: basic[8],
                       // checkColor: basic[0],
                       // checkboxShape: RoundedRectangleBorder(
                       //   borderRadius: BorderRadius.circular(10),
                       // ),
-        
+
                       // side: BorderSide(color: basic[3], width: 1.5),
                       // contentPadding: const EdgeInsets.all(0),
                       // title: Container(
@@ -244,8 +248,8 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Container(
-                            margin:
-                                const EdgeInsets.only(left: 15, top: 10, bottom: 5),
+                            margin: const EdgeInsets.only(
+                                left: 15, top: 10, bottom: 5),
                             width: 30,
                             height: 35,
                             child: Checkbox(
@@ -322,13 +326,20 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                     InkWell(
                       onTap: () {
                         captureWidget().then((value) {
-                          shareMessage(value);
+                          shareMessage(
+                              value,
+                              showOverall
+                                  ? "전체 정산서"
+                                  : mProvider.selectedSettlement
+                                      .settlementPapers[index].memberName,
+                              mProvider.selectedSettlement.settlementName);
                         });
                       },
                       child: Container(
                         width: size.width * 0.5 - 22.5,
                         height: 55,
-                        margin: const EdgeInsets.only(top: 0, bottom: 10, left: 15),
+                        margin:
+                            const EdgeInsets.only(top: 0, bottom: 10, left: 15),
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         decoration: BoxDecoration(
                           color: const Color(0xFFF7E600),
@@ -350,7 +361,8 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                         sProvider.loading();
                         captureWidget().then((value) {
                           ImageGallerySaver.saveImage(value, quality: 100);
-                          Future.delayed(const Duration(milliseconds: 1000), () {
+                          Future.delayed(const Duration(milliseconds: 1000),
+                              () {
                             sProvider.loading();
                           });
                         });
@@ -358,8 +370,8 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
                       child: Container(
                         width: size.width * 0.5 - 22.5,
                         height: 55,
-                        margin:
-                            const EdgeInsets.only(top: 0, bottom: 10, right: 15),
+                        margin: const EdgeInsets.only(
+                            top: 0, bottom: 10, right: 15),
                         padding: const EdgeInsets.symmetric(horizontal: 30),
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -386,18 +398,22 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
             ],
           ),
         ),
-        sProvider.isLoading ? Container(
-          width: size.width,
-          height: size.height,
-          color: basic[1].withOpacity(0.1),
-          child: Center(
-            child: SizedBox(
-              height: 30,
-              width: 30,
-              child: CircularProgressIndicator(color: basic[2],),
-            ),
-          ),
-        ) : const SizedBox.shrink(),
+        sProvider.isLoading
+            ? Container(
+                width: size.width,
+                height: size.height,
+                color: basic[1].withOpacity(0.1),
+                child: Center(
+                  child: SizedBox(
+                    height: 30,
+                    width: 30,
+                    child: CircularProgressIndicator(
+                      color: basic[2],
+                    ),
+                  ),
+                ),
+              )
+            : const SizedBox.shrink(),
       ],
     );
   }

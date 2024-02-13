@@ -53,59 +53,69 @@ import 'package:path_provider/path_provider.dart';
 //   ],
 // );
 
-
-Future<FeedTemplate> makeTemplate(Uint8List uint8list) async {
-
+Future<FeedTemplate> makeTemplate(
+    Uint8List uint8list, String stmPaperName, String stmName) async {
   Directory tempDir = await getApplicationDocumentsDirectory();
   String tempPath = '${tempDir.path}/abc.txt';
-  log("경로: ${tempPath}");
+  // log("경로: ${tempPath}");
 
-  File file = File(tempPath); await file.writeAsBytes(uint8list);
+  File file = File(tempPath);
+  await file.writeAsBytes(uint8list);
 
   try {
     // 카카오 이미지 서버로 업로드
     ImageUploadResult imageUploadResult =
         await ShareClient.instance.uploadImage(image: file);
-    print('이미지 업로드 성공'
-        '\n${imageUploadResult.infos.original.url}');
+    // print('이미지 업로드 성공'
+    //     '\n${imageUploadResult.infos.original.url}');
 
     final FeedTemplate template = FeedTemplate(
       content: Content(
-        title: "정산서",
-        imageUrl: Uri.parse(imageUploadResult.infos.original.url),
+        title: stmPaperName == "전체 정산서"
+            ? "Yemon에서 정산한 '$stmName'의 정산서가 도착했어요"
+            : "Yemon에서 정산한 '$stmPaperName'님의 $stmName 정산서가 도착했어요!",
+        imageUrl: Uri.parse("https://i.ibb.co/jf1fr8k/Yemon-Icon-text.png"),
+        imageHeight: 600,
+        imageWidth: 1024,
         link: Link(
+            webUrl: Uri.parse(imageUploadResult.infos.original.url),
             mobileWebUrl: Uri.parse(imageUploadResult.infos.original.url)),
       ),
+      buttons: [
+        Button(
+          title: "정산서 이미지 자세히 보기",
+          link: Link(
+              webUrl: Uri.parse(imageUploadResult.infos.original.url),
+              mobileWebUrl: Uri.parse(imageUploadResult.infos.original.url)),
+        ),
+      ],
     );
 
     return template;
-
   } catch (error) {
-    print('이미지 업로드 실패 $error');
+    // print('이미지 업로드 실패 $error');
   }
 
   exit(0);
 }
 
-void shareMessage(Uint8List image) async {
-
-  final createdTemplate = await makeTemplate(image);
+void shareMessage(Uint8List image, String stmPaperName, String stmName) async {
+  final createdTemplate = await makeTemplate(image, stmPaperName, stmName);
 
   // 카카오톡 실행 가능 여부 확인
-  bool isKakaoTalkSharingAvailable = await ShareClient.instance
-      .isKakaoTalkSharingAvailable();
+  bool isKakaoTalkSharingAvailable =
+      await ShareClient.instance.isKakaoTalkSharingAvailable();
 
   if (isKakaoTalkSharingAvailable) {
     try {
       Uri uri =
-      await ShareClient.instance.shareDefault(template: createdTemplate);
+          await ShareClient.instance.shareDefault(template: createdTemplate);
       await ShareClient.instance.launchKakaoTalk(uri);
       log('카카오톡 공유 완료');
     } catch (error) {
       log('카카오톡 공유 실패 $error');
     }
-  }
-  else {
+  } else {
     try {
       Uri shareUrl = await WebSharerClient.instance
           .makeDefaultUrl(template: createdTemplate);
@@ -114,7 +124,4 @@ void shareMessage(Uint8List image) async {
       log('카카오톡 공유 실패 $error');
     }
   }
-
 }
-
-
