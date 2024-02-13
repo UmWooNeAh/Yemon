@@ -9,6 +9,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart' hide BoxShadow, BoxDecoration;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import '../Kakao/kakao_common.dart';
 import '../shared_tool.dart';
 import '../theme.dart';
 
@@ -317,7 +318,11 @@ class _SettlementCheckState extends ConsumerState<SettlementCheck> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    captureWidget().then((value) {
+                      shareMessage(value);
+                    });
+                    },
                   child: Container(
                     width: size.width * 0.5 - 22.5,
                     height: 55,

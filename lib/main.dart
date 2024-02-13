@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqlite_test/DB/sqlflite_DB.dart';
 import 'package:sqlite_test/ViewModel/mainviewmodel.dart';
@@ -11,6 +12,11 @@ import 'View/settlement_list_page.dart';
 import 'View/settlement_management_page.dart';
 
 void main() {
+  // runApp() 호출 전 Flutter SDK 초기화
+  KakaoSdk.init(
+    nativeAppKey: '3261fb5134b2c138c08605111066bfe6',
+    javaScriptAppKey: '119de50bf0c40a51fec11302a510fdad',
+  );
   runApp(const ProviderScope(child: MainApp()));
 }
 
