@@ -34,7 +34,8 @@ class _MainAppState extends ConsumerState<MainApp> {
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(0.8)),
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: const TextScaler.linear(0.8)),
           child: child!,
         );
       },
@@ -91,10 +92,19 @@ class _SplashViewState extends ConsumerState<SplashView> {
     SqlFliteDB().database.then((Database db) {
       //앱 시작할 때 모든 테이블 데이터 날리고 시작 가능한 코드
       //db.rawDelete(sql1); db.rawDelete(sql2); db.rawDelete(sql3); db.rawDelete(sql4); db.rawDelete(sql5);
-      ref.read(mainProvider).setDB(db).then((value){
-        Future.delayed(const Duration(milliseconds: 1000), (){
-          context.go('/');
-        });
+      ref.read(mainProvider).setDB(db).then((value) {
+        final eprovider = ref.read(editManagementProvider);
+        final provider = ref.read(mainProvider);
+        if (provider.db != null) {
+          provider.fetchAllSettlements().then((value) {
+            eprovider.setEditSettlement(provider.settlementList.length);
+          });
+        }
+        Future.delayed(const Duration(milliseconds: 1000)).then(
+          (value) {
+            context.go('/');
+          },
+        );
       });
     });
   }
@@ -103,10 +113,15 @@ class _SplashViewState extends ConsumerState<SplashView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        width: double.infinity, height: double.infinity,
+        width: double.infinity,
+        height: double.infinity,
         color: basic[0],
         child: Center(
-          child: SvgPicture.asset('assets/Yemon.svg', width: 150, height: 150,),
+          child: SvgPicture.asset(
+            'assets/Yemon.svg',
+            width: 150,
+            height: 150,
+          ),
         ),
       ),
     );

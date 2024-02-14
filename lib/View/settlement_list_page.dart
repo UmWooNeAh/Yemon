@@ -93,11 +93,6 @@ class SettlementListPage extends ConsumerStatefulWidget {
 
 class _SettlementListPageState extends ConsumerState<SettlementListPage> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final eprovider = ref.read(editManagementProvider);
