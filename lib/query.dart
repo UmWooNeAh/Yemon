@@ -129,7 +129,7 @@ class Query {
     try {
       await DBSettlementItem().createStmItem(_db!, stmPaperId, rcpItemId);
     } catch (e) {
-      print(e);
+      // print(e);
       return 0;
     }
     return 1;
@@ -167,7 +167,7 @@ class Query {
     try {
       await DBSettlementItem().deleteStmItem(_db!, stmPaperId, rcpItemId);
     } catch (e) {
-      print(e);
+      // print(e);
       return 0;
     }
     return 1;
