@@ -541,6 +541,9 @@ class IncludedMember extends ConsumerWidget {
           top: 5,
           child: GestureDetector(
             onTap: () {
+              if (index == 0) {
+                return;
+              }
               showDialog(
                   context: context,
                   builder: (context) {
