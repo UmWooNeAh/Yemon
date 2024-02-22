@@ -7,7 +7,6 @@ import 'package:sqlite_test/ViewModel/mainviewmodel.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqlite_test/View/settlement_matching.dart';
-import '../DB/sqlflite_DB.dart';
 import '../shared_tool.dart';
 import '../theme.dart';
 import '../ViewModel/mainviewmodel.dart';

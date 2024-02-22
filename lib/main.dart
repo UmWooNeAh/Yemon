@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqlite_test/DB/sqlflite_DB.dart';
+import 'package:sqlite_test/DBSetting/sqlflite_DB.dart';
 import 'package:sqlite_test/ViewModel/mainviewmodel.dart';
 import 'package:sqlite_test/theme.dart';
 import 'View/load_member_page.dart';

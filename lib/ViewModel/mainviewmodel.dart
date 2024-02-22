@@ -3,9 +3,9 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqlite_test/DB/db_receiptitem.dart';
-import 'package:sqlite_test/DB/db_settlementitem.dart';
-import 'package:sqlite_test/DB/sqlflite_db.dart';
+import 'package:sqlite_test/DAO/receiptitem_dao.dart';
+import 'package:sqlite_test/DAO/settlementitem_dao.dart';
+import 'package:sqlite_test/DBSetting/sqlflite_db.dart';
 import 'package:sqlite_test/shared_tool.dart';
 import '../Model/receipt.dart';
 import '../Model/receipt_item.dart';
@@ -382,7 +382,7 @@ class MainViewModel extends ChangeNotifier {
     for (int i = isSelectedReceiptList.length - 1; i >= 0; i--) {
       if (isSelectedReceiptList[i]) {
         await Query(db!).deleteReceipt(selectedSettlement.receipts[i].receiptId);
-        await DBReceiptItem()
+        await ReceiptItemDAO()
             .deleteAllRcpItems(db!, selectedSettlement.receipts[i].receiptId);
         selectedSettlement.receipts.removeAt(i);
         receiptItemControllerList.removeAt(i);
@@ -410,9 +410,9 @@ class MainViewModel extends ChangeNotifier {
     for (int i = receiptItems.length - 1; i >= 0; i--) {
       for (int j = receiptItems[i].length - 1; j >= 0; j--) {
         if (receiptItems[i][j]) {
-          await DBReceiptItem().deleteReceiptItem(
+          await ReceiptItemDAO().delete(
               db!, selectedSettlement.receipts[i].receiptItems[j].receiptItemId);
-          await DBSettlementItem().deleteAllStmItemsByRcpItemId(
+          await SettlementItemDAO().deleteAllByRcpItemId(
               db!, selectedSettlement.receipts[i].receiptItems[j].receiptItemId);
           deleteSettlementItem(selectedSettlement.receipts[i].receiptItems[j]);
           selectedSettlement.receipts[i].receiptItems.removeAt(j);
