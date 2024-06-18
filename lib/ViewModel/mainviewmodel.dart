@@ -56,14 +56,6 @@ class MainViewModel extends ChangeNotifier {
         addReceiptItemTextEditingController(i, receiptItem);
       }
     }
-
-    // selectedSettlement.receipts.forEach((receipt) {
-    //   receipt.receiptItems.forEach((rcpItem) {
-    //     rcpItem.paperOwner.forEach((paperId, value) {
-    //       rcpItem.paperOwner[paperId] = selectedSettlement.settlementPapers.firstWhere((paper)=>paper.settlementPaperId == paperId).
-    //     })
-    //   });
-    // });
   }
 
   void matchAllSettlementItem() {
@@ -223,7 +215,7 @@ class MainViewModel extends ChangeNotifier {
     }
     selectedSettlement.totalPrice = total;
   }
-
+  
 //ReceiptItem 값 수정
   void editReceiptItemIndividualPrice(
       double newIndividualPrice, int receiptIndex, int receiptItemIndex) async {

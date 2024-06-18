@@ -109,7 +109,6 @@ class _SettlementInformationState extends ConsumerState<SettlementInformation> {
   @override
   Widget build(BuildContext context) {
     final rprovider = ref.watch(receiptProvider);
-    final mprovider = ref.watch(mainProvider);
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () {
@@ -1380,7 +1379,6 @@ class IncludedReceiptItem extends ConsumerWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    final rprovider = ref.watch(receiptProvider);
                     rprovider.selectReceiptItem(receiptIndex, index);
                   },
                   child: AnimatedContainer(
@@ -1491,11 +1489,9 @@ class IncludedReceiptItem extends ConsumerWidget {
                           maxLength}) {
                         return const SizedBox.shrink();
                       },
-                      onChanged: (value) {
-                        if (value == '') {
-                          value = '0';
-                        }
-                        value = value.replaceAll(RegExp(r'[^0-9]'), '');
+                      onChanged: (value){
+                        value = value.replaceAll(RegExp(r'(?<!^)-|[^0-9-]'), '');
+                        if(value == '' || value == '-') return;
                         mprovider.editReceiptItemIndividualPrice(
                             double.parse(value), receiptIndex, index);
                       },
