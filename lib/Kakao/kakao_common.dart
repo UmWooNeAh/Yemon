@@ -3,61 +3,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:path_provider/path_provider.dart';
 
-// final FeedTemplate defaultFeed = FeedTemplate(
-//   content: Content(
-//     title: '딸기 치즈 케익',
-//     description: '#케익 #딸기 #삼평동 #카페 #분위기 #소개팅',
-//     imageUrl: Uri.parse(
-//         'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-//     link: Link(
-//         webUrl: Uri.parse('https://developers.kakao.com'),
-//         mobileWebUrl: Uri.parse('https://developers.kakao.com')),
-//   ),
-//   itemContent: ItemContent(
-//     profileText: 'Kakao',
-//     profileImageUrl: Uri.parse(
-//         'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-//     titleImageUrl: Uri.parse(
-//         'https://mud-kage.kakao.com/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png'),
-//     titleImageText: 'Cheese cake',
-//     titleImageCategory: 'cake',
-//     items: [
-//       ItemInfo(item: 'cake1', itemOp: '1000원'),
-//       ItemInfo(item: 'cake2', itemOp: '2000원'),
-//       ItemInfo(item: 'cake3', itemOp: '3000원'),
-//       ItemInfo(item: 'cake4', itemOp: '4000원'),
-//       ItemInfo(item: 'cake5', itemOp: '5000원')
-//     ],
-//     sum: 'total',
-//     sumOp: '15000원',
-//   ),
-//   social: Social(likeCount: 286, commentCount: 45, sharedCount: 845),
-//   buttons: [
-//     Button(
-//       title: '웹으로 보기',
-//       link: Link(
-//         webUrl: Uri.parse('https: //developers.kakao.com'),
-//         mobileWebUrl: Uri.parse('https: //developers.kakao.com'),
-//       ),
-//     ),
-//     Button(
-//       title: '앱으로보기',
-//       link: Link(
-//         androidExecutionParams: {'key1': 'value1', 'key2': 'value2'},
-//         iosExecutionParams: {'key1': 'value1', 'key2': 'value2'},
-//       ),
-//     ),
-//   ],
-// );
+
+/**
+ * 카카오톡이 미설치된 디바이스의 경우 카톡 네이티브 앱 대신 브라우저(팝업)으로 공유하기를 할 수 있도록 지원하는데,
+ * 해당 케이스의 경우 카톡 공유가 정상적으로 처리되었음에도 try~catch 문에서 예외가 발생하면서 log에 에러 메시지가 찍힘
+ * 해당 오류는 공유하기가 카카오톡 네이티브 앱이 아닌 웹에서 실행되기 때문에 카카오 sdk에서 공유 성공 여부를 알지 못해 발생하는 오류라고 함
+ * 카카오톡 측에서도 어쩔 수 없는 오류라고 하여, 해당 오류에 한해서만 정상 로직으로 처리되게 하라고 권장함
+ * 관련 문서: https://incurio.tistory.com/9
+ */
 
 Future<FeedTemplate> makeTemplate(
     Uint8List uint8list, String stmPaperName, String stmName) async {
   Directory tempDir = await getApplicationDocumentsDirectory();
   String tempPath = '${tempDir.path}/abc.txt';
-  // log("경로: ${tempPath}");
+  // print("경로: ${tempPath}");
 
   File file = File(tempPath);
   await file.writeAsBytes(uint8list);
@@ -66,8 +27,8 @@ Future<FeedTemplate> makeTemplate(
     // 카카오 이미지 서버로 업로드
     ImageUploadResult imageUploadResult =
         await ShareClient.instance.uploadImage(image: file);
-    // print('이미지 업로드 성공'
-    //     '\n${imageUploadResult.infos.original.url}');
+     print('이미지 업로드 성공'
+         '\n${imageUploadResult.infos.original.url}');
 
     final FeedTemplate template = FeedTemplate(
       content: Content(
@@ -83,7 +44,7 @@ Future<FeedTemplate> makeTemplate(
       ),
       buttons: [
         Button(
-          title: "정산서 이미지 자세히 보기",
+          title: "정산서 보기",
           link: Link(
               webUrl: Uri.parse(imageUploadResult.infos.original.url),
               mobileWebUrl: Uri.parse(imageUploadResult.infos.original.url)),
@@ -93,7 +54,7 @@ Future<FeedTemplate> makeTemplate(
 
     return template;
   } catch (error) {
-    // print('이미지 업로드 실패 $error');
+     print('이미지 업로드 실패 $error');
   }
 
   exit(0);
@@ -111,17 +72,22 @@ void shareMessage(Uint8List image, String stmPaperName, String stmName) async {
       Uri uri =
           await ShareClient.instance.shareDefault(template: createdTemplate);
       await ShareClient.instance.launchKakaoTalk(uri);
-      log('카카오톡 공유 완료');
+      print('카카오톡 공유 완료');
     } catch (error) {
-      log('카카오톡 공유 실패 $error');
+        print('카카오톡 공유 실패 $error');
     }
-  } else {
+  } else { //카카오 미설치 사용자 일 시 웹으로 카카오톡 공유하기 기능 지원
     try {
       Uri shareUrl = await WebSharerClient.instance
           .makeDefaultUrl(template: createdTemplate);
       await launchBrowserTab(shareUrl, popupOpen: true);
     } catch (error) {
-      log('카카오톡 공유 실패 $error');
+      //해당 에러에 한해서만 정상 로직으로 처리되게 코드 리팩토링
+      if(error.runtimeType.toString() ==  "PlatformException") {
+        print('카카오톡 공유 완료');
+      } else {
+        print('카카오톡 공유 실패 $error');
+      }
     }
   }
 }
